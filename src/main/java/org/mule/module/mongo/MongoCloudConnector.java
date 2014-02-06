@@ -30,16 +30,7 @@ import org.apache.commons.lang.Validate;
 import org.bson.types.BasicBSONList;
 import org.mule.api.ConnectionException;
 import org.mule.api.ConnectionExceptionCode;
-import org.mule.api.annotations.Configurable;
-import org.mule.api.annotations.Connect;
-import org.mule.api.annotations.ConnectionIdentifier;
-import org.mule.api.annotations.Connector;
-import org.mule.api.annotations.Disconnect;
-import org.mule.api.annotations.MetaDataSwitch;
-import org.mule.api.annotations.Mime;
-import org.mule.api.annotations.Processor;
-import org.mule.api.annotations.Transformer;
-import org.mule.api.annotations.ValidateConnection;
+import org.mule.api.annotations.*;
 import org.mule.api.annotations.display.Password;
 import org.mule.api.annotations.display.Placement;
 import org.mule.api.annotations.param.ConnectionKey;
@@ -157,6 +148,7 @@ public class MongoCloudConnector
      * @return Result of the operation
      */
     @Processor
+	@InvalidateConnectionOn(exception = IllegalStateException.class)
     public WriteResult addUser(final String newUsername, final String newPassword)
     {
         return client.addUser(newUsername, newPassword);
@@ -168,6 +160,7 @@ public class MongoCloudConnector
      * {@sample.xml ../../../doc/mongo-connector.xml.sample mongo:drop-database}
      */
     @Processor
+	@InvalidateConnectionOn(exception = IllegalStateException.class)
     public void dropDatabase()
     {
         client.dropDatabase();
@@ -181,6 +174,7 @@ public class MongoCloudConnector
      * @return the list of names of collections available at this database
      */
     @Processor
+	@InvalidateConnectionOn(exception = IllegalStateException.class)
     public Collection<String> listCollections()
     {
         return client.listCollections();
@@ -195,6 +189,7 @@ public class MongoCloudConnector
      * @return if the collection exists
      */
     @Processor
+	@InvalidateConnectionOn(exception = IllegalStateException.class)
     public boolean existsCollection(final String collection)
     {
         return client.existsCollection(collection);
@@ -209,6 +204,7 @@ public class MongoCloudConnector
      * @param collection the name of the collection to drop
      */
     @Processor
+	@InvalidateConnectionOn(exception = IllegalStateException.class)
     public void dropCollection(final String collection)
     {
         client.dropCollection(collection);
@@ -225,6 +221,7 @@ public class MongoCloudConnector
      * @param size the maximum size of the new collection
      */
     @Processor
+	@InvalidateConnectionOn(exception = IllegalStateException.class)
     public void createCollection(final String collection,
                                  @Optional @Default(CAPPED_DEFAULT_VALUE) final boolean capped,
                                  @Optional final Integer maxObjects,
@@ -244,6 +241,7 @@ public class MongoCloudConnector
      * @return the id that was just insterted
      */
     @Processor
+	@InvalidateConnectionOn(exception = IllegalStateException.class)
     public String insertObject(final String collection,
                                @Optional @Default("#[payload]") final DBObject dbObject,
                                @Optional @Default(WRITE_CONCERN_DEFAULT_VALUE) final WriteConcern writeConcern)
@@ -266,6 +264,7 @@ public class MongoCloudConnector
      * @return the id that was just insterted
      */
     @Processor
+	@InvalidateConnectionOn(exception = IllegalStateException.class)
     public String insertObjectFromMap(final String collection,
                                       @Placement(group = "Element Attributes") final Map<String, Object> elementAttributes,
                                       @Optional @Default(WRITE_CONCERN_DEFAULT_VALUE) final WriteConcern writeConcern)
@@ -290,6 +289,7 @@ public class MongoCloudConnector
      * @param writeConcern the write concern used to update
      */
     @Processor
+	@InvalidateConnectionOn(exception = IllegalStateException.class)
     public void updateObjects(final String collection,
                               final DBObject query,
                               @Optional @Default("#[payload]") final DBObject element,
@@ -317,6 +317,7 @@ public class MongoCloudConnector
      * @param writeConcern the write concern used to update
      */
     @Processor
+	@InvalidateConnectionOn(exception = IllegalStateException.class)
     public void updateObjectsUsingQueryMap(final String collection,
                                            final Map<String, Object> queryAttributes,
                                            final DBObject element,
@@ -344,6 +345,7 @@ public class MongoCloudConnector
      * @param writeConcern the write concern used to update
      */
     @Processor
+	@InvalidateConnectionOn(exception = IllegalStateException.class)
     public void updateObjectsUsingMap(final String collection,
                                       @Placement(group = "Query Attributes") final Map<String, Object> queryAttributes,
                                       @Placement(group = "Element Attributes") final Map<String, Object> elementAttributes,
@@ -371,6 +373,7 @@ public class MongoCloudConnector
      * @param writeConcern the write concern used to update
      */
     @Processor
+	@InvalidateConnectionOn(exception = IllegalStateException.class)
     public void updateObjectsByFunction(final String collection,
                                         final String function,
                                         final DBObject query,
@@ -401,6 +404,7 @@ public class MongoCloudConnector
      * @param writeConcern the write concern used to update
      */
     @Processor
+	@InvalidateConnectionOn(exception = IllegalStateException.class)
     public void updateObjectsByFunctionUsingMap(final String collection,
                                                 final String function,
                                                 final Map<String, Object> queryAttributes,
@@ -425,6 +429,7 @@ public class MongoCloudConnector
      * @param writeConcern the write concern used to persist the object
      */
     @Processor
+	@InvalidateConnectionOn(exception = IllegalStateException.class)
     public void saveObject(final String collection,
                            @Optional @Default("#[payload]") final DBObject element,
                            @Optional @Default(WRITE_CONCERN_DEFAULT_VALUE) final WriteConcern writeConcern)
@@ -442,6 +447,7 @@ public class MongoCloudConnector
      * @param writeConcern the write concern used to persist the object
      */
     @Processor
+	@InvalidateConnectionOn(exception = IllegalStateException.class)
     public void saveObjectFromMap(final String collection,
                                   @Placement(group = "Element Attributes") final Map<String, Object> elementAttributes,
                                   @Optional @Default(WRITE_CONCERN_DEFAULT_VALUE) final WriteConcern writeConcern)
@@ -462,6 +468,7 @@ public class MongoCloudConnector
      * @param writeConcern the write concern used to remove the object
      */
     @Processor
+	@InvalidateConnectionOn(exception = IllegalStateException.class)
     public void removeObjects(final String collection,
                               @Optional @Default("#[payload]") final DBObject query,
                               @Optional @Default(WRITE_CONCERN_DEFAULT_VALUE) final WriteConcern writeConcern)
@@ -481,6 +488,7 @@ public class MongoCloudConnector
      * @param writeConcern the write concern used to remove the object
      */
     @Processor
+	@InvalidateConnectionOn(exception = IllegalStateException.class)
     public void removeObjectsUsingQueryMap(final String collection,
                                     @Placement(group = "Query Attributes") @Optional final Map<String, Object> queryAttributes,
                                     @Optional @Default(WRITE_CONCERN_DEFAULT_VALUE) final WriteConcern writeConcern)
@@ -511,6 +519,7 @@ public class MongoCloudConnector
      * @return an iterable that retrieves the resulting collection of {@link DBObject}
      */
     @Processor
+	@InvalidateConnectionOn(exception = IllegalStateException.class)
     public Iterable<DBObject> mapReduceObjects(final String collection,
                                                final String mapFunction,
                                                final String reduceFunction,
@@ -531,6 +540,7 @@ public class MongoCloudConnector
      * @return the amount of objects that matches the query
      */
     @Processor
+	@InvalidateConnectionOn(exception = IllegalStateException.class)
     public long countObjects(final String collection, @Optional @Default("#[payload]") final DBObject query)
     {
         return client.countObjects(collection, query);
@@ -548,6 +558,7 @@ public class MongoCloudConnector
      * @return the amount of objects that matches the query
      */
     @Processor
+	@InvalidateConnectionOn(exception = IllegalStateException.class)
     public long countObjectsUsingQueryMap(final String collection,
                                           @Placement(group = "Query Attributes") @Optional final Map<String, Object> queryAttributes)
     {
@@ -569,6 +580,7 @@ public class MongoCloudConnector
      * @return an iterable of {@link DBObject}
      */
     @Processor
+	@InvalidateConnectionOn(exception = IllegalStateException.class)
     public Iterable<DBObject> findObjects(final String collection,
                                           @Optional @Default("") final DBObject query,
                                           @Placement(group = "Fields") @Optional final List<String> fields,
@@ -592,6 +604,7 @@ public class MongoCloudConnector
      * @return an iterable of {@link DBObject}
      */
     @Processor
+	@InvalidateConnectionOn(exception = IllegalStateException.class)
     public Iterable<DBObject> findObjectsUsingQueryMap(final String collection,
                                                        @Placement(group = "Query Attributes") @Optional final Map<String, Object> queryAttributes,
                                                        @Placement(group = "Fields") @Optional final List<String> fields,
@@ -614,6 +627,7 @@ public class MongoCloudConnector
      * @return a {@link DBObject} that matches the query. If nothing matches and the failOnNotFound is set to false, null will be returned
      */
     @Processor
+	@InvalidateConnectionOn(exception = IllegalStateException.class)
     public DBObject findOneObject(final String collection,
                                   @Optional @Default("#[payload]") final DBObject query,
                                   @Placement(group = "Fields") @Optional final List<String> fields,
@@ -636,6 +650,7 @@ public class MongoCloudConnector
      * @return a {@link DBObject} that matches the query. If nothing matches and the failOnNotFound is set to false, null will be returned
      */
     @Processor
+	@InvalidateConnectionOn(exception = IllegalStateException.class)
     public DBObject findOneObjectUsingQueryMap(final String collection,
                                                @Placement(group = "Query Attributes") final Map<String, Object> queryAttributes,
                                                @Placement(group = "Fields") @Optional final List<String> fields,
@@ -655,6 +670,7 @@ public class MongoCloudConnector
      * @param order the indexing order
      */
     @Processor
+	@InvalidateConnectionOn(exception = IllegalStateException.class)
     public void createIndex(final String collection,
                             final String field,
                             @Optional @Default("ASC") final IndexOrder order)
@@ -671,6 +687,7 @@ public class MongoCloudConnector
      * @param index the name of the index to drop
      */
     @Processor
+	@InvalidateConnectionOn(exception = IllegalStateException.class)
     public void dropIndex(final String collection, final String index)
     {
         client.dropIndex(collection, index);
@@ -685,6 +702,7 @@ public class MongoCloudConnector
      * @return a collection of {@link DBObject} with indices information
      */
     @Processor
+	@InvalidateConnectionOn(exception = IllegalStateException.class)
     public Collection<DBObject> listIndices(final String collection)
     {
         return client.listIndices(collection);
@@ -705,6 +723,7 @@ public class MongoCloudConnector
      * @throws IOException IOException
      */
     @Processor
+	@InvalidateConnectionOn(exception = IllegalStateException.class)
     public DBObject createFileFromPayload(@Payload final Object payload,
                                           final String filename,
                                           @Optional final String contentType,
@@ -747,6 +766,7 @@ public class MongoCloudConnector
      * @return a {@link DBObject} files iterable
      */
     @Processor
+	@InvalidateConnectionOn(exception = IllegalStateException.class)
     public Iterable<DBObject> findFiles(@Optional @Default("#[payload]") final DBObject query)
     {
         return client.findFiles(from(query));
@@ -761,6 +781,7 @@ public class MongoCloudConnector
      * @return a {@link DBObject} files iterable
      */
     @Processor
+	@InvalidateConnectionOn(exception = IllegalStateException.class)
     public Iterable<DBObject> findFilesUsingQueryMap(@Placement(group = "Query Attributes") @Optional final Map<String, Object> queryAttributes)
     {
         return client.findFiles((DBObject) adapt(queryAttributes));
@@ -776,6 +797,7 @@ public class MongoCloudConnector
      * @return a {@link DBObject}
      */
     @Processor
+	@InvalidateConnectionOn(exception = IllegalStateException.class)
     public DBObject findOneFile(final DBObject query)
     {
         return client.findOneFile(from(query));
@@ -791,6 +813,7 @@ public class MongoCloudConnector
      * @return a {@link DBObject}
      */
     @Processor
+	@InvalidateConnectionOn(exception = IllegalStateException.class)
     public DBObject findOneFileUsingQueryMap(@Placement(group = "Query Attributes") final Map<String, Object> queryAttributes)
     {
         return client.findOneFile((DBObject) adapt(queryAttributes));
@@ -806,6 +829,7 @@ public class MongoCloudConnector
      * @return an InputStream to the file contents
      */
     @Processor
+	@InvalidateConnectionOn(exception = IllegalStateException.class)
     public InputStream getFileContent(@Optional @Default("#[payload]") final DBObject query)
     {
         return client.getFileContent(from(query));
@@ -821,6 +845,7 @@ public class MongoCloudConnector
      * @return an InputStream to the file contents
      */
     @Processor
+	@InvalidateConnectionOn(exception = IllegalStateException.class)
     public InputStream getFileContentUsingQueryMap(@Placement(group = "Query Attributes") final Map<String, Object> queryAttributes)
     {
         return client.getFileContent((DBObject) adapt(queryAttributes));
@@ -836,6 +861,7 @@ public class MongoCloudConnector
      * @return an iterable of {@link DBObject}
      */
     @Processor
+	@InvalidateConnectionOn(exception = IllegalStateException.class)
     public Iterable<DBObject> listFiles(@Optional @Default("#[payload]") final DBObject query)
     {
         return client.listFiles(from(query));
@@ -851,6 +877,7 @@ public class MongoCloudConnector
      * @return an iterable of {@link DBObject}
      */
     @Processor
+	@InvalidateConnectionOn(exception = IllegalStateException.class)
     public Iterable<DBObject> listFilesUsingQueryMap(@Placement(group = "Query Attributes") @Optional final Map<String, Object> queryAttributes)
     {
         return client.listFiles((DBObject) adapt(queryAttributes));
@@ -865,6 +892,7 @@ public class MongoCloudConnector
      * @param query the {@link DBObject} optional query
      */
     @Processor
+	@InvalidateConnectionOn(exception = IllegalStateException.class)
     public void removeFiles(@Optional @Default("#[payload]") final DBObject query)
     {
         client.removeFiles(from(query));
@@ -879,6 +907,7 @@ public class MongoCloudConnector
      * @param queryAttributes the optional query
      */
     @Processor
+	@InvalidateConnectionOn(exception = IllegalStateException.class)
     public void removeFilesUsingQueryMap(@Placement(group = "Query Attributes") @Optional final Map<String, Object> queryAttributes)
     {
         client.removeFiles((DBObject) adapt(queryAttributes));
@@ -895,6 +924,7 @@ public class MongoCloudConnector
      * @return The result of the command
      */
     @Processor
+	@InvalidateConnectionOn(exception = IllegalStateException.class)
     public DBObject executeCommand(final String commandName, @Optional final String commandValue)
     {
         final DBObject dbObject = fromCommand(commandName, commandValue);
@@ -918,6 +948,7 @@ public class MongoCloudConnector
      * @throws IOException if an error occurs during the dump
      */
     @Processor
+	@InvalidateConnectionOn(exception = IllegalStateException.class)
     public void dump(@Optional @Default(DEFAULT_OUTPUT_DIRECTORY) final String outputDirectory,
                      @Optional final String outputName,
                      @Optional @Default("false") final boolean zip,
@@ -948,6 +979,7 @@ public class MongoCloudConnector
      * @throws IOException if an error occurs during the incremental dump
      */
     @Processor
+	@InvalidateConnectionOn(exception = IllegalStateException.class)
     public void incrementalDump(@Optional @Default(DEFAULT_OUTPUT_DIRECTORY) final String outputDirectory,
                                 @Optional final String incrementalTimestampFile) throws IOException
     {
@@ -972,6 +1004,7 @@ public class MongoCloudConnector
      * @throws IOException if an error occurs during restore of the database
      */
     @Processor
+	@InvalidateConnectionOn(exception = IllegalStateException.class)
     public void restore(@Optional @Default(DEFAULT_OUTPUT_DIRECTORY) final String inputPath,
                         @Optional @Default("false") final boolean drop,
                         @Optional @Default("false") final boolean oplogReplay) throws IOException
@@ -989,6 +1022,7 @@ public class MongoCloudConnector
      * @see <a href="http://docs.mongodb.org/ecosystem/drivers/java-concurrency/">MongoDB: Java Driver Concurrency</a>
      */
     @Processor
+	@InvalidateConnectionOn(exception = IllegalStateException.class)
     public void startConsistentRequest() {
         client.requestStart();
     }
@@ -1001,6 +1035,7 @@ public class MongoCloudConnector
      * @see <a href="http://docs.mongodb.org/ecosystem/drivers/java-concurrency/">MongoDB: Java Driver Concurrency</a>
      */
     @Processor
+	@InvalidateConnectionOn(exception = IllegalStateException.class)
     public void endConsistentRequest() {
         client.requestDone();
     }
