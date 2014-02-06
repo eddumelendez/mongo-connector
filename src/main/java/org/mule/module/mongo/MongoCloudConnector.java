@@ -70,8 +70,6 @@ public class MongoCloudConnector
     private static final String BACKUP_THREADS = "5";
     private static final String DEFAULT_OUTPUT_DIRECTORY = "dump";
 
-    private final Mongo.Holder mongoClientHolder = Mongo.Holder.singleton();
-
     /**
      * The host of the Mongo server, it can also be a list of comma separated hosts for replicas
      */
@@ -1132,8 +1130,6 @@ public class MongoCloudConnector
     {
         try
         {
-            // TODO: use MongoClient instead of Mongo once the Holder supports it (in driver version 2.12.0)
-            //mongo = mongoClientHolder.connect(new MongoURI(getMongoClientURI(username, password, database)));
             mongo = new com.mongodb.MongoClient(getMongoClientURI(username, password, database));
             
             this.client = new MongoClientImpl(getDatabase(mongo, username, password, database));
