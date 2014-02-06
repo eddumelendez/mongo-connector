@@ -1133,8 +1133,9 @@ public class MongoCloudConnector
         try
         {
             // TODO: use MongoClient instead of Mongo once the Holder supports it (in driver version 2.12.0)
-            mongo = mongoClientHolder.connect(new MongoURI(getMongoClientURI(username, password, database)));
-
+            //mongo = mongoClientHolder.connect(new MongoURI(getMongoClientURI(username, password, database)));
+            mongo = new com.mongodb.MongoClient(getMongoClientURI(username, password, database));
+            
             this.client = new MongoClientImpl(getDatabase(mongo, username, password, database));
         }
         catch (final MongoException me)
@@ -1216,7 +1217,7 @@ public class MongoCloudConnector
                 client = null;
             }
         }
-
+        
         if (mongo != null)
         {
             try
@@ -1237,7 +1238,7 @@ public class MongoCloudConnector
     @ValidateConnection
     public boolean isConnected()
     {
-        return this.client != null;
+        return this.client != null && this.mongo != null && mongo.getConnector().isOpen();
     }
 
     @ConnectionIdentifier
