@@ -1,0 +1,2798 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xs:schema xmlns:ns2="http://www.mulesoft.org/schema/mule/devkit" xmlns:mule="http://www.mulesoft.org/schema/mule/core" xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified" targetNamespace="http://www.mulesoft.org/schema/mule/mongo">
+  <xs:import namespace="http://www.w3.org/XML/1998/namespace"></xs:import>
+  <xs:import schemaLocation="http://www.springframework.org/schema/beans/spring-beans-3.0.xsd" namespace="http://www.springframework.org/schema/beans"></xs:import>
+  <xs:import schemaLocation="http://www.mulesoft.org/schema/mule/core/current/mule.xsd" namespace="http://www.mulesoft.org/schema/mule/core"></xs:import>
+  <xs:element xmlns:mule="http://www.mulesoft.org/schema/mule/core" name="config" substitutionGroup="mule:abstract-extension" ns2:javaClass="org.mule.module.mongo.connectivity.MongoCloudConnectorConnectionManager">
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="mule:abstractExtensionType">
+          <xs:annotation>
+            <xs:documentation>MongoDB is an open source, high-performance, schema-free, document-oriented database that manages
+collections of BSON documents.</xs:documentation>
+          </xs:annotation>
+          <xs:sequence>
+            <xs:element name="connection-pooling-profile" minOccurs="0" type="mule:poolingProfileType">
+              <xs:annotation>
+                <xs:documentation>Characteristics of the connection pool.</xs:documentation>
+              </xs:annotation>
+            </xs:element>
+            <xs:element ref="mule:abstract-reconnection-strategy" minOccurs="0">
+              <xs:annotation>
+                <xs:documentation>Reconnection strategy that defines how Mule should handle a connection failure.</xs:documentation>
+              </xs:annotation>
+            </xs:element>
+          </xs:sequence>
+          <xs:attribute name="name" use="optional" type="xs:string">
+            <xs:annotation>
+              <xs:documentation>Give a name to this configuration so it can be later referenced by config-ref.</xs:documentation>
+            </xs:annotation>
+          </xs:attribute>
+          <xs:attribute name="host" default="localhost" use="optional" type="xs:string">
+            <xs:annotation>
+              <xs:documentation>The host of the Mongo server, it can also be a list of comma separated hosts for replicas</xs:documentation>
+            </xs:annotation>
+          </xs:attribute>
+          <xs:attribute xmlns="http://www.mulesoft.org/schema/mule/mongo" name="port" default="27017" use="optional" type="integerType">
+            <xs:annotation>
+              <xs:documentation>The port of the Mongo server</xs:documentation>
+            </xs:annotation>
+          </xs:attribute>
+          <xs:attribute xmlns="http://www.mulesoft.org/schema/mule/mongo" name="connectionsPerHost" use="optional" type="integerType">
+            <xs:annotation>
+              <xs:documentation>The number of connections allowed per host (the pool size, per host)</xs:documentation>
+            </xs:annotation>
+          </xs:attribute>
+          <xs:attribute xmlns="http://www.mulesoft.org/schema/mule/mongo" name="threadsAllowedToBlockForConnectionMultiplier" use="optional" type="integerType">
+            <xs:annotation>
+              <xs:documentation>Multiplier for connectionsPerHost for # of threads that can block</xs:documentation>
+            </xs:annotation>
+          </xs:attribute>
+          <xs:attribute xmlns="http://www.mulesoft.org/schema/mule/mongo" name="maxWaitTime" use="optional" type="integerType">
+            <xs:annotation>
+              <xs:documentation>The max wait time for a blocking thread for a connection from the pool in ms.</xs:documentation>
+            </xs:annotation>
+          </xs:attribute>
+          <xs:attribute xmlns="http://www.mulesoft.org/schema/mule/mongo" name="connectTimeout" default="30000" use="optional" type="integerType">
+            <xs:annotation>
+              <xs:documentation>The connection timeout in milliseconds; this is for establishing the socket connections
+(open). 0 is default and infinite.</xs:documentation>
+            </xs:annotation>
+          </xs:attribute>
+          <xs:attribute xmlns="http://www.mulesoft.org/schema/mule/mongo" name="socketTimeout" use="optional" type="integerType">
+            <xs:annotation>
+              <xs:documentation>The socket timeout. 0 is default and infinite.</xs:documentation>
+            </xs:annotation>
+          </xs:attribute>
+          <xs:attribute xmlns="http://www.mulesoft.org/schema/mule/mongo" name="autoConnectRetry" use="optional" type="booleanType">
+            <xs:annotation>
+              <xs:documentation>This controls whether the system retries automatically on connection errors.</xs:documentation>
+            </xs:annotation>
+          </xs:attribute>
+          <xs:attribute name="username" use="optional" type="xs:string">
+            <xs:annotation>
+              <xs:documentation>the username to use for authentication. NOTE: Please use a dummy user if you have disabled Mongo authentication</xs:documentation>
+            </xs:annotation>
+          </xs:attribute>
+          <xs:attribute name="password" use="optional" type="xs:string">
+            <xs:annotation>
+              <xs:documentation>the password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication</xs:documentation>
+            </xs:annotation>
+          </xs:attribute>
+          <xs:attribute name="database" default="test" use="optional" type="xs:string">
+            <xs:annotation>
+              <xs:documentation>Name of the database</xs:documentation>
+            </xs:annotation>
+          </xs:attribute>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+  <xs:element xmlns="http://www.mulesoft.org/schema/mule/mongo" xmlns:mule="http://www.mulesoft.org/schema/mule/core" name="add-user" substitutionGroup="mule:abstract-message-processor" type="AddUserType">
+    <xs:annotation>
+      <xs:documentation>Adds a new user for this db
+&lt;p/&gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:complexType name="AddUserType">
+    <xs:complexContent>
+      <xs:extension xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:abstractMessageProcessorType">
+        <xs:attribute name="config-ref" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>Specify which configuration to use for this invocation.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="newUsername" use="required" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>Name of the user</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="newPassword" use="required" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>Password that will be used for authentication</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="username" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the username to use for authentication. NOTE: Please use a dummy user if you have disabled Mongo authentication</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="password" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="database" default="test" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>Name of the database</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element xmlns="http://www.mulesoft.org/schema/mule/mongo" xmlns:mule="http://www.mulesoft.org/schema/mule/core" name="drop-database" substitutionGroup="mule:abstract-message-processor" type="DropDatabaseType">
+    <xs:annotation>
+      <xs:documentation>Drop the current database
+&lt;p/&gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:complexType name="DropDatabaseType">
+    <xs:complexContent>
+      <xs:extension xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:abstractMessageProcessorType">
+        <xs:attribute name="config-ref" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>Specify which configuration to use for this invocation.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="username" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the username to use for authentication. NOTE: Please use a dummy user if you have disabled Mongo authentication</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="password" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="database" default="test" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>Name of the database</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element xmlns="http://www.mulesoft.org/schema/mule/mongo" xmlns:mule="http://www.mulesoft.org/schema/mule/core" name="list-collections" substitutionGroup="mule:abstract-message-processor" type="ListCollectionsType">
+    <xs:annotation>
+      <xs:documentation>Lists names of collections available at this database
+&lt;p/&gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:complexType name="ListCollectionsType">
+    <xs:complexContent>
+      <xs:extension xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:abstractMessageProcessorType">
+        <xs:attribute name="config-ref" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>Specify which configuration to use for this invocation.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="username" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the username to use for authentication. NOTE: Please use a dummy user if you have disabled Mongo authentication</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="password" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="database" default="test" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>Name of the database</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element xmlns="http://www.mulesoft.org/schema/mule/mongo" xmlns:mule="http://www.mulesoft.org/schema/mule/core" name="exists-collection" substitutionGroup="mule:abstract-message-processor" type="ExistsCollectionType">
+    <xs:annotation>
+      <xs:documentation>Answers if a collection exists given its name
+&lt;p/&gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:complexType name="ExistsCollectionType">
+    <xs:complexContent>
+      <xs:extension xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:abstractMessageProcessorType">
+        <xs:attribute name="config-ref" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>Specify which configuration to use for this invocation.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="collection" use="required" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the name of the collection</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="username" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the username to use for authentication. NOTE: Please use a dummy user if you have disabled Mongo authentication</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="password" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="database" default="test" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>Name of the database</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element xmlns="http://www.mulesoft.org/schema/mule/mongo" xmlns:mule="http://www.mulesoft.org/schema/mule/core" name="drop-collection" substitutionGroup="mule:abstract-message-processor" type="DropCollectionType">
+    <xs:annotation>
+      <xs:documentation>Deletes a collection and all the objects it contains. If the collection does not exist, does
+nothing.
+&lt;p/&gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:complexType name="DropCollectionType">
+    <xs:complexContent>
+      <xs:extension xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:abstractMessageProcessorType">
+        <xs:attribute name="config-ref" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>Specify which configuration to use for this invocation.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="collection" use="required" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the name of the collection to drop</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="username" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the username to use for authentication. NOTE: Please use a dummy user if you have disabled Mongo authentication</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="password" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="database" default="test" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>Name of the database</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element xmlns="http://www.mulesoft.org/schema/mule/mongo" xmlns:mule="http://www.mulesoft.org/schema/mule/core" name="create-collection" substitutionGroup="mule:abstract-message-processor" type="CreateCollectionType">
+    <xs:annotation>
+      <xs:documentation>Creates a new collection. If the collection already exists, a MongoException will be thrown.
+&lt;p/&gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:complexType name="CreateCollectionType">
+    <xs:complexContent>
+      <xs:extension xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:abstractMessageProcessorType">
+        <xs:attribute name="config-ref" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>Specify which configuration to use for this invocation.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="collection" use="required" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the name of the collection to create</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute xmlns="http://www.mulesoft.org/schema/mule/mongo" name="capped" default="false" use="optional" type="booleanType">
+          <xs:annotation>
+            <xs:documentation>if the collection will be capped</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute xmlns="http://www.mulesoft.org/schema/mule/mongo" name="maxObjects" use="optional" type="integerType">
+          <xs:annotation>
+            <xs:documentation>the maximum number of documents the new collection is able to contain</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute xmlns="http://www.mulesoft.org/schema/mule/mongo" name="size" use="optional" type="integerType">
+          <xs:annotation>
+            <xs:documentation>the maximum size of the new collection</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="username" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the username to use for authentication. NOTE: Please use a dummy user if you have disabled Mongo authentication</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="password" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="database" default="test" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>Name of the database</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element xmlns="http://www.mulesoft.org/schema/mule/mongo" xmlns:mule="http://www.mulesoft.org/schema/mule/core" name="insert-object" substitutionGroup="mule:abstract-message-processor" type="InsertObjectType">
+    <xs:annotation>
+      <xs:documentation>Inserts an object in a collection, setting its id if necessary.
+&lt;p/&gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:complexType name="InsertObjectType">
+    <xs:complexContent>
+      <xs:extension xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:abstractMessageProcessorType">
+        <xs:attribute name="config-ref" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>Specify which configuration to use for this invocation.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="collection" use="required" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the name of the collection where to insert the given object</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="dbObject-ref" default="#[payload]" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>a  instance.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute xmlns="http://www.mulesoft.org/schema/mule/mongo" name="writeConcern" default="DATABASE_DEFAULT" use="optional" type="WriteConcernEnumType">
+          <xs:annotation>
+            <xs:documentation>the optional write concern of insertion</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="username" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the username to use for authentication. NOTE: Please use a dummy user if you have disabled Mongo authentication</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="password" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="database" default="test" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>Name of the database</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element xmlns="http://www.mulesoft.org/schema/mule/mongo" xmlns:mule="http://www.mulesoft.org/schema/mule/core" name="insert-object-from-map" substitutionGroup="mule:abstract-message-processor" type="InsertObjectFromMapType">
+    <xs:annotation>
+      <xs:documentation>Inserts an object in a collection, setting its id if necessary.
+&lt;p/&gt;
+A shallow conversion into DBObject is performed - that is, no conversion is performed to its
+values.
+&lt;p/&gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:complexType name="InsertObjectFromMapType">
+    <xs:complexContent>
+      <xs:extension xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:abstractMessageProcessorType">
+        <xs:sequence>
+          <xs:element name="element-attributes" maxOccurs="1" minOccurs="1">
+            <xs:annotation>
+              <xs:documentation>alternative way of specifying the element as a literal Map inside a Mule Flow</xs:documentation>
+            </xs:annotation>
+            <xs:complexType>
+              <xs:choice>
+                <xs:sequence>
+                  <xs:element name="element-attribute" maxOccurs="unbounded" minOccurs="0">
+                    <xs:complexType>
+                      <xs:simpleContent>
+                        <xs:extension base="xs:string">
+                          <xs:attribute name="value-ref" use="optional" type="xs:string"></xs:attribute>
+                          <xs:attribute name="key" type="xs:string"></xs:attribute>
+                        </xs:extension>
+                      </xs:simpleContent>
+                    </xs:complexType>
+                  </xs:element>
+                </xs:sequence>
+                <xs:sequence>
+                  <xs:any maxOccurs="unbounded" minOccurs="0" processContents="lax"></xs:any>
+                </xs:sequence>
+              </xs:choice>
+              <xs:attribute name="ref" use="optional" type="xs:string">
+                <xs:annotation>
+                  <xs:documentation>The reference object for this parameter</xs:documentation>
+                </xs:annotation>
+              </xs:attribute>
+            </xs:complexType>
+          </xs:element>
+        </xs:sequence>
+        <xs:attribute name="config-ref" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>Specify which configuration to use for this invocation.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="collection" use="required" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the name of the collection where to insert the given object</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute xmlns="http://www.mulesoft.org/schema/mule/mongo" name="writeConcern" default="DATABASE_DEFAULT" use="optional" type="WriteConcernEnumType">
+          <xs:annotation>
+            <xs:documentation>the optional write concern of insertion</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="username" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the username to use for authentication. NOTE: Please use a dummy user if you have disabled Mongo authentication</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="password" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="database" default="test" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>Name of the database</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element xmlns="http://www.mulesoft.org/schema/mule/mongo" xmlns:mule="http://www.mulesoft.org/schema/mule/core" name="update-objects" substitutionGroup="mule:abstract-message-processor" type="UpdateObjectsType">
+    <xs:annotation>
+      <xs:documentation>Updates objects that matches the given query. If parameter multi is set to false, only the
+first document matching it will be updated. Otherwise, all the documents matching it will be
+updated.
+&lt;p/&gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:complexType name="UpdateObjectsType">
+    <xs:complexContent>
+      <xs:extension xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:abstractMessageProcessorType">
+        <xs:attribute name="config-ref" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>Specify which configuration to use for this invocation.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="collection" use="required" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the name of the collection to update</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="query-ref" use="required" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the  query object used to detect the element to update. If the object Id is an instance of ObjectId you need to specify the value pair as map with the following structure: { "_id" : "ObjectId(OBJECT_ID_VALUE)"</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="element-ref" default="#[payload]" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the  mandatory object that will replace that one which matches the query.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute xmlns="http://www.mulesoft.org/schema/mule/mongo" name="upsert" default="false" use="optional" type="booleanType">
+          <xs:annotation>
+            <xs:documentation>if the database should create the element if it does not exist</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute xmlns="http://www.mulesoft.org/schema/mule/mongo" name="multi" default="true" use="optional" type="booleanType">
+          <xs:annotation>
+            <xs:documentation>if all or just the first object matching the query will be updated</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute xmlns="http://www.mulesoft.org/schema/mule/mongo" name="writeConcern" default="DATABASE_DEFAULT" use="optional" type="WriteConcernEnumType">
+          <xs:annotation>
+            <xs:documentation>the write concern used to update</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="username" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the username to use for authentication. NOTE: Please use a dummy user if you have disabled Mongo authentication</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="password" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="database" default="test" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>Name of the database</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element xmlns="http://www.mulesoft.org/schema/mule/mongo" xmlns:mule="http://www.mulesoft.org/schema/mule/core" name="update-objects-using-query-map" substitutionGroup="mule:abstract-message-processor" type="UpdateObjectsUsingQueryMapType">
+    <xs:annotation>
+      <xs:documentation>Updates objects that matches the given query. If parameter multi is set to false, only the
+first document matching it will be updated. Otherwise, all the documents matching it will be
+updated.
+&lt;p/&gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:complexType name="UpdateObjectsUsingQueryMapType">
+    <xs:complexContent>
+      <xs:extension xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:abstractMessageProcessorType">
+        <xs:sequence>
+          <xs:element name="query-attributes" maxOccurs="1" minOccurs="1">
+            <xs:annotation>
+              <xs:documentation>the query object used to detect the element to update. If the object Id is an instance of ObjectId you need to specify the value pair as map with the following structure: { "_id" : "ObjectId(OBJECT_ID_VALUE)"</xs:documentation>
+            </xs:annotation>
+            <xs:complexType>
+              <xs:choice>
+                <xs:sequence>
+                  <xs:element name="query-attribute" maxOccurs="unbounded" minOccurs="0">
+                    <xs:complexType>
+                      <xs:simpleContent>
+                        <xs:extension base="xs:string">
+                          <xs:attribute name="value-ref" use="optional" type="xs:string"></xs:attribute>
+                          <xs:attribute name="key" type="xs:string"></xs:attribute>
+                        </xs:extension>
+                      </xs:simpleContent>
+                    </xs:complexType>
+                  </xs:element>
+                </xs:sequence>
+                <xs:sequence>
+                  <xs:any maxOccurs="unbounded" minOccurs="0" processContents="lax"></xs:any>
+                </xs:sequence>
+              </xs:choice>
+              <xs:attribute name="ref" use="optional" type="xs:string">
+                <xs:annotation>
+                  <xs:documentation>The reference object for this parameter</xs:documentation>
+                </xs:annotation>
+              </xs:attribute>
+            </xs:complexType>
+          </xs:element>
+        </xs:sequence>
+        <xs:attribute name="config-ref" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>Specify which configuration to use for this invocation.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="collection" use="required" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the name of the collection to update</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="element-ref" use="required" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the  mandatory object that will replace that one which matches the query.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute xmlns="http://www.mulesoft.org/schema/mule/mongo" name="upsert" default="false" use="optional" type="booleanType">
+          <xs:annotation>
+            <xs:documentation>if the database should create the element if it does not exist</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute xmlns="http://www.mulesoft.org/schema/mule/mongo" name="multi" default="true" use="optional" type="booleanType">
+          <xs:annotation>
+            <xs:documentation>if all or just the first object matching the query will be updated</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute xmlns="http://www.mulesoft.org/schema/mule/mongo" name="writeConcern" default="DATABASE_DEFAULT" use="optional" type="WriteConcernEnumType">
+          <xs:annotation>
+            <xs:documentation>the write concern used to update</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="username" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the username to use for authentication. NOTE: Please use a dummy user if you have disabled Mongo authentication</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="password" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="database" default="test" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>Name of the database</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element xmlns="http://www.mulesoft.org/schema/mule/mongo" xmlns:mule="http://www.mulesoft.org/schema/mule/core" name="update-objects-using-map" substitutionGroup="mule:abstract-message-processor" type="UpdateObjectsUsingMapType">
+    <xs:annotation>
+      <xs:documentation>Updates objects that matches the given query. If parameter multi is set to false, only the
+first document matching it will be updated. Otherwise, all the documents matching it will be
+updated.
+&lt;p/&gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:complexType name="UpdateObjectsUsingMapType">
+    <xs:complexContent>
+      <xs:extension xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:abstractMessageProcessorType">
+        <xs:sequence>
+          <xs:element name="query-attributes" maxOccurs="1" minOccurs="1">
+            <xs:annotation>
+              <xs:documentation>the query object used to detect the element to update.</xs:documentation>
+            </xs:annotation>
+            <xs:complexType>
+              <xs:choice>
+                <xs:sequence>
+                  <xs:element name="query-attribute" maxOccurs="unbounded" minOccurs="0">
+                    <xs:complexType>
+                      <xs:simpleContent>
+                        <xs:extension base="xs:string">
+                          <xs:attribute name="value-ref" use="optional" type="xs:string"></xs:attribute>
+                          <xs:attribute name="key" type="xs:string"></xs:attribute>
+                        </xs:extension>
+                      </xs:simpleContent>
+                    </xs:complexType>
+                  </xs:element>
+                </xs:sequence>
+                <xs:sequence>
+                  <xs:any maxOccurs="unbounded" minOccurs="0" processContents="lax"></xs:any>
+                </xs:sequence>
+              </xs:choice>
+              <xs:attribute name="ref" use="optional" type="xs:string">
+                <xs:annotation>
+                  <xs:documentation>The reference object for this parameter</xs:documentation>
+                </xs:annotation>
+              </xs:attribute>
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="element-attributes" maxOccurs="1" minOccurs="1">
+            <xs:annotation>
+              <xs:documentation>the mandatory object that will replace that one which matches the query.</xs:documentation>
+            </xs:annotation>
+            <xs:complexType>
+              <xs:choice>
+                <xs:sequence>
+                  <xs:element name="element-attribute" maxOccurs="unbounded" minOccurs="0">
+                    <xs:complexType>
+                      <xs:simpleContent>
+                        <xs:extension base="xs:string">
+                          <xs:attribute name="value-ref" use="optional" type="xs:string"></xs:attribute>
+                          <xs:attribute name="key" type="xs:string"></xs:attribute>
+                        </xs:extension>
+                      </xs:simpleContent>
+                    </xs:complexType>
+                  </xs:element>
+                </xs:sequence>
+                <xs:sequence>
+                  <xs:any maxOccurs="unbounded" minOccurs="0" processContents="lax"></xs:any>
+                </xs:sequence>
+              </xs:choice>
+              <xs:attribute name="ref" use="optional" type="xs:string">
+                <xs:annotation>
+                  <xs:documentation>The reference object for this parameter</xs:documentation>
+                </xs:annotation>
+              </xs:attribute>
+            </xs:complexType>
+          </xs:element>
+        </xs:sequence>
+        <xs:attribute name="config-ref" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>Specify which configuration to use for this invocation.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="collection" use="required" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the name of the collection to update</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute xmlns="http://www.mulesoft.org/schema/mule/mongo" name="upsert" default="false" use="optional" type="booleanType">
+          <xs:annotation>
+            <xs:documentation>if the database should create the element if it does not exist</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute xmlns="http://www.mulesoft.org/schema/mule/mongo" name="multi" default="true" use="optional" type="booleanType">
+          <xs:annotation>
+            <xs:documentation>if all or just the first object matching the query will be updated</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute xmlns="http://www.mulesoft.org/schema/mule/mongo" name="writeConcern" default="DATABASE_DEFAULT" use="optional" type="WriteConcernEnumType">
+          <xs:annotation>
+            <xs:documentation>the write concern used to update</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="username" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the username to use for authentication. NOTE: Please use a dummy user if you have disabled Mongo authentication</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="password" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="database" default="test" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>Name of the database</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element xmlns="http://www.mulesoft.org/schema/mule/mongo" xmlns:mule="http://www.mulesoft.org/schema/mule/core" name="update-objects-by-function" substitutionGroup="mule:abstract-message-processor" type="UpdateObjectsByFunctionType">
+    <xs:annotation>
+      <xs:documentation>Update objects using a mongo function
+&lt;p/&gt;
+&lt;p/&gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:complexType name="UpdateObjectsByFunctionType">
+    <xs:complexContent>
+      <xs:extension xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:abstractMessageProcessorType">
+        <xs:attribute name="config-ref" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>Specify which configuration to use for this invocation.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="collection" use="required" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the name of the collection to update</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="function" use="required" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the function used to execute the update</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="query-ref" use="required" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the  query object used to detect the element to update.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="element-ref" use="required" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the  mandatory object that will replace that one which matches the query.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute xmlns="http://www.mulesoft.org/schema/mule/mongo" name="upsert" default="false" use="optional" type="booleanType">
+          <xs:annotation>
+            <xs:documentation>if the database should create the element if it does not exist</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute xmlns="http://www.mulesoft.org/schema/mule/mongo" name="multi" default="true" use="optional" type="booleanType">
+          <xs:annotation>
+            <xs:documentation>if all or just the first object matching the query will be updated</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute xmlns="http://www.mulesoft.org/schema/mule/mongo" name="writeConcern" default="DATABASE_DEFAULT" use="optional" type="WriteConcernEnumType">
+          <xs:annotation>
+            <xs:documentation>the write concern used to update</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="username" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the username to use for authentication. NOTE: Please use a dummy user if you have disabled Mongo authentication</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="password" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="database" default="test" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>Name of the database</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element xmlns="http://www.mulesoft.org/schema/mule/mongo" xmlns:mule="http://www.mulesoft.org/schema/mule/core" name="update-objects-by-function-using-map" substitutionGroup="mule:abstract-message-processor" type="UpdateObjectsByFunctionUsingMapType">
+    <xs:annotation>
+      <xs:documentation>Update objects using a mongo function
+&lt;p/&gt;
+&lt;p/&gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:complexType name="UpdateObjectsByFunctionUsingMapType">
+    <xs:complexContent>
+      <xs:extension xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:abstractMessageProcessorType">
+        <xs:sequence>
+          <xs:element name="query-attributes" maxOccurs="1" minOccurs="1">
+            <xs:annotation>
+              <xs:documentation>the query object used to detect the element to update.</xs:documentation>
+            </xs:annotation>
+            <xs:complexType>
+              <xs:choice>
+                <xs:sequence>
+                  <xs:element name="query-attribute" maxOccurs="unbounded" minOccurs="0">
+                    <xs:complexType>
+                      <xs:simpleContent>
+                        <xs:extension base="xs:string">
+                          <xs:attribute name="value-ref" use="optional" type="xs:string"></xs:attribute>
+                          <xs:attribute name="key" type="xs:string"></xs:attribute>
+                        </xs:extension>
+                      </xs:simpleContent>
+                    </xs:complexType>
+                  </xs:element>
+                </xs:sequence>
+                <xs:sequence>
+                  <xs:any maxOccurs="unbounded" minOccurs="0" processContents="lax"></xs:any>
+                </xs:sequence>
+              </xs:choice>
+              <xs:attribute name="ref" use="optional" type="xs:string">
+                <xs:annotation>
+                  <xs:documentation>The reference object for this parameter</xs:documentation>
+                </xs:annotation>
+              </xs:attribute>
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="element-attributes" maxOccurs="1" minOccurs="1">
+            <xs:annotation>
+              <xs:documentation>the mandatory object that will replace that one which matches the query.</xs:documentation>
+            </xs:annotation>
+            <xs:complexType>
+              <xs:choice>
+                <xs:sequence>
+                  <xs:element name="element-attribute" maxOccurs="unbounded" minOccurs="0">
+                    <xs:complexType>
+                      <xs:simpleContent>
+                        <xs:extension base="xs:string">
+                          <xs:attribute name="value-ref" use="optional" type="xs:string"></xs:attribute>
+                          <xs:attribute name="key" type="xs:string"></xs:attribute>
+                        </xs:extension>
+                      </xs:simpleContent>
+                    </xs:complexType>
+                  </xs:element>
+                </xs:sequence>
+                <xs:sequence>
+                  <xs:any maxOccurs="unbounded" minOccurs="0" processContents="lax"></xs:any>
+                </xs:sequence>
+              </xs:choice>
+              <xs:attribute name="ref" use="optional" type="xs:string">
+                <xs:annotation>
+                  <xs:documentation>The reference object for this parameter</xs:documentation>
+                </xs:annotation>
+              </xs:attribute>
+            </xs:complexType>
+          </xs:element>
+        </xs:sequence>
+        <xs:attribute name="config-ref" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>Specify which configuration to use for this invocation.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="collection" use="required" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the name of the collection to update</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="function" use="required" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the function used to execute the update</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute xmlns="http://www.mulesoft.org/schema/mule/mongo" name="upsert" default="false" use="optional" type="booleanType">
+          <xs:annotation>
+            <xs:documentation>if the database should create the element if it does not exist</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute xmlns="http://www.mulesoft.org/schema/mule/mongo" name="multi" default="true" use="optional" type="booleanType">
+          <xs:annotation>
+            <xs:documentation>if all or just the first object matching the query will be updated</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute xmlns="http://www.mulesoft.org/schema/mule/mongo" name="writeConcern" default="DATABASE_DEFAULT" use="optional" type="WriteConcernEnumType">
+          <xs:annotation>
+            <xs:documentation>the write concern used to update</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="username" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the username to use for authentication. NOTE: Please use a dummy user if you have disabled Mongo authentication</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="password" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="database" default="test" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>Name of the database</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element xmlns="http://www.mulesoft.org/schema/mule/mongo" xmlns:mule="http://www.mulesoft.org/schema/mule/core" name="save-object" substitutionGroup="mule:abstract-message-processor" type="SaveObjectType">
+    <xs:annotation>
+      <xs:documentation>Inserts or updates an object based on its object _id.
+&lt;p/&gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:complexType name="SaveObjectType">
+    <xs:complexContent>
+      <xs:extension xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:abstractMessageProcessorType">
+        <xs:attribute name="config-ref" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>Specify which configuration to use for this invocation.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="collection" use="required" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the collection where to insert the object</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="element-ref" default="#[payload]" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the mandatory  object to insert.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute xmlns="http://www.mulesoft.org/schema/mule/mongo" name="writeConcern" default="DATABASE_DEFAULT" use="optional" type="WriteConcernEnumType">
+          <xs:annotation>
+            <xs:documentation>the write concern used to persist the object</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="username" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the username to use for authentication. NOTE: Please use a dummy user if you have disabled Mongo authentication</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="password" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="database" default="test" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>Name of the database</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element xmlns="http://www.mulesoft.org/schema/mule/mongo" xmlns:mule="http://www.mulesoft.org/schema/mule/core" name="save-object-from-map" substitutionGroup="mule:abstract-message-processor" type="SaveObjectFromMapType">
+    <xs:annotation>
+      <xs:documentation>Inserts or updates an object based on its object _id.
+&lt;p/&gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:complexType name="SaveObjectFromMapType">
+    <xs:complexContent>
+      <xs:extension xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:abstractMessageProcessorType">
+        <xs:sequence>
+          <xs:element name="element-attributes" maxOccurs="1" minOccurs="1">
+            <xs:annotation>
+              <xs:documentation>the mandatory object to insert.</xs:documentation>
+            </xs:annotation>
+            <xs:complexType>
+              <xs:choice>
+                <xs:sequence>
+                  <xs:element name="element-attribute" maxOccurs="unbounded" minOccurs="0">
+                    <xs:complexType>
+                      <xs:simpleContent>
+                        <xs:extension base="xs:string">
+                          <xs:attribute name="value-ref" use="optional" type="xs:string"></xs:attribute>
+                          <xs:attribute name="key" type="xs:string"></xs:attribute>
+                        </xs:extension>
+                      </xs:simpleContent>
+                    </xs:complexType>
+                  </xs:element>
+                </xs:sequence>
+                <xs:sequence>
+                  <xs:any maxOccurs="unbounded" minOccurs="0" processContents="lax"></xs:any>
+                </xs:sequence>
+              </xs:choice>
+              <xs:attribute name="ref" use="optional" type="xs:string">
+                <xs:annotation>
+                  <xs:documentation>The reference object for this parameter</xs:documentation>
+                </xs:annotation>
+              </xs:attribute>
+            </xs:complexType>
+          </xs:element>
+        </xs:sequence>
+        <xs:attribute name="config-ref" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>Specify which configuration to use for this invocation.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="collection" use="required" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the collection where to insert the object</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute xmlns="http://www.mulesoft.org/schema/mule/mongo" name="writeConcern" default="DATABASE_DEFAULT" use="optional" type="WriteConcernEnumType">
+          <xs:annotation>
+            <xs:documentation>the write concern used to persist the object</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="username" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the username to use for authentication. NOTE: Please use a dummy user if you have disabled Mongo authentication</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="password" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="database" default="test" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>Name of the database</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element xmlns="http://www.mulesoft.org/schema/mule/mongo" xmlns:mule="http://www.mulesoft.org/schema/mule/core" name="remove-objects" substitutionGroup="mule:abstract-message-processor" type="RemoveObjectsType">
+    <xs:annotation>
+      <xs:documentation>Removes all the objects that match the a given optional query. If query is not specified, all
+objects are removed. However, please notice that this is normally less performant that
+dropping the collection and creating it and its indices again
+&lt;p/&gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:complexType name="RemoveObjectsType">
+    <xs:complexContent>
+      <xs:extension xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:abstractMessageProcessorType">
+        <xs:attribute name="config-ref" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>Specify which configuration to use for this invocation.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="collection" use="required" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the collection whose elements will be removed</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="query-ref" default="#[payload]" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the optional  query object. Objects that match it will be removed.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute xmlns="http://www.mulesoft.org/schema/mule/mongo" name="writeConcern" default="DATABASE_DEFAULT" use="optional" type="WriteConcernEnumType">
+          <xs:annotation>
+            <xs:documentation>the write concern used to remove the object</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="username" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the username to use for authentication. NOTE: Please use a dummy user if you have disabled Mongo authentication</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="password" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="database" default="test" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>Name of the database</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element xmlns="http://www.mulesoft.org/schema/mule/mongo" xmlns:mule="http://www.mulesoft.org/schema/mule/core" name="remove-objects-using-query-map" substitutionGroup="mule:abstract-message-processor" type="RemoveObjectsUsingQueryMapType">
+    <xs:annotation>
+      <xs:documentation>Removes all the objects that match the a given optional query. If query is not specified, all
+objects are removed. However, please notice that this is normally less performant that
+dropping the collection and creating it and its indices again
+&lt;p/&gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:complexType name="RemoveObjectsUsingQueryMapType">
+    <xs:complexContent>
+      <xs:extension xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:abstractMessageProcessorType">
+        <xs:sequence>
+          <xs:element name="query-attributes" maxOccurs="1" minOccurs="0">
+            <xs:annotation>
+              <xs:documentation>the query object. Objects that match it will be removed.</xs:documentation>
+            </xs:annotation>
+            <xs:complexType>
+              <xs:choice>
+                <xs:sequence>
+                  <xs:element name="query-attribute" maxOccurs="unbounded" minOccurs="0">
+                    <xs:complexType>
+                      <xs:simpleContent>
+                        <xs:extension base="xs:string">
+                          <xs:attribute name="value-ref" use="optional" type="xs:string"></xs:attribute>
+                          <xs:attribute name="key" type="xs:string"></xs:attribute>
+                        </xs:extension>
+                      </xs:simpleContent>
+                    </xs:complexType>
+                  </xs:element>
+                </xs:sequence>
+                <xs:sequence>
+                  <xs:any maxOccurs="unbounded" minOccurs="0" processContents="lax"></xs:any>
+                </xs:sequence>
+              </xs:choice>
+              <xs:attribute name="ref" use="optional" type="xs:string">
+                <xs:annotation>
+                  <xs:documentation>The reference object for this parameter</xs:documentation>
+                </xs:annotation>
+              </xs:attribute>
+            </xs:complexType>
+          </xs:element>
+        </xs:sequence>
+        <xs:attribute name="config-ref" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>Specify which configuration to use for this invocation.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="collection" use="required" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the collection whose elements will be removed</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute xmlns="http://www.mulesoft.org/schema/mule/mongo" name="writeConcern" default="DATABASE_DEFAULT" use="optional" type="WriteConcernEnumType">
+          <xs:annotation>
+            <xs:documentation>the write concern used to remove the object</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="username" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the username to use for authentication. NOTE: Please use a dummy user if you have disabled Mongo authentication</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="password" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="database" default="test" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>Name of the database</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element xmlns="http://www.mulesoft.org/schema/mule/mongo" xmlns:mule="http://www.mulesoft.org/schema/mule/core" name="map-reduce-objects" substitutionGroup="mule:abstract-message-processor" type="MapReduceObjectsType">
+    <xs:annotation>
+      <xs:documentation>Transforms a collection into a collection of aggregated groups, by applying a supplied
+element-mapping function to each element, that transforms each one into a key-value pair,
+grouping the resulting pairs by key, and finally reducing values in each group applying a
+suppling 'reduce' function.
+&lt;p/&gt;
+Each supplied function is coded in JavaScript.
+&lt;p/&gt;
+Note that the correct way of writing those functions may not be obvious; please consult
+MongoDB documentation for writing them.
+&lt;p/&gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:complexType name="MapReduceObjectsType">
+    <xs:complexContent>
+      <xs:extension xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:abstractMessageProcessorType">
+        <xs:attribute name="config-ref" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>Specify which configuration to use for this invocation.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="collection" use="required" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the name of the collection to map and reduce</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="mapFunction" use="required" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>a JavaScript encoded mapping function</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="reduceFunction" use="required" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>a JavaScript encoded reducing function</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="outputCollection" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the name of the output collection to write the results, replacing previous collection if existed, mandatory when results may be larger than 16MB. If outputCollection is unspecified, the computation is performed in-memory and not persisted.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="username" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the username to use for authentication. NOTE: Please use a dummy user if you have disabled Mongo authentication</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="password" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="database" default="test" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>Name of the database</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element xmlns="http://www.mulesoft.org/schema/mule/mongo" xmlns:mule="http://www.mulesoft.org/schema/mule/core" name="count-objects" substitutionGroup="mule:abstract-message-processor" type="CountObjectsType">
+    <xs:annotation>
+      <xs:documentation>Counts the number of objects that match the given query. If no query is passed, returns the
+number of elements in the collection
+&lt;p/&gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:complexType name="CountObjectsType">
+    <xs:complexContent>
+      <xs:extension xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:abstractMessageProcessorType">
+        <xs:attribute name="config-ref" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>Specify which configuration to use for this invocation.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="collection" use="required" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the target collection</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="query-ref" default="#[payload]" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the optional  query for counting objects. Only objects matching it will be counted. If unspecified, all objects are counted.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="username" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the username to use for authentication. NOTE: Please use a dummy user if you have disabled Mongo authentication</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="password" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="database" default="test" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>Name of the database</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element xmlns="http://www.mulesoft.org/schema/mule/mongo" xmlns:mule="http://www.mulesoft.org/schema/mule/core" name="count-objects-using-query-map" substitutionGroup="mule:abstract-message-processor" type="CountObjectsUsingQueryMapType">
+    <xs:annotation>
+      <xs:documentation>Counts the number of objects that match the given query. If no query is passed, returns the
+number of elements in the collection
+&lt;p/&gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:complexType name="CountObjectsUsingQueryMapType">
+    <xs:complexContent>
+      <xs:extension xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:abstractMessageProcessorType">
+        <xs:sequence>
+          <xs:element name="query-attributes" maxOccurs="1" minOccurs="0">
+            <xs:annotation>
+              <xs:documentation>the optional query for counting objects. Only objects matching it will be counted. If unspecified, all objects are counted.</xs:documentation>
+            </xs:annotation>
+            <xs:complexType>
+              <xs:choice>
+                <xs:sequence>
+                  <xs:element name="query-attribute" maxOccurs="unbounded" minOccurs="0">
+                    <xs:complexType>
+                      <xs:simpleContent>
+                        <xs:extension base="xs:string">
+                          <xs:attribute name="value-ref" use="optional" type="xs:string"></xs:attribute>
+                          <xs:attribute name="key" type="xs:string"></xs:attribute>
+                        </xs:extension>
+                      </xs:simpleContent>
+                    </xs:complexType>
+                  </xs:element>
+                </xs:sequence>
+                <xs:sequence>
+                  <xs:any maxOccurs="unbounded" minOccurs="0" processContents="lax"></xs:any>
+                </xs:sequence>
+              </xs:choice>
+              <xs:attribute name="ref" use="optional" type="xs:string">
+                <xs:annotation>
+                  <xs:documentation>The reference object for this parameter</xs:documentation>
+                </xs:annotation>
+              </xs:attribute>
+            </xs:complexType>
+          </xs:element>
+        </xs:sequence>
+        <xs:attribute name="config-ref" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>Specify which configuration to use for this invocation.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="collection" use="required" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the target collection</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="username" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the username to use for authentication. NOTE: Please use a dummy user if you have disabled Mongo authentication</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="password" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="database" default="test" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>Name of the database</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element xmlns="http://www.mulesoft.org/schema/mule/mongo" xmlns:mule="http://www.mulesoft.org/schema/mule/core" name="find-objects" substitutionGroup="mule:abstract-message-processor" type="FindObjectsType">
+    <xs:annotation>
+      <xs:documentation>Finds all objects that match a given query. If no query is specified, all objects of the
+collection are retrieved. If no fields object is specified, all fields are retrieved.
+&lt;p/&gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:complexType name="FindObjectsType">
+    <xs:complexContent>
+      <xs:extension xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:abstractMessageProcessorType">
+        <xs:sequence>
+          <xs:element name="fields" maxOccurs="1" minOccurs="0">
+            <xs:annotation>
+              <xs:documentation>alternative way of passing fields as a literal List</xs:documentation>
+            </xs:annotation>
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="field" maxOccurs="unbounded" minOccurs="0">
+                  <xs:complexType>
+                    <xs:simpleContent>
+                      <xs:extension base="xs:string">
+                        <xs:attribute name="value-ref" use="optional" type="xs:string"></xs:attribute>
+                      </xs:extension>
+                    </xs:simpleContent>
+                  </xs:complexType>
+                </xs:element>
+              </xs:sequence>
+              <xs:attribute name="ref" use="optional" type="xs:string">
+                <xs:annotation>
+                  <xs:documentation>The reference object for this parameter</xs:documentation>
+                </xs:annotation>
+              </xs:attribute>
+            </xs:complexType>
+          </xs:element>
+        </xs:sequence>
+        <xs:attribute name="config-ref" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>Specify which configuration to use for this invocation.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="collection" use="required" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the target collection</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="query-ref" default="" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the optional  query object. If unspecified, all documents are returned.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute xmlns="http://www.mulesoft.org/schema/mule/mongo" name="numToSkip" use="optional" type="integerType">
+          <xs:annotation>
+            <xs:documentation>number of objects skip (offset)</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute xmlns="http://www.mulesoft.org/schema/mule/mongo" name="limit" use="optional" type="integerType">
+          <xs:annotation>
+            <xs:documentation>limit of objects to return</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="username" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the username to use for authentication. NOTE: Please use a dummy user if you have disabled Mongo authentication</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="password" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="database" default="test" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>Name of the database</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element xmlns="http://www.mulesoft.org/schema/mule/mongo" xmlns:mule="http://www.mulesoft.org/schema/mule/core" name="find-objects-using-query-map" substitutionGroup="mule:abstract-message-processor" type="FindObjectsUsingQueryMapType">
+    <xs:annotation>
+      <xs:documentation>Finds all objects that match a given query. If no query is specified, all objects of the
+collection are retrieved. If no fields object is specified, all fields are retrieved.
+&lt;p/&gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:complexType name="FindObjectsUsingQueryMapType">
+    <xs:complexContent>
+      <xs:extension xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:abstractMessageProcessorType">
+        <xs:sequence>
+          <xs:element name="query-attributes" maxOccurs="1" minOccurs="0">
+            <xs:annotation>
+              <xs:documentation>the optional query object. If unspecified, all documents are returned.</xs:documentation>
+            </xs:annotation>
+            <xs:complexType>
+              <xs:choice>
+                <xs:sequence>
+                  <xs:element name="query-attribute" maxOccurs="unbounded" minOccurs="0">
+                    <xs:complexType>
+                      <xs:simpleContent>
+                        <xs:extension base="xs:string">
+                          <xs:attribute name="value-ref" use="optional" type="xs:string"></xs:attribute>
+                          <xs:attribute name="key" type="xs:string"></xs:attribute>
+                        </xs:extension>
+                      </xs:simpleContent>
+                    </xs:complexType>
+                  </xs:element>
+                </xs:sequence>
+                <xs:sequence>
+                  <xs:any maxOccurs="unbounded" minOccurs="0" processContents="lax"></xs:any>
+                </xs:sequence>
+              </xs:choice>
+              <xs:attribute name="ref" use="optional" type="xs:string">
+                <xs:annotation>
+                  <xs:documentation>The reference object for this parameter</xs:documentation>
+                </xs:annotation>
+              </xs:attribute>
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="fields" maxOccurs="1" minOccurs="0">
+            <xs:annotation>
+              <xs:documentation>alternative way of passing fields as a literal List</xs:documentation>
+            </xs:annotation>
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="field" maxOccurs="unbounded" minOccurs="0">
+                  <xs:complexType>
+                    <xs:simpleContent>
+                      <xs:extension base="xs:string">
+                        <xs:attribute name="value-ref" use="optional" type="xs:string"></xs:attribute>
+                      </xs:extension>
+                    </xs:simpleContent>
+                  </xs:complexType>
+                </xs:element>
+              </xs:sequence>
+              <xs:attribute name="ref" use="optional" type="xs:string">
+                <xs:annotation>
+                  <xs:documentation>The reference object for this parameter</xs:documentation>
+                </xs:annotation>
+              </xs:attribute>
+            </xs:complexType>
+          </xs:element>
+        </xs:sequence>
+        <xs:attribute name="config-ref" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>Specify which configuration to use for this invocation.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="collection" use="required" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the target collection</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute xmlns="http://www.mulesoft.org/schema/mule/mongo" name="numToSkip" use="optional" type="integerType">
+          <xs:annotation>
+            <xs:documentation>number of objects skip (offset)</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute xmlns="http://www.mulesoft.org/schema/mule/mongo" name="limit" use="optional" type="integerType">
+          <xs:annotation>
+            <xs:documentation>limit of objects to return</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="username" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the username to use for authentication. NOTE: Please use a dummy user if you have disabled Mongo authentication</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="password" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="database" default="test" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>Name of the database</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element xmlns="http://www.mulesoft.org/schema/mule/mongo" xmlns:mule="http://www.mulesoft.org/schema/mule/core" name="find-one-object" substitutionGroup="mule:abstract-message-processor" type="FindOneObjectType">
+    <xs:annotation>
+      <xs:documentation>Finds the first object that matches a given query. Throws a  if no one
+matches the given query
+&lt;p/&gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:complexType name="FindOneObjectType">
+    <xs:complexContent>
+      <xs:extension xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:abstractMessageProcessorType">
+        <xs:sequence>
+          <xs:element name="fields" maxOccurs="1" minOccurs="0">
+            <xs:annotation>
+              <xs:documentation>alternative way of passing fields as a literal List</xs:documentation>
+            </xs:annotation>
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="field" maxOccurs="unbounded" minOccurs="0">
+                  <xs:complexType>
+                    <xs:simpleContent>
+                      <xs:extension base="xs:string">
+                        <xs:attribute name="value-ref" use="optional" type="xs:string"></xs:attribute>
+                      </xs:extension>
+                    </xs:simpleContent>
+                  </xs:complexType>
+                </xs:element>
+              </xs:sequence>
+              <xs:attribute name="ref" use="optional" type="xs:string">
+                <xs:annotation>
+                  <xs:documentation>The reference object for this parameter</xs:documentation>
+                </xs:annotation>
+              </xs:attribute>
+            </xs:complexType>
+          </xs:element>
+        </xs:sequence>
+        <xs:attribute name="config-ref" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>Specify which configuration to use for this invocation.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="collection" use="required" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the target collection</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="query-ref" default="#[payload]" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the mandatory  query object that the returned object matches.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute xmlns="http://www.mulesoft.org/schema/mule/mongo" name="failOnNotFound" default="true" use="optional" type="booleanType">
+          <xs:annotation>
+            <xs:documentation>Flag to specify if an exception will be thrown when no object is found. For backward compatibility the default value is true.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="username" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the username to use for authentication. NOTE: Please use a dummy user if you have disabled Mongo authentication</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="password" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="database" default="test" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>Name of the database</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element xmlns="http://www.mulesoft.org/schema/mule/mongo" xmlns:mule="http://www.mulesoft.org/schema/mule/core" name="find-one-object-using-query-map" substitutionGroup="mule:abstract-message-processor" type="FindOneObjectUsingQueryMapType">
+    <xs:annotation>
+      <xs:documentation>Finds the first object that matches a given query. Throws a  if no one
+matches the given query
+&lt;p/&gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:complexType name="FindOneObjectUsingQueryMapType">
+    <xs:complexContent>
+      <xs:extension xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:abstractMessageProcessorType">
+        <xs:sequence>
+          <xs:element name="query-attributes" maxOccurs="1" minOccurs="1">
+            <xs:annotation>
+              <xs:documentation>the mandatory query object that the returned object matches.</xs:documentation>
+            </xs:annotation>
+            <xs:complexType>
+              <xs:choice>
+                <xs:sequence>
+                  <xs:element name="query-attribute" maxOccurs="unbounded" minOccurs="0">
+                    <xs:complexType>
+                      <xs:simpleContent>
+                        <xs:extension base="xs:string">
+                          <xs:attribute name="value-ref" use="optional" type="xs:string"></xs:attribute>
+                          <xs:attribute name="key" type="xs:string"></xs:attribute>
+                        </xs:extension>
+                      </xs:simpleContent>
+                    </xs:complexType>
+                  </xs:element>
+                </xs:sequence>
+                <xs:sequence>
+                  <xs:any maxOccurs="unbounded" minOccurs="0" processContents="lax"></xs:any>
+                </xs:sequence>
+              </xs:choice>
+              <xs:attribute name="ref" use="optional" type="xs:string">
+                <xs:annotation>
+                  <xs:documentation>The reference object for this parameter</xs:documentation>
+                </xs:annotation>
+              </xs:attribute>
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="fields" maxOccurs="1" minOccurs="0">
+            <xs:annotation>
+              <xs:documentation>alternative way of passing fields as a literal List</xs:documentation>
+            </xs:annotation>
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="field" maxOccurs="unbounded" minOccurs="0">
+                  <xs:complexType>
+                    <xs:simpleContent>
+                      <xs:extension base="xs:string">
+                        <xs:attribute name="value-ref" use="optional" type="xs:string"></xs:attribute>
+                      </xs:extension>
+                    </xs:simpleContent>
+                  </xs:complexType>
+                </xs:element>
+              </xs:sequence>
+              <xs:attribute name="ref" use="optional" type="xs:string">
+                <xs:annotation>
+                  <xs:documentation>The reference object for this parameter</xs:documentation>
+                </xs:annotation>
+              </xs:attribute>
+            </xs:complexType>
+          </xs:element>
+        </xs:sequence>
+        <xs:attribute name="config-ref" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>Specify which configuration to use for this invocation.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="collection" use="required" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the target collection</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute xmlns="http://www.mulesoft.org/schema/mule/mongo" name="failOnNotFound" default="true" use="optional" type="booleanType">
+          <xs:annotation>
+            <xs:documentation>Flag to specify if an exception will be thrown when no object is found. For backward compatibility the default value is true.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="username" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the username to use for authentication. NOTE: Please use a dummy user if you have disabled Mongo authentication</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="password" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="database" default="test" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>Name of the database</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element xmlns="http://www.mulesoft.org/schema/mule/mongo" xmlns:mule="http://www.mulesoft.org/schema/mule/core" name="create-index" substitutionGroup="mule:abstract-message-processor" type="CreateIndexType">
+    <xs:annotation>
+      <xs:documentation>Creates a new index
+&lt;p/&gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:complexType name="CreateIndexType">
+    <xs:complexContent>
+      <xs:extension xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:abstractMessageProcessorType">
+        <xs:attribute name="config-ref" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>Specify which configuration to use for this invocation.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="collection" use="required" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the name of the collection where the index will be created</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="field" use="required" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the name of the field which will be indexed</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute xmlns="http://www.mulesoft.org/schema/mule/mongo" name="order" default="ASC" use="optional" type="IndexOrderEnumType">
+          <xs:annotation>
+            <xs:documentation>the indexing order</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="username" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the username to use for authentication. NOTE: Please use a dummy user if you have disabled Mongo authentication</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="password" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="database" default="test" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>Name of the database</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element xmlns="http://www.mulesoft.org/schema/mule/mongo" xmlns:mule="http://www.mulesoft.org/schema/mule/core" name="drop-index" substitutionGroup="mule:abstract-message-processor" type="DropIndexType">
+    <xs:annotation>
+      <xs:documentation>Drops an existing index
+&lt;p/&gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:complexType name="DropIndexType">
+    <xs:complexContent>
+      <xs:extension xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:abstractMessageProcessorType">
+        <xs:attribute name="config-ref" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>Specify which configuration to use for this invocation.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="collection" use="required" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the name of the collection where the index is</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="index" use="required" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the name of the index to drop</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="username" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the username to use for authentication. NOTE: Please use a dummy user if you have disabled Mongo authentication</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="password" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="database" default="test" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>Name of the database</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element xmlns="http://www.mulesoft.org/schema/mule/mongo" xmlns:mule="http://www.mulesoft.org/schema/mule/core" name="list-indices" substitutionGroup="mule:abstract-message-processor" type="ListIndicesType">
+    <xs:annotation>
+      <xs:documentation>List existent indices in a collection
+&lt;p/&gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:complexType name="ListIndicesType">
+    <xs:complexContent>
+      <xs:extension xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:abstractMessageProcessorType">
+        <xs:attribute name="config-ref" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>Specify which configuration to use for this invocation.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="collection" use="required" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the name of the collection</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="username" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the username to use for authentication. NOTE: Please use a dummy user if you have disabled Mongo authentication</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="password" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="database" default="test" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>Name of the database</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element xmlns="http://www.mulesoft.org/schema/mule/mongo" xmlns:mule="http://www.mulesoft.org/schema/mule/core" name="create-file-from-payload" substitutionGroup="mule:abstract-message-processor" type="CreateFileFromPayloadType">
+    <xs:annotation>
+      <xs:documentation>Creates a new GridFSFile in the database, saving the given content, filename, contentType,
+and extraData, and answers it.
+&lt;p/&gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:complexType name="CreateFileFromPayloadType">
+    <xs:complexContent>
+      <xs:extension xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:abstractMessageProcessorType">
+        <xs:attribute name="config-ref" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>Specify which configuration to use for this invocation.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="filename" use="required" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the mandatory name of new file.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="contentType" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the optional content type of the new file</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="metadata-ref" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the optional  metadata of the new content type</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="username" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the username to use for authentication. NOTE: Please use a dummy user if you have disabled Mongo authentication</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="password" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="database" default="test" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>Name of the database</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element xmlns="http://www.mulesoft.org/schema/mule/mongo" xmlns:mule="http://www.mulesoft.org/schema/mule/core" name="find-files" substitutionGroup="mule:abstract-message-processor" type="FindFilesType">
+    <xs:annotation>
+      <xs:documentation>Lists all the files that match the given query
+&lt;p/&gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:complexType name="FindFilesType">
+    <xs:complexContent>
+      <xs:extension xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:abstractMessageProcessorType">
+        <xs:attribute name="config-ref" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>Specify which configuration to use for this invocation.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="query-ref" default="#[payload]" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>a  query the optional query</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="username" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the username to use for authentication. NOTE: Please use a dummy user if you have disabled Mongo authentication</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="password" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="database" default="test" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>Name of the database</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element xmlns="http://www.mulesoft.org/schema/mule/mongo" xmlns:mule="http://www.mulesoft.org/schema/mule/core" name="find-files-using-query-map" substitutionGroup="mule:abstract-message-processor" type="FindFilesUsingQueryMapType">
+    <xs:annotation>
+      <xs:documentation>Lists all the files that match the given query
+&lt;p/&gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:complexType name="FindFilesUsingQueryMapType">
+    <xs:complexContent>
+      <xs:extension xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:abstractMessageProcessorType">
+        <xs:sequence>
+          <xs:element name="query-attributes" maxOccurs="1" minOccurs="0">
+            <xs:annotation>
+              <xs:documentation>the optional query attributes</xs:documentation>
+            </xs:annotation>
+            <xs:complexType>
+              <xs:choice>
+                <xs:sequence>
+                  <xs:element name="query-attribute" maxOccurs="unbounded" minOccurs="0">
+                    <xs:complexType>
+                      <xs:simpleContent>
+                        <xs:extension base="xs:string">
+                          <xs:attribute name="value-ref" use="optional" type="xs:string"></xs:attribute>
+                          <xs:attribute name="key" type="xs:string"></xs:attribute>
+                        </xs:extension>
+                      </xs:simpleContent>
+                    </xs:complexType>
+                  </xs:element>
+                </xs:sequence>
+                <xs:sequence>
+                  <xs:any maxOccurs="unbounded" minOccurs="0" processContents="lax"></xs:any>
+                </xs:sequence>
+              </xs:choice>
+              <xs:attribute name="ref" use="optional" type="xs:string">
+                <xs:annotation>
+                  <xs:documentation>The reference object for this parameter</xs:documentation>
+                </xs:annotation>
+              </xs:attribute>
+            </xs:complexType>
+          </xs:element>
+        </xs:sequence>
+        <xs:attribute name="config-ref" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>Specify which configuration to use for this invocation.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="username" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the username to use for authentication. NOTE: Please use a dummy user if you have disabled Mongo authentication</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="password" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="database" default="test" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>Name of the database</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element xmlns="http://www.mulesoft.org/schema/mule/mongo" xmlns:mule="http://www.mulesoft.org/schema/mule/core" name="find-one-file" substitutionGroup="mule:abstract-message-processor" type="FindOneFileType">
+    <xs:annotation>
+      <xs:documentation>Answers the first file that matches the given query. If no object matches it, a
+MongoException is thrown.
+&lt;p/&gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:complexType name="FindOneFileType">
+    <xs:complexContent>
+      <xs:extension xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:abstractMessageProcessorType">
+        <xs:attribute name="config-ref" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>Specify which configuration to use for this invocation.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="query-ref" use="required" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the  mandatory query</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="username" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the username to use for authentication. NOTE: Please use a dummy user if you have disabled Mongo authentication</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="password" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="database" default="test" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>Name of the database</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element xmlns="http://www.mulesoft.org/schema/mule/mongo" xmlns:mule="http://www.mulesoft.org/schema/mule/core" name="find-one-file-using-query-map" substitutionGroup="mule:abstract-message-processor" type="FindOneFileUsingQueryMapType">
+    <xs:annotation>
+      <xs:documentation>Answers the first file that matches the given query. If no object matches it, a
+MongoException is thrown.
+&lt;p/&gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:complexType name="FindOneFileUsingQueryMapType">
+    <xs:complexContent>
+      <xs:extension xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:abstractMessageProcessorType">
+        <xs:sequence>
+          <xs:element name="query-attributes" maxOccurs="1" minOccurs="1">
+            <xs:annotation>
+              <xs:documentation>the mandatory query</xs:documentation>
+            </xs:annotation>
+            <xs:complexType>
+              <xs:choice>
+                <xs:sequence>
+                  <xs:element name="query-attribute" maxOccurs="unbounded" minOccurs="0">
+                    <xs:complexType>
+                      <xs:simpleContent>
+                        <xs:extension base="xs:string">
+                          <xs:attribute name="value-ref" use="optional" type="xs:string"></xs:attribute>
+                          <xs:attribute name="key" type="xs:string"></xs:attribute>
+                        </xs:extension>
+                      </xs:simpleContent>
+                    </xs:complexType>
+                  </xs:element>
+                </xs:sequence>
+                <xs:sequence>
+                  <xs:any maxOccurs="unbounded" minOccurs="0" processContents="lax"></xs:any>
+                </xs:sequence>
+              </xs:choice>
+              <xs:attribute name="ref" use="optional" type="xs:string">
+                <xs:annotation>
+                  <xs:documentation>The reference object for this parameter</xs:documentation>
+                </xs:annotation>
+              </xs:attribute>
+            </xs:complexType>
+          </xs:element>
+        </xs:sequence>
+        <xs:attribute name="config-ref" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>Specify which configuration to use for this invocation.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="username" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the username to use for authentication. NOTE: Please use a dummy user if you have disabled Mongo authentication</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="password" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="database" default="test" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>Name of the database</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element xmlns="http://www.mulesoft.org/schema/mule/mongo" xmlns:mule="http://www.mulesoft.org/schema/mule/core" name="get-file-content" substitutionGroup="mule:abstract-message-processor" type="GetFileContentType">
+    <xs:annotation>
+      <xs:documentation>Answers an inputstream to the contents of the first file that matches the given query. If no
+object matches it, a MongoException is thrown.
+&lt;p/&gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:complexType name="GetFileContentType">
+    <xs:complexContent>
+      <xs:extension xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:abstractMessageProcessorType">
+        <xs:attribute name="config-ref" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>Specify which configuration to use for this invocation.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="query-ref" default="#[payload]" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the  mandatory query</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="username" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the username to use for authentication. NOTE: Please use a dummy user if you have disabled Mongo authentication</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="password" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="database" default="test" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>Name of the database</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element xmlns="http://www.mulesoft.org/schema/mule/mongo" xmlns:mule="http://www.mulesoft.org/schema/mule/core" name="get-file-content-using-query-map" substitutionGroup="mule:abstract-message-processor" type="GetFileContentUsingQueryMapType">
+    <xs:annotation>
+      <xs:documentation>Answers an inputstream to the contents of the first file that matches the given
+queryAttributes. If no object matches it, a MongoException is thrown.
+&lt;p/&gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:complexType name="GetFileContentUsingQueryMapType">
+    <xs:complexContent>
+      <xs:extension xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:abstractMessageProcessorType">
+        <xs:sequence>
+          <xs:element name="query-attributes" maxOccurs="1" minOccurs="1">
+            <xs:annotation>
+              <xs:documentation>the mandatory query attributes</xs:documentation>
+            </xs:annotation>
+            <xs:complexType>
+              <xs:choice>
+                <xs:sequence>
+                  <xs:element name="query-attribute" maxOccurs="unbounded" minOccurs="0">
+                    <xs:complexType>
+                      <xs:simpleContent>
+                        <xs:extension base="xs:string">
+                          <xs:attribute name="value-ref" use="optional" type="xs:string"></xs:attribute>
+                          <xs:attribute name="key" type="xs:string"></xs:attribute>
+                        </xs:extension>
+                      </xs:simpleContent>
+                    </xs:complexType>
+                  </xs:element>
+                </xs:sequence>
+                <xs:sequence>
+                  <xs:any maxOccurs="unbounded" minOccurs="0" processContents="lax"></xs:any>
+                </xs:sequence>
+              </xs:choice>
+              <xs:attribute name="ref" use="optional" type="xs:string">
+                <xs:annotation>
+                  <xs:documentation>The reference object for this parameter</xs:documentation>
+                </xs:annotation>
+              </xs:attribute>
+            </xs:complexType>
+          </xs:element>
+        </xs:sequence>
+        <xs:attribute name="config-ref" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>Specify which configuration to use for this invocation.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="username" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the username to use for authentication. NOTE: Please use a dummy user if you have disabled Mongo authentication</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="password" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="database" default="test" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>Name of the database</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element xmlns="http://www.mulesoft.org/schema/mule/mongo" xmlns:mule="http://www.mulesoft.org/schema/mule/core" name="list-files" substitutionGroup="mule:abstract-message-processor" type="ListFilesType">
+    <xs:annotation>
+      <xs:documentation>Lists all the files that match the given query, sorting them by filename. If no query is
+specified, all files are listed.
+&lt;p/&gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:complexType name="ListFilesType">
+    <xs:complexContent>
+      <xs:extension xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:abstractMessageProcessorType">
+        <xs:attribute name="config-ref" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>Specify which configuration to use for this invocation.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="query-ref" default="#[payload]" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the  optional query</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="username" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the username to use for authentication. NOTE: Please use a dummy user if you have disabled Mongo authentication</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="password" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="database" default="test" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>Name of the database</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element xmlns="http://www.mulesoft.org/schema/mule/mongo" xmlns:mule="http://www.mulesoft.org/schema/mule/core" name="list-files-using-query-map" substitutionGroup="mule:abstract-message-processor" type="ListFilesUsingQueryMapType">
+    <xs:annotation>
+      <xs:documentation>Lists all the files that match the given query, sorting them by filename. If no query is
+specified, all files are listed.
+&lt;p/&gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:complexType name="ListFilesUsingQueryMapType">
+    <xs:complexContent>
+      <xs:extension xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:abstractMessageProcessorType">
+        <xs:sequence>
+          <xs:element name="query-attributes" maxOccurs="1" minOccurs="0">
+            <xs:annotation>
+              <xs:documentation>the optional query</xs:documentation>
+            </xs:annotation>
+            <xs:complexType>
+              <xs:choice>
+                <xs:sequence>
+                  <xs:element name="query-attribute" maxOccurs="unbounded" minOccurs="0">
+                    <xs:complexType>
+                      <xs:simpleContent>
+                        <xs:extension base="xs:string">
+                          <xs:attribute name="value-ref" use="optional" type="xs:string"></xs:attribute>
+                          <xs:attribute name="key" type="xs:string"></xs:attribute>
+                        </xs:extension>
+                      </xs:simpleContent>
+                    </xs:complexType>
+                  </xs:element>
+                </xs:sequence>
+                <xs:sequence>
+                  <xs:any maxOccurs="unbounded" minOccurs="0" processContents="lax"></xs:any>
+                </xs:sequence>
+              </xs:choice>
+              <xs:attribute name="ref" use="optional" type="xs:string">
+                <xs:annotation>
+                  <xs:documentation>The reference object for this parameter</xs:documentation>
+                </xs:annotation>
+              </xs:attribute>
+            </xs:complexType>
+          </xs:element>
+        </xs:sequence>
+        <xs:attribute name="config-ref" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>Specify which configuration to use for this invocation.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="username" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the username to use for authentication. NOTE: Please use a dummy user if you have disabled Mongo authentication</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="password" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="database" default="test" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>Name of the database</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element xmlns="http://www.mulesoft.org/schema/mule/mongo" xmlns:mule="http://www.mulesoft.org/schema/mule/core" name="remove-files" substitutionGroup="mule:abstract-message-processor" type="RemoveFilesType">
+    <xs:annotation>
+      <xs:documentation>Removes all the files that match the given query. If no query is specified, all files are
+removed
+&lt;p/&gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:complexType name="RemoveFilesType">
+    <xs:complexContent>
+      <xs:extension xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:abstractMessageProcessorType">
+        <xs:attribute name="config-ref" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>Specify which configuration to use for this invocation.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="query-ref" default="#[payload]" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the  optional query</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="username" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the username to use for authentication. NOTE: Please use a dummy user if you have disabled Mongo authentication</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="password" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="database" default="test" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>Name of the database</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element xmlns="http://www.mulesoft.org/schema/mule/mongo" xmlns:mule="http://www.mulesoft.org/schema/mule/core" name="remove-files-using-query-map" substitutionGroup="mule:abstract-message-processor" type="RemoveFilesUsingQueryMapType">
+    <xs:annotation>
+      <xs:documentation>Removes all the files that match the given query. If no query is specified, all files are
+removed
+&lt;p/&gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:complexType name="RemoveFilesUsingQueryMapType">
+    <xs:complexContent>
+      <xs:extension xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:abstractMessageProcessorType">
+        <xs:sequence>
+          <xs:element name="query-attributes" maxOccurs="1" minOccurs="0">
+            <xs:annotation>
+              <xs:documentation>the optional query</xs:documentation>
+            </xs:annotation>
+            <xs:complexType>
+              <xs:choice>
+                <xs:sequence>
+                  <xs:element name="query-attribute" maxOccurs="unbounded" minOccurs="0">
+                    <xs:complexType>
+                      <xs:simpleContent>
+                        <xs:extension base="xs:string">
+                          <xs:attribute name="value-ref" use="optional" type="xs:string"></xs:attribute>
+                          <xs:attribute name="key" type="xs:string"></xs:attribute>
+                        </xs:extension>
+                      </xs:simpleContent>
+                    </xs:complexType>
+                  </xs:element>
+                </xs:sequence>
+                <xs:sequence>
+                  <xs:any maxOccurs="unbounded" minOccurs="0" processContents="lax"></xs:any>
+                </xs:sequence>
+              </xs:choice>
+              <xs:attribute name="ref" use="optional" type="xs:string">
+                <xs:annotation>
+                  <xs:documentation>The reference object for this parameter</xs:documentation>
+                </xs:annotation>
+              </xs:attribute>
+            </xs:complexType>
+          </xs:element>
+        </xs:sequence>
+        <xs:attribute name="config-ref" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>Specify which configuration to use for this invocation.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="username" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the username to use for authentication. NOTE: Please use a dummy user if you have disabled Mongo authentication</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="password" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="database" default="test" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>Name of the database</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element xmlns="http://www.mulesoft.org/schema/mule/mongo" xmlns:mule="http://www.mulesoft.org/schema/mule/core" name="execute-command" substitutionGroup="mule:abstract-message-processor" type="ExecuteCommandType">
+    <xs:annotation>
+      <xs:documentation>Executes a command on the database
+&lt;p/&gt;
+&lt;p/&gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:complexType name="ExecuteCommandType">
+    <xs:complexContent>
+      <xs:extension xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:abstractMessageProcessorType">
+        <xs:attribute name="config-ref" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>Specify which configuration to use for this invocation.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="commandName" use="required" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>The command to execute on the database</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="commandValue" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>The value for the command</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="username" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the username to use for authentication. NOTE: Please use a dummy user if you have disabled Mongo authentication</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="password" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="database" default="test" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>Name of the database</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element xmlns="http://www.mulesoft.org/schema/mule/mongo" xmlns:mule="http://www.mulesoft.org/schema/mule/core" name="dump" substitutionGroup="mule:abstract-message-processor" type="DumpType">
+    <xs:annotation>
+      <xs:documentation>Executes a dump of the database to the specified output directory. If no output directory is
+provided then the default /dump directory is used.
+&lt;p/&gt;
+&lt;p/&gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:complexType name="DumpType">
+    <xs:complexContent>
+      <xs:extension xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:abstractMessageProcessorType">
+        <xs:attribute name="config-ref" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>Specify which configuration to use for this invocation.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="outputDirectory" default="dump" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>output directory path, if no output directory is provided the default /dump directory is assumed</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="outputName" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>output file name, if it's not specified the database name is used</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute xmlns="http://www.mulesoft.org/schema/mule/mongo" name="zip" default="false" use="optional" type="booleanType">
+          <xs:annotation>
+            <xs:documentation>whether to zip the created dump file or not</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute xmlns="http://www.mulesoft.org/schema/mule/mongo" name="oplog" default="false" use="optional" type="booleanType">
+          <xs:annotation>
+            <xs:documentation>point in time backup (requires an oplog)</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute xmlns="http://www.mulesoft.org/schema/mule/mongo" name="threads" default="5" use="optional" type="integerType">
+          <xs:annotation>
+            <xs:documentation>amount of threads to execute the dump</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="username" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the username to use for authentication. NOTE: Please use a dummy user if you have disabled Mongo authentication</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="password" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="database" default="test" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>Name of the database</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element xmlns="http://www.mulesoft.org/schema/mule/mongo" xmlns:mule="http://www.mulesoft.org/schema/mule/core" name="incremental-dump" substitutionGroup="mule:abstract-message-processor" type="IncrementalDumpType">
+    <xs:annotation>
+      <xs:documentation>Executes an incremental dump of the database
+&lt;p/&gt;
+&lt;p/&gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:complexType name="IncrementalDumpType">
+    <xs:complexContent>
+      <xs:extension xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:abstractMessageProcessorType">
+        <xs:attribute name="config-ref" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>Specify which configuration to use for this invocation.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="outputDirectory" default="dump" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>output directory path, if no output directory is provided the default /dump directory is assumed</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="incrementalTimestampFile" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>file that keeps track of the last timestamp processed, if no file is provided one is created on the output directory</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="username" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the username to use for authentication. NOTE: Please use a dummy user if you have disabled Mongo authentication</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="password" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="database" default="test" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>Name of the database</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element xmlns="http://www.mulesoft.org/schema/mule/mongo" xmlns:mule="http://www.mulesoft.org/schema/mule/core" name="restore" substitutionGroup="mule:abstract-message-processor" type="RestoreType">
+    <xs:annotation>
+      <xs:documentation>Takes the output from the dump and restores it. Indexes will be created on a restore. It only
+does inserts with the data to restore, if existing data is there, it will not be replaced.
+&lt;p/&gt;
+&lt;p/&gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:complexType name="RestoreType">
+    <xs:complexContent>
+      <xs:extension xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:abstractMessageProcessorType">
+        <xs:attribute name="config-ref" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>Specify which configuration to use for this invocation.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="inputPath" default="dump" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>input path to the dump files, it can be a directory, a zip file or just a bson file</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute xmlns="http://www.mulesoft.org/schema/mule/mongo" name="drop" default="false" use="optional" type="booleanType">
+          <xs:annotation>
+            <xs:documentation>whether to drop existing collections before restore</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute xmlns="http://www.mulesoft.org/schema/mule/mongo" name="oplogReplay" default="false" use="optional" type="booleanType">
+          <xs:annotation>
+            <xs:documentation>replay oplog for point-in-time restore</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="username" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the username to use for authentication. NOTE: Please use a dummy user if you have disabled Mongo authentication</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="password" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="database" default="test" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>Name of the database</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element xmlns="http://www.mulesoft.org/schema/mule/mongo" xmlns:mule="http://www.mulesoft.org/schema/mule/core" name="start-consistent-request" substitutionGroup="mule:abstract-message-processor" type="StartConsistentRequestType">
+    <xs:annotation>
+      <xs:documentation>Begins a consistent request, which allows you to be sure that each subsequent request to MongoDB happens in sequence.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:complexType name="StartConsistentRequestType">
+    <xs:complexContent>
+      <xs:extension xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:abstractMessageProcessorType">
+        <xs:attribute name="config-ref" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>Specify which configuration to use for this invocation.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="username" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the username to use for authentication. NOTE: Please use a dummy user if you have disabled Mongo authentication</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="password" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="database" default="test" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>Name of the database</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element xmlns="http://www.mulesoft.org/schema/mule/mongo" xmlns:mule="http://www.mulesoft.org/schema/mule/core" name="end-consistent-request" substitutionGroup="mule:abstract-message-processor" type="EndConsistentRequestType">
+    <xs:annotation>
+      <xs:documentation>Ends a consistent request.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:complexType name="EndConsistentRequestType">
+    <xs:complexContent>
+      <xs:extension xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:abstractMessageProcessorType">
+        <xs:attribute name="config-ref" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>Specify which configuration to use for this invocation.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="username" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the username to use for authentication. NOTE: Please use a dummy user if you have disabled Mongo authentication</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="password" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="database" default="test" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>Name of the database</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element xmlns:mule="http://www.mulesoft.org/schema/mule/core" name="json-to-dbobject" substitutionGroup="mule:abstract-transformer" type="mule:abstractTransformerType"></xs:element>
+  <xs:element xmlns:mule="http://www.mulesoft.org/schema/mule/core" name="dbobject-to-json" substitutionGroup="mule:abstract-transformer" type="mule:abstractTransformerType"></xs:element>
+  <xs:element xmlns:mule="http://www.mulesoft.org/schema/mule/core" name="bson-list-to-json" substitutionGroup="mule:abstract-transformer" type="mule:abstractTransformerType"></xs:element>
+  <xs:element xmlns:mule="http://www.mulesoft.org/schema/mule/core" name="mongo-collection-to-json" substitutionGroup="mule:abstract-transformer" type="mule:abstractTransformerType"></xs:element>
+  <xs:element xmlns:mule="http://www.mulesoft.org/schema/mule/core" name="db-object-to-map" substitutionGroup="mule:abstract-transformer" type="mule:abstractTransformerType"></xs:element>
+  <xs:simpleType name="WriteConcernEnumType">
+    <xs:annotation>
+      <xs:documentation>An enum wrapper of</xs:documentation>
+    </xs:annotation>
+    <xs:union>
+      <xs:simpleType>
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="NONE">
+            <xs:annotation>
+              <xs:documentation>No exceptions are raised, even for network issues</xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="NORMAL">
+            <xs:annotation>
+              <xs:documentation>Exceptions are raised for network issues, but not server errors</xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="SAFE">
+            <xs:annotation>
+              <xs:documentation>Exceptions are raised for network issues, and server errors, waits on a server
+for the write operation</xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="FSYNC_SAFE">
+            <xs:annotation>
+              <xs:documentation>Exceptions are raised for network issues, and server errors and the write
+operation waits for the server to flush the data to disk</xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="REPLICAS_SAFE">
+            <xs:annotation>
+              <xs:documentation>Exceptions are raised for network issues, and server errors, waits for at
+least 2 servers for the write operation</xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="DATABASE_DEFAULT">
+            <xs:annotation>
+              <xs:documentation>Database default write access</xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:simpleType>
+        <xs:restriction xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:propertyPlaceholderType"></xs:restriction>
+      </xs:simpleType>
+    </xs:union>
+  </xs:simpleType>
+  <xs:simpleType name="IndexOrderEnumType">
+    <xs:annotation>
+      <xs:documentation></xs:documentation>
+    </xs:annotation>
+    <xs:union>
+      <xs:simpleType>
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="ASC">
+            <xs:annotation>
+              <xs:documentation></xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="DESC">
+            <xs:annotation>
+              <xs:documentation></xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:simpleType>
+        <xs:restriction xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:propertyPlaceholderType"></xs:restriction>
+      </xs:simpleType>
+    </xs:union>
+  </xs:simpleType>
+  <xs:simpleType name="OnNoTokenPolicyEnumType">
+    <xs:union>
+      <xs:simpleType>
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="EXCEPTION"></xs:enumeration>
+          <xs:enumeration value="STOP_FLOW"></xs:enumeration>
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:simpleType>
+        <xs:restriction xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:propertyPlaceholderType"></xs:restriction>
+      </xs:simpleType>
+    </xs:union>
+  </xs:simpleType>
+  <xs:simpleType name="integerType">
+    <xs:union>
+      <xs:simpleType>
+        <xs:restriction base="xs:integer"></xs:restriction>
+      </xs:simpleType>
+      <xs:simpleType>
+        <xs:restriction xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:propertyPlaceholderType"></xs:restriction>
+      </xs:simpleType>
+    </xs:union>
+  </xs:simpleType>
+  <xs:simpleType name="decimalType">
+    <xs:union>
+      <xs:simpleType>
+        <xs:restriction base="xs:decimal"></xs:restriction>
+      </xs:simpleType>
+      <xs:simpleType>
+        <xs:restriction xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:propertyPlaceholderType"></xs:restriction>
+      </xs:simpleType>
+    </xs:union>
+  </xs:simpleType>
+  <xs:simpleType name="floatType">
+    <xs:union>
+      <xs:simpleType>
+        <xs:restriction base="xs:float"></xs:restriction>
+      </xs:simpleType>
+      <xs:simpleType>
+        <xs:restriction xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:propertyPlaceholderType"></xs:restriction>
+      </xs:simpleType>
+    </xs:union>
+  </xs:simpleType>
+  <xs:simpleType name="doubleType">
+    <xs:union>
+      <xs:simpleType>
+        <xs:restriction base="xs:double"></xs:restriction>
+      </xs:simpleType>
+      <xs:simpleType>
+        <xs:restriction xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:propertyPlaceholderType"></xs:restriction>
+      </xs:simpleType>
+    </xs:union>
+  </xs:simpleType>
+  <xs:simpleType name="dateTimeType">
+    <xs:union>
+      <xs:simpleType>
+        <xs:restriction base="xs:dateTime"></xs:restriction>
+      </xs:simpleType>
+      <xs:simpleType>
+        <xs:restriction xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:propertyPlaceholderType"></xs:restriction>
+      </xs:simpleType>
+    </xs:union>
+  </xs:simpleType>
+  <xs:simpleType name="longType">
+    <xs:union>
+      <xs:simpleType>
+        <xs:restriction base="xs:long"></xs:restriction>
+      </xs:simpleType>
+      <xs:simpleType>
+        <xs:restriction xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:propertyPlaceholderType"></xs:restriction>
+      </xs:simpleType>
+    </xs:union>
+  </xs:simpleType>
+  <xs:simpleType name="byteType">
+    <xs:union>
+      <xs:simpleType>
+        <xs:restriction base="xs:byte"></xs:restriction>
+      </xs:simpleType>
+      <xs:simpleType>
+        <xs:restriction xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:propertyPlaceholderType"></xs:restriction>
+      </xs:simpleType>
+    </xs:union>
+  </xs:simpleType>
+  <xs:simpleType name="booleanType">
+    <xs:union>
+      <xs:simpleType>
+        <xs:restriction base="xs:boolean"></xs:restriction>
+      </xs:simpleType>
+      <xs:simpleType>
+        <xs:restriction xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:propertyPlaceholderType"></xs:restriction>
+      </xs:simpleType>
+    </xs:union>
+  </xs:simpleType>
+  <xs:simpleType name="anyUriType">
+    <xs:union>
+      <xs:simpleType>
+        <xs:restriction base="xs:anyURI"></xs:restriction>
+      </xs:simpleType>
+      <xs:simpleType>
+        <xs:restriction xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:propertyPlaceholderType"></xs:restriction>
+      </xs:simpleType>
+    </xs:union>
+  </xs:simpleType>
+  <xs:simpleType name="charType">
+    <xs:union>
+      <xs:simpleType>
+        <xs:restriction base="xs:string">
+          <xs:minLength value="1"></xs:minLength>
+          <xs:maxLength value="1"></xs:maxLength>
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:simpleType>
+        <xs:restriction xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:propertyPlaceholderType"></xs:restriction>
+      </xs:simpleType>
+    </xs:union>
+  </xs:simpleType>
+</xs:schema>
