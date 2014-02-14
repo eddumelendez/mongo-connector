@@ -10,7 +10,7 @@ import org.mule.module.mongo.MongoCloudConnector;
  * A <code>MongoCloudConnectorMetadataAdapater</code> is a wrapper around {@link MongoCloudConnector } that adds support for querying metadata about the extension.
  * 
  */
-@Generated(value = "Mule DevKit Version 3.5.0-SNAPSHOT", date = "2014-02-14T12:14:34-06:00", comments = "Build UNKNOWN_BUILDNUMBER")
+@Generated(value = "Mule DevKit Version 3.5.0-SNAPSHOT", date = "2014-02-14T12:17:17-06:00", comments = "Build UNKNOWN_BUILDNUMBER")
 public class MongoCloudConnectorMetadataAdapater
     extends MongoCloudConnectorCapabilitiesAdapter
     implements MetadataAware
