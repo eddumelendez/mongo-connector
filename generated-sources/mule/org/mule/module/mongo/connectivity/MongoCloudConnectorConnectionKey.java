@@ -8,7 +8,7 @@ import javax.annotation.Generated;
  * A tuple of connection parameters
  * 
  */
-@Generated(value = "Mule DevKit Version 3.5.0-SNAPSHOT", date = "2014-02-14T12:17:17-06:00", comments = "Build UNKNOWN_BUILDNUMBER")
+@Generated(value = "Mule DevKit Version 3.5.0-SNAPSHOT", date = "2014-02-19T02:52:57-06:00", comments = "Build UNKNOWN_BUILDNUMBER")
 public class MongoCloudConnectorConnectionKey {
 
     /**
@@ -81,19 +81,14 @@ public class MongoCloudConnectorConnectionKey {
         return this.database;
     }
 
+    @Override
     public int hashCode() {
-        int hash = 1;
-        hash = (hash* 31);
-        if (this.username!= null) {
-            hash += this.username.hashCode();
-        }
-        hash = (hash* 31);
-        if (this.database!= null) {
-            hash += this.database.hashCode();
-        }
-        return hash;
+        int result = ((this.username!= null)?this.username.hashCode(): 0);
+        result = ((31 *result)+((this.database!= null)?this.database.hashCode(): 0));
+        return result;
     }
 
+    @Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;

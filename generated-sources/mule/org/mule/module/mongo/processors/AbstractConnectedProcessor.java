@@ -4,7 +4,7 @@ package org.mule.module.mongo.processors;
 import javax.annotation.Generated;
 import org.mule.devkit.processor.DevkitBasedMessageProcessor;
 
-@Generated(value = "Mule DevKit Version 3.5.0-SNAPSHOT", date = "2014-02-14T12:17:17-06:00", comments = "Build UNKNOWN_BUILDNUMBER")
+@Generated(value = "Mule DevKit Version 3.5.0-SNAPSHOT", date = "2014-02-19T02:52:57-06:00", comments = "Build UNKNOWN_BUILDNUMBER")
 public abstract class AbstractConnectedProcessor
     extends DevkitBasedMessageProcessor
 {

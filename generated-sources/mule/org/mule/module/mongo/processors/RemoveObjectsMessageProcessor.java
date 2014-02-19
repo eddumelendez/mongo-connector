@@ -21,7 +21,7 @@ import org.mule.security.oauth.callback.ProcessCallback;
  * RemoveObjectsMessageProcessor invokes the {@link org.mule.module.mongo.MongoCloudConnector#removeObjects(java.lang.String, com.mongodb.DBObject, org.mule.module.mongo.api.WriteConcern)} method in {@link MongoCloudConnector }. For each argument there is a field in this processor to match it.  Before invoking the actual method the processor will evaluate and transform where possible to the expected argument type.
  * 
  */
-@Generated(value = "Mule DevKit Version 3.5.0-SNAPSHOT", date = "2014-02-14T12:17:17-06:00", comments = "Build UNKNOWN_BUILDNUMBER")
+@Generated(value = "Mule DevKit Version 3.5.0-SNAPSHOT", date = "2014-02-19T02:52:57-06:00", comments = "Build UNKNOWN_BUILDNUMBER")
 public class RemoveObjectsMessageProcessor
     extends AbstractConnectedProcessor
     implements MessageProcessor
