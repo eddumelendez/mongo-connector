@@ -20,6 +20,7 @@
         <category>Community</category>
         <licensePath>LICENSE.md</licensePath>
         <devkit.studio.package.skip>false</devkit.studio.package.skip>
+        <connector.test.version>2.0.3</connector.test.version>
     </properties>
 
     <dependencies>
