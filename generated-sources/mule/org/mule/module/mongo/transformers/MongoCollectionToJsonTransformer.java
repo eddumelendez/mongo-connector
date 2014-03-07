@@ -12,7 +12,7 @@ import org.mule.module.mongo.api.MongoCollection;
 import org.mule.transformer.AbstractTransformer;
 import org.mule.transformer.types.DataTypeFactory;
 
-@Generated(value = "Mule DevKit Version 3.5.0-SNAPSHOT", date = "2014-02-19T03:09:09-06:00", comments = "Build UNKNOWN_BUILDNUMBER")
+@Generated(value = "Mule DevKit Version 3.5.0-M4", date = "2014-03-07T01:34:18-06:00", comments = "Build M4.1875.17b58a3")
 public class MongoCollectionToJsonTransformer
     extends AbstractTransformer
     implements DiscoverableTransformer
