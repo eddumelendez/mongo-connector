@@ -65,49 +65,6 @@
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
@@ -264,8 +221,6 @@
     <li class="api apilevel-">
   <a href="../../../../../../java/org/mule/module/mongo/config/package-summary.html">org.mule.module.mongo.config</a></li>
     <li class="api apilevel-">
-  <a href="../../../../../../java/org/mule/module/mongo/config/spring/package-summary.html">org.mule.module.mongo.config.spring</a></li>
-    <li class="api apilevel-">
   <a href="../../../../../../java/org/mule/module/mongo/connection/package-summary.html">org.mule.module.mongo.connection</a></li>
     <li class="api apilevel-">
   <a href="../../../../../../java/org/mule/module/mongo/connectivity/package-summary.html">org.mule.module.mongo.connectivity</a></li>
@@ -292,13 +247,9 @@
       <ul>
           <li class="selected api apilevel-"><a href="../../../../../../java/org/mule/module/mongo/adapters/MongoCloudConnectorCapabilitiesAdapter.html">MongoCloudConnectorCapabilitiesAdapter</a></li>
           <li class="api apilevel-"><a href="../../../../../../java/org/mule/module/mongo/adapters/MongoCloudConnectorConnectionIdentifierAdapter.html">MongoCloudConnectorConnectionIdentifierAdapter</a></li>
-          <li class="api apilevel-"><a href="../../../../../../java/org/mule/module/mongo/adapters/MongoCloudConnectorConnectionManager.html">MongoCloudConnectorConnectionManager</a></li>
-          <li class="api apilevel-"><a href="../../../../../../java/org/mule/module/mongo/adapters/MongoCloudConnectorConnectionManager.ConnectionKey.html">MongoCloudConnectorConnectionManager.ConnectionKey</a></li>
           <li class="api apilevel-"><a href="../../../../../../java/org/mule/module/mongo/adapters/MongoCloudConnectorLifecycleAdapter.html">MongoCloudConnectorLifecycleAdapter</a></li>
           <li class="api apilevel-"><a href="../../../../../../java/org/mule/module/mongo/adapters/MongoCloudConnectorMetadataAdapater.html">MongoCloudConnectorMetadataAdapater</a></li>
           <li class="api apilevel-"><a href="../../../../../../java/org/mule/module/mongo/adapters/MongoCloudConnectorProcessAdapter.html">MongoCloudConnectorProcessAdapter</a></li>
-          <li class="api apilevel-"><a href="../../../../../../java/org/mule/module/mongo/adapters/MongoObjectStoreCapabilitiesAdapter.html">MongoObjectStoreCapabilitiesAdapter</a></li>
-          <li class="api apilevel-"><a href="../../../../../../java/org/mule/module/mongo/adapters/MongoObjectStoreLifecycleAdapter.html">MongoObjectStoreLifecycleAdapter</a></li>
       </ul>
     </li>
               
@@ -439,7 +390,7 @@ Summary:
   
       implements 
       
-        Capabilities 
+        <a href="../../../../../../java/org/mule/module/mongo/basic/Capabilities.html">Capabilities</a> 
       
   
   
@@ -897,7 +848,7 @@ Summary:
             boolean</nobr>
         </td>
         <td class="jd-linkcol" width="100%"><nobr>
-        <span class="sympad"><a href="../../../../../../org/mule/module/mongo/adapters/MongoCloudConnectorCapabilitiesAdapter.html#isCapableOf(org.mule.api.devkit.capability.ModuleCapability)">isCapableOf</a></span>(ModuleCapability capability)</nobr>
+        <span class="sympad"><a href="../../../../../../org/mule/module/mongo/adapters/MongoCloudConnectorCapabilitiesAdapter.html#isCapableOf(org.mule.module.mongo.basic.Capability)">isCapableOf</a></span>(<a href="../../../../../../java/org/mule/module/mongo/basic/Capability.html">Capability</a> capability)</nobr>
         
         <div class="jd-descrdiv">Returns true if this module implements such capability
  
@@ -2441,19 +2392,19 @@ From class
 
 <tr class="api apilevel-" >
 <td colspan="12">
-  <a href="#" onclick="return toggleInherited(this, null)" id="inherited-methods-org.mule.api.devkit.capability.Capabilities" class="jd-expando-trigger closed"
-          ><img id="inherited-methods-org.mule.api.devkit.capability.Capabilities-trigger"
+  <a href="#" onclick="return toggleInherited(this, null)" id="inherited-methods-org.mule.module.mongo.basic.Capabilities" class="jd-expando-trigger closed"
+          ><img id="inherited-methods-org.mule.module.mongo.basic.Capabilities-trigger"
           src="../../../../../../assets/images/triangle-closed.png"
           class="jd-expando-trigger-img" /></a>
 From interface
 
-  org.mule.api.devkit.capability.Capabilities
+  <a href="../../../../../../org/mule/module/mongo/basic/Capabilities.html">org.mule.module.mongo.basic.Capabilities</a>
 
-<div id="inherited-methods-org.mule.api.devkit.capability.Capabilities">
-  <div id="inherited-methods-org.mule.api.devkit.capability.Capabilities-list"
+<div id="inherited-methods-org.mule.module.mongo.basic.Capabilities">
+  <div id="inherited-methods-org.mule.module.mongo.basic.Capabilities-list"
         class="jd-inheritedlinks">
   </div>
-  <div id="inherited-methods-org.mule.api.devkit.capability.Capabilities-summary" style="display: none;">
+  <div id="inherited-methods-org.mule.module.mongo.basic.Capabilities-summary" style="display: none;">
     <table class="jd-sumtable-expando">
     
 
@@ -2469,8 +2420,11 @@ From interface
             boolean</nobr>
         </td>
         <td class="jd-linkcol" width="100%"><nobr>
-        <span class="sympad">isCapableOf</span>(ModuleCapability arg0)</nobr>
+        <span class="sympad"><a href="../../../../../../org/mule/module/mongo/basic/Capabilities.html#isCapableOf(org.mule.module.mongo.basic.Capability)">isCapableOf</a></span>(<a href="../../../../../../java/org/mule/module/mongo/basic/Capability.html">Capability</a> capability)</nobr>
         
+        <div class="jd-descrdiv">Returns true if this module implements such
+ capability</div>
+  
   </td></tr>
 
 
@@ -2560,7 +2514,7 @@ From interface
 
 
 
-<A NAME="isCapableOf(org.mule.api.devkit.capability.ModuleCapability)"></A>
+<A NAME="isCapableOf(org.mule.module.mongo.basic.Capability)"></A>
 
 <div class="jd-details api apilevel-"> 
     <h4 class="jd-details-title">
@@ -2573,7 +2527,7 @@ From interface
         boolean
       </span>
       <span class="sympad">isCapableOf</span>
-      <span class="normal">(ModuleCapability capability)</span>
+      <span class="normal">(<a href="../../../../../../java/org/mule/module/mongo/basic/Capability.html">Capability</a> capability)</span>
     </h4>
       <div class="api-level">
         <div>
@@ -2593,9 +2547,14 @@ From interface
       <table class="jd-tagtable">
         <tr>
           <th>capability</td>
-          <td></td>
+          <td>The capability to test for</td>
         </tr>
       </table>
+  </div>
+  <div class="jd-tagdata">
+      <h5 class="jd-tagtitle">Returns</h5>
+      <ul class="nolist"><li>True if it does, false otherwise
+</li></ul>
   </div>
 
     </div>

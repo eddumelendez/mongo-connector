@@ -65,49 +65,6 @@
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
@@ -264,8 +221,6 @@
     <li class="api apilevel-">
   <a href="../../../../../../java/org/mule/module/mongo/config/package-summary.html">org.mule.module.mongo.config</a></li>
     <li class="api apilevel-">
-  <a href="../../../../../../java/org/mule/module/mongo/config/spring/package-summary.html">org.mule.module.mongo.config.spring</a></li>
-    <li class="api apilevel-">
   <a href="../../../../../../java/org/mule/module/mongo/connection/package-summary.html">org.mule.module.mongo.connection</a></li>
     <li class="selected api apilevel-">
   <a href="../../../../../../java/org/mule/module/mongo/connectivity/package-summary.html">org.mule.module.mongo.connectivity</a></li>
@@ -416,7 +371,7 @@ Summary:
   
       implements 
       
-        KeyedPoolableObjectFactory&lt;K,&nbsp;V&gt; 
+        KeyedPoolableObjectFactory 
       
   
   
@@ -895,7 +850,7 @@ From interface
             void</nobr>
         </td>
         <td class="jd-linkcol" width="100%"><nobr>
-        <span class="sympad">activateObject</span>(K arg0, V arg1)</nobr>
+        <span class="sympad">activateObject</span>(Object arg0, Object arg1)</nobr>
         
   </td></tr>
 
@@ -911,7 +866,7 @@ From interface
             void</nobr>
         </td>
         <td class="jd-linkcol" width="100%"><nobr>
-        <span class="sympad">destroyObject</span>(K arg0, V arg1)</nobr>
+        <span class="sympad">destroyObject</span>(Object arg0, Object arg1)</nobr>
         
   </td></tr>
 
@@ -924,10 +879,10 @@ From interface
             
             
             
-            V</nobr>
+            Object</nobr>
         </td>
         <td class="jd-linkcol" width="100%"><nobr>
-        <span class="sympad">makeObject</span>(K arg0)</nobr>
+        <span class="sympad">makeObject</span>(Object arg0)</nobr>
         
   </td></tr>
 
@@ -943,7 +898,7 @@ From interface
             void</nobr>
         </td>
         <td class="jd-linkcol" width="100%"><nobr>
-        <span class="sympad">passivateObject</span>(K arg0, V arg1)</nobr>
+        <span class="sympad">passivateObject</span>(Object arg0, Object arg1)</nobr>
         
   </td></tr>
 
@@ -959,7 +914,7 @@ From interface
             boolean</nobr>
         </td>
         <td class="jd-linkcol" width="100%"><nobr>
-        <span class="sympad">validateObject</span>(K arg0, V arg1)</nobr>
+        <span class="sympad">validateObject</span>(Object arg0, Object arg1)</nobr>
         
   </td></tr>
 

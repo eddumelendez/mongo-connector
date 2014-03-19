@@ -7,7 +7,6 @@ org.mule.module.mongo.api.transformers
 org.mule.module.mongo.basic
 org.mule.module.mongo.callback
 org.mule.module.mongo.config
-org.mule.module.mongo.config.spring
 org.mule.module.mongo.connection
 org.mule.module.mongo.connectivity
 org.mule.module.mongo.devkit
