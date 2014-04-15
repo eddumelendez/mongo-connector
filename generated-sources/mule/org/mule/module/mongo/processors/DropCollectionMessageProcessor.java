@@ -19,7 +19,7 @@ import org.mule.security.oauth.callback.ProcessCallback;
  * DropCollectionMessageProcessor invokes the {@link org.mule.module.mongo.MongoCloudConnector#dropCollection(java.lang.String)} method in {@link MongoCloudConnector }. For each argument there is a field in this processor to match it.  Before invoking the actual method the processor will evaluate and transform where possible to the expected argument type.
  * 
  */
-@Generated(value = "Mule DevKit Version 3.5.0-M4", date = "2014-03-07T01:34:18-06:00", comments = "Build M4.1875.17b58a3")
+@Generated(value = "Mule DevKit Version 3.5.0-SNAPSHOT", date = "2014-04-15T03:23:24-05:00", comments = "Build master.1915.dd1962d")
 public class DropCollectionMessageProcessor
     extends AbstractConnectedProcessor
     implements MessageProcessor
@@ -83,7 +83,7 @@ public class DropCollectionMessageProcessor
         try {
             moduleObject = findOrCreate(MongoCloudConnectorConnectionManager.class, true, event);
             final String _transformedCollection = ((String) evaluateAndTransform(getMuleContext(), event, DropCollectionMessageProcessor.class.getDeclaredField("_collectionType").getGenericType(), null, collection));
-            ProcessTemplate<Object, Object> processTemplate = ((ProcessAdapter<Object> ) moduleObject).getProcessTemplate();
+            final ProcessTemplate<Object, Object> processTemplate = ((ProcessAdapter<Object> ) moduleObject).getProcessTemplate();
             processTemplate.execute(new ProcessCallback<Object,Object>() {
 
 

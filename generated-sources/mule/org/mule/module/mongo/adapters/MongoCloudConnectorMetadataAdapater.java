@@ -10,16 +10,16 @@ import org.mule.module.mongo.MongoCloudConnector;
  * A <code>MongoCloudConnectorMetadataAdapater</code> is a wrapper around {@link MongoCloudConnector } that adds support for querying metadata about the extension.
  * 
  */
-@Generated(value = "Mule DevKit Version 3.5.0-M4", date = "2014-03-07T01:34:18-06:00", comments = "Build M4.1875.17b58a3")
+@Generated(value = "Mule DevKit Version 3.5.0-SNAPSHOT", date = "2014-04-15T03:23:24-05:00", comments = "Build master.1915.dd1962d")
 public class MongoCloudConnectorMetadataAdapater
     extends MongoCloudConnectorCapabilitiesAdapter
     implements MetadataAware
 {
 
     private final static String MODULE_NAME = "Mongo DB";
-    private final static String MODULE_VERSION = "3.4.3-SNAPSHOT";
-    private final static String DEVKIT_VERSION = "3.5.0-M4";
-    private final static String DEVKIT_BUILD = "M4.1875.17b58a3";
+    private final static String MODULE_VERSION = "3.4.5-SNAPSHOT";
+    private final static String DEVKIT_VERSION = "3.5.0-SNAPSHOT";
+    private final static String DEVKIT_BUILD = "master.1915.dd1962d";
     private final static String MIN_MULE_VERSION = "3.5";
 
     public String getModuleName() {
