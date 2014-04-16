@@ -20,7 +20,7 @@ import org.slf4j.LoggerFactory;
  * A <code>MongoCloudConnectorLifecycleAdapter</code> is a wrapper around {@link MongoCloudConnector } that adds lifecycle methods to the pojo.
  * 
  */
-@Generated(value = "Mule DevKit Version 3.5.0-SNAPSHOT", date = "2014-04-15T03:23:24-05:00", comments = "Build master.1915.dd1962d")
+@Generated(value = "Mule DevKit Version 3.5.0-SNAPSHOT", date = "2014-04-16T09:55:15-05:00", comments = "Build master.1915.dd1962d")
 public class MongoCloudConnectorLifecycleAdapter
     extends MongoCloudConnectorMetadataAdapater
     implements Disposable, Initialisable, Startable, Stoppable

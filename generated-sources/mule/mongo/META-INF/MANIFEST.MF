@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Mongo DB
 Bundle-SymbolicName: org.mule.tooling.ui.contribution.mongo.3.5.0;singleton:=true
-Bundle-Version: 3.4.5.201404151523
+Bundle-Version: 3.4.5.201404160955
 Bundle-Activator: org.mule.tooling.ui.contribution.MongoActivator
 Bundle-Vendor: MuleSoft, inc.
 Require-Bundle: org.eclipse.ui,
