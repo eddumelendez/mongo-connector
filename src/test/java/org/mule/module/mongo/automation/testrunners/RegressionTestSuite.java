@@ -6,12 +6,13 @@
  * LICENSE.md file.
  */
 
-package org.mule.module.mongo.automation;
+package org.mule.module.mongo.automation.testrunners;
 
 import org.junit.experimental.categories.Categories;
 import org.junit.experimental.categories.Categories.IncludeCategory;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite.SuiteClasses;
+import org.mule.module.mongo.automation.RegressionTests;
 import org.mule.module.mongo.automation.testcases.AddUserTestCases;
 import org.mule.module.mongo.automation.testcases.CountObjectsTestCases;
 import org.mule.module.mongo.automation.testcases.CountObjectsUsingQueryMapTestCases;
@@ -43,7 +44,6 @@ import org.mule.module.mongo.automation.testcases.ListFilesUsingQueryMapTestCase
 import org.mule.module.mongo.automation.testcases.ListIndicesTestCases;
 import org.mule.module.mongo.automation.testcases.MapReduceObjectsTestCases;
 import org.mule.module.mongo.automation.testcases.PoolingTestCases;
-import org.mule.module.mongo.automation.testcases.RegressionTests;
 import org.mule.module.mongo.automation.testcases.RemoveFilesTestCases;
 import org.mule.module.mongo.automation.testcases.RemoveFilesUsingQueryMapTestCases;
 import org.mule.module.mongo.automation.testcases.RemoveObjectsTestCases;
