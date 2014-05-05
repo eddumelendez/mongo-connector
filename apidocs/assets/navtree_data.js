@@ -22,6 +22,8 @@ var NAVTREE_DATA =
 , "" ] ]
 , "" ], [ "org.mule.module.mongo.devkit", "org/mule/module/mongo/devkit/package-summary.html", [ [ "Interfaces", null, [ [ "SplashScreenAgent", "org/mule/module/mongo/devkit/SplashScreenAgent.html", null, "" ] ]
 , "" ] ]
+, "" ], [ "org.mule.module.mongo.pooling", "org/mule/module/mongo/pooling/package-summary.html", [ [ "Classes", null, [ [ "DevkitGenericKeyedObjectPool", "org/mule/module/mongo/pooling/DevkitGenericKeyedObjectPool.html", null, "" ] ]
+, "" ] ]
 , "" ], [ "org.mule.module.mongo.process", "org/mule/module/mongo/process/package-summary.html", [ [ "Classes", null, [ [ "ManagedConnectionProcessInterceptor", "org/mule/module/mongo/process/ManagedConnectionProcessInterceptor.html", null, "" ] ]
 , "" ] ]
 , "" ], [ "org.mule.module.mongo.processors", "org/mule/module/mongo/processors/package-summary.html", [ [ "Interfaces", null, [ [ "ConnectivityProcessor", "org/mule/module/mongo/processors/ConnectivityProcessor.html", null, "" ] ]

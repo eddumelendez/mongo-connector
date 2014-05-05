@@ -2,7 +2,7 @@
 package org.mule.module.mongo.connectivity;
 
 import javax.annotation.Generated;
-import org.apache.commons.pool.impl.GenericKeyedObjectPool;
+import org.apache.commons.pool.KeyedObjectPool;
 import org.mule.api.ConnectionException;
 import org.mule.api.ConnectionExceptionCode;
 import org.mule.api.MetadataAware;
@@ -29,13 +29,14 @@ import org.mule.module.mongo.MongoCloudConnector;
 import org.mule.module.mongo.adapters.MongoCloudConnectorConnectionIdentifierAdapter;
 import org.mule.module.mongo.connection.ConnectionManager;
 import org.mule.module.mongo.connection.UnableToAcquireConnectionException;
+import org.mule.module.mongo.pooling.DevkitGenericKeyedObjectPool;
 
 
 /**
  * A {@code MongoCloudConnectorConnectionManager} is a wrapper around {@link MongoCloudConnector } that adds connection management capabilities to the pojo.
  * 
  */
-@Generated(value = "Mule DevKit Version 3.5.0-SNAPSHOT", date = "2014-04-16T09:55:15-05:00", comments = "Build master.1915.dd1962d")
+@Generated(value = "Mule DevKit Version 3.5.0-RC1", date = "2014-05-05T02:17:19-05:00", comments = "Build master.1926.b0106b2")
 public class MongoCloudConnectorConnectionManager
     extends ExpressionEvaluatorSupport
     implements MetadataAware, MuleContextAware, ProcessAdapter<MongoCloudConnectorConnectionIdentifierAdapter> , Capabilities, Disposable, Initialisable, Testable, ConnectionManager<MongoCloudConnectorConnectionKey, MongoCloudConnectorConnectionIdentifierAdapter>
@@ -75,13 +76,13 @@ public class MongoCloudConnectorConnectionManager
      * Connector Pool
      * 
      */
-    private GenericKeyedObjectPool connectionPool;
-    protected PoolingProfile connectionPoolingProfile;
+    private KeyedObjectPool connectionPool;
+    protected PoolingProfile poolingProfile;
     protected RetryPolicyTemplate retryPolicyTemplate;
     private final static String MODULE_NAME = "Mongo DB";
     private final static String MODULE_VERSION = "3.4.5-SNAPSHOT";
-    private final static String DEVKIT_VERSION = "3.5.0-SNAPSHOT";
-    private final static String DEVKIT_BUILD = "master.1915.dd1962d";
+    private final static String DEVKIT_VERSION = "3.5.0-RC1";
+    private final static String DEVKIT_BUILD = "master.1926.b0106b2";
     private final static String MIN_MULE_VERSION = "3.5";
 
     /**
@@ -255,20 +256,20 @@ public class MongoCloudConnectorConnectionManager
     }
 
     /**
-     * Sets connectionPoolingProfile
+     * Sets poolingProfile
      * 
      * @param value Value to set
      */
-    public void setConnectionPoolingProfile(PoolingProfile value) {
-        this.connectionPoolingProfile = value;
+    public void setPoolingProfile(PoolingProfile value) {
+        this.poolingProfile = value;
     }
 
     /**
-     * Retrieves connectionPoolingProfile
+     * Retrieves poolingProfile
      * 
      */
-    public PoolingProfile getConnectionPoolingProfile() {
-        return this.connectionPoolingProfile;
+    public PoolingProfile getPoolingProfile() {
+        return this.poolingProfile;
     }
 
     /**
@@ -340,16 +341,7 @@ public class MongoCloudConnectorConnectionManager
     }
 
     public void initialise() {
-        GenericKeyedObjectPool.Config config = new GenericKeyedObjectPool.Config();
-        if (connectionPoolingProfile!= null) {
-            config.maxIdle = connectionPoolingProfile.getMaxIdle();
-            config.maxActive = connectionPoolingProfile.getMaxActive();
-            config.maxWait = connectionPoolingProfile.getMaxWait();
-            config.whenExhaustedAction = ((byte) connectionPoolingProfile.getExhaustedAction());
-            config.timeBetweenEvictionRunsMillis = connectionPoolingProfile.getEvictionCheckIntervalMillis();
-            config.minEvictableIdleTimeMillis = connectionPoolingProfile.getMinEvictionMillis();
-        }
-        connectionPool = new GenericKeyedObjectPool(new MongoCloudConnectorConnectionFactory(this), config);
+        connectionPool = new DevkitGenericKeyedObjectPool(new MongoCloudConnectorConnectionFactory(this), poolingProfile);
         if (retryPolicyTemplate == null) {
             retryPolicyTemplate = muleContext.getRegistry().lookupObject(MuleProperties.OBJECT_DEFAULT_RETRY_POLICY_TEMPLATE);
         }
@@ -415,10 +407,10 @@ public class MongoCloudConnectorConnectionManager
                 throw new UnableToAcquireConnectionException("Parameter username in method connect can't be null because is not @Optional");
             }
             final String _transformedPassword = ((String) evaluateAndTransform(muleContext, event, this.getClass().getDeclaredField("password").getGenericType(), null, getPassword()));
-            if (_transformedPassword == null) {
-                throw new UnableToAcquireConnectionException("Parameter password in method connect can't be null because is not @Optional");
-            }
             final String _transformedDatabase = ((String) evaluateAndTransform(muleContext, event, this.getClass().getDeclaredField("database").getGenericType(), null, getDatabase()));
+            if (_transformedDatabase == null) {
+                throw new UnableToAcquireConnectionException("Parameter database in method connect can't be null because is not @Optional");
+            }
             return new MongoCloudConnectorConnectionKey(_transformedUsername, _transformedPassword, _transformedDatabase);
         }
         return getDefaultConnectionKey();

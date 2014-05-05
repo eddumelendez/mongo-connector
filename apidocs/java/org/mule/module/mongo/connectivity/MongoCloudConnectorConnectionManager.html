@@ -266,6 +266,8 @@
     <li class="api apilevel-">
   <a href="../../../../../../java/org/mule/module/mongo/devkit/package-summary.html">org.mule.module.mongo.devkit</a></li>
     <li class="api apilevel-">
+  <a href="../../../../../../java/org/mule/module/mongo/pooling/package-summary.html">org.mule.module.mongo.pooling</a></li>
+    <li class="api apilevel-">
   <a href="../../../../../../java/org/mule/module/mongo/process/package-summary.html">org.mule.module.mongo.process</a></li>
     <li class="api apilevel-">
   <a href="../../../../../../java/org/mule/module/mongo/processors/package-summary.html">org.mule.module.mongo.processors</a></li>
@@ -758,7 +760,7 @@ org.mule.api.lifecycle.Initialisable
           private
           
           
-          GenericKeyedObjectPool</nobr></td>
+          KeyedObjectPool</nobr></td>
           <td class="jd-linkcol"><a href="../../../../../../org/mule/module/mongo/connectivity/MongoCloudConnectorConnectionManager.html#connectionPool">connectionPool</a></td>
           <td class="jd-descrcol" width="100%">Connector Pool
  
@@ -767,17 +769,6 @@ org.mule.api.lifecycle.Initialisable
       
     
       <tr class=" api apilevel-" >
-          <td class="jd-typecol"><nobr>
-          protected
-          
-          
-          PoolingProfile</nobr></td>
-          <td class="jd-linkcol"><a href="../../../../../../org/mule/module/mongo/connectivity/MongoCloudConnectorConnectionManager.html#connectionPoolingProfile">connectionPoolingProfile</a></td>
-          <td class="jd-descrcol" width="100%"></td>
-      </tr>
-      
-    
-      <tr class="alt-color api apilevel-" >
           <td class="jd-typecol"><nobr>
           private
           
@@ -788,7 +779,7 @@ org.mule.api.lifecycle.Initialisable
       </tr>
       
     
-      <tr class=" api apilevel-" >
+      <tr class="alt-color api apilevel-" >
           <td class="jd-typecol"><nobr>
           private
           
@@ -799,7 +790,7 @@ org.mule.api.lifecycle.Initialisable
       </tr>
       
     
-      <tr class="alt-color api apilevel-" >
+      <tr class=" api apilevel-" >
           <td class="jd-typecol"><nobr>
           protected
           
@@ -812,7 +803,7 @@ org.mule.api.lifecycle.Initialisable
       </tr>
       
     
-      <tr class=" api apilevel-" >
+      <tr class="alt-color api apilevel-" >
           <td class="jd-typecol"><nobr>
           private
           
@@ -823,7 +814,7 @@ org.mule.api.lifecycle.Initialisable
       </tr>
       
     
-      <tr class="alt-color api apilevel-" >
+      <tr class=" api apilevel-" >
           <td class="jd-typecol"><nobr>
           private
           
@@ -834,7 +825,7 @@ org.mule.api.lifecycle.Initialisable
       </tr>
       
     
-      <tr class=" api apilevel-" >
+      <tr class="alt-color api apilevel-" >
           <td class="jd-typecol"><nobr>
           protected
           
@@ -847,13 +838,24 @@ org.mule.api.lifecycle.Initialisable
       </tr>
       
     
-      <tr class="alt-color api apilevel-" >
+      <tr class=" api apilevel-" >
           <td class="jd-typecol"><nobr>
           private
           
           
           String</nobr></td>
           <td class="jd-linkcol"><a href="../../../../../../org/mule/module/mongo/connectivity/MongoCloudConnectorConnectionManager.html#password">password</a></td>
+          <td class="jd-descrcol" width="100%"></td>
+      </tr>
+      
+    
+      <tr class="alt-color api apilevel-" >
+          <td class="jd-typecol"><nobr>
+          protected
+          
+          
+          PoolingProfile</nobr></td>
+          <td class="jd-linkcol"><a href="../../../../../../org/mule/module/mongo/connectivity/MongoCloudConnectorConnectionManager.html#poolingProfile">poolingProfile</a></td>
           <td class="jd-descrcol" width="100%"></td>
       </tr>
       
@@ -1068,26 +1070,6 @@ org.mule.api.lifecycle.Initialisable
             
             
             
-            PoolingProfile</nobr>
-        </td>
-        <td class="jd-linkcol" width="100%"><nobr>
-        <span class="sympad"><a href="../../../../../../org/mule/module/mongo/connectivity/MongoCloudConnectorConnectionManager.html#getConnectionPoolingProfile()">getConnectionPoolingProfile</a></span>()</nobr>
-        
-        <div class="jd-descrdiv">Retrieves connectionPoolingProfile
- 
-</div>
-  
-  </td></tr>
-
-
-	 
-    <tr class=" api apilevel-" >
-        <td class="jd-typecol"><nobr>
-            
-            
-            
-            
-            
             Integer</nobr>
         </td>
         <td class="jd-linkcol" width="100%"><nobr>
@@ -1101,7 +1083,7 @@ org.mule.api.lifecycle.Initialisable
 
 
 	 
-    <tr class="alt-color api apilevel-" >
+    <tr class=" api apilevel-" >
         <td class="jd-typecol"><nobr>
             
             
@@ -1121,7 +1103,7 @@ org.mule.api.lifecycle.Initialisable
 
 
 	 
-    <tr class=" api apilevel-" >
+    <tr class="alt-color api apilevel-" >
         <td class="jd-typecol"><nobr>
             
             
@@ -1139,7 +1121,7 @@ org.mule.api.lifecycle.Initialisable
 
 
 	 
-    <tr class="alt-color api apilevel-" >
+    <tr class=" api apilevel-" >
         <td class="jd-typecol"><nobr>
             
             
@@ -1155,7 +1137,7 @@ org.mule.api.lifecycle.Initialisable
 
 
 	 
-    <tr class=" api apilevel-" >
+    <tr class="alt-color api apilevel-" >
         <td class="jd-typecol"><nobr>
             
             
@@ -1171,7 +1153,7 @@ org.mule.api.lifecycle.Initialisable
 
 
 	 
-    <tr class="alt-color api apilevel-" >
+    <tr class=" api apilevel-" >
         <td class="jd-typecol"><nobr>
             
             
@@ -1189,7 +1171,7 @@ org.mule.api.lifecycle.Initialisable
 
 
 	 
-    <tr class=" api apilevel-" >
+    <tr class="alt-color api apilevel-" >
         <td class="jd-typecol"><nobr>
             
             
@@ -1209,7 +1191,7 @@ org.mule.api.lifecycle.Initialisable
 
 
 	 
-    <tr class="alt-color api apilevel-" >
+    <tr class=" api apilevel-" >
         <td class="jd-typecol"><nobr>
             
             
@@ -1229,7 +1211,7 @@ org.mule.api.lifecycle.Initialisable
 
 
 	 
-    <tr class=" api apilevel-" >
+    <tr class="alt-color api apilevel-" >
         <td class="jd-typecol"><nobr>
             
             
@@ -1249,7 +1231,7 @@ org.mule.api.lifecycle.Initialisable
 
 
 	 
-    <tr class="alt-color api apilevel-" >
+    <tr class=" api apilevel-" >
         <td class="jd-typecol"><nobr>
             
             
@@ -1265,7 +1247,7 @@ org.mule.api.lifecycle.Initialisable
 
 
 	 
-    <tr class=" api apilevel-" >
+    <tr class="alt-color api apilevel-" >
         <td class="jd-typecol"><nobr>
             
             
@@ -1281,7 +1263,7 @@ org.mule.api.lifecycle.Initialisable
 
 
 	 
-    <tr class="alt-color api apilevel-" >
+    <tr class=" api apilevel-" >
         <td class="jd-typecol"><nobr>
             
             
@@ -1297,7 +1279,7 @@ org.mule.api.lifecycle.Initialisable
 
 
 	 
-    <tr class=" api apilevel-" >
+    <tr class="alt-color api apilevel-" >
         <td class="jd-typecol"><nobr>
             
             
@@ -1317,7 +1299,7 @@ org.mule.api.lifecycle.Initialisable
 
 
 	 
-    <tr class="alt-color api apilevel-" >
+    <tr class=" api apilevel-" >
         <td class="jd-typecol"><nobr>
             
             
@@ -1330,6 +1312,26 @@ org.mule.api.lifecycle.Initialisable
         <span class="sympad"><a href="../../../../../../org/mule/module/mongo/connectivity/MongoCloudConnectorConnectionManager.html#getPassword()">getPassword</a></span>()</nobr>
         
         <div class="jd-descrdiv">Retrieves password
+ 
+</div>
+  
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            
+            
+            PoolingProfile</nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad"><a href="../../../../../../org/mule/module/mongo/connectivity/MongoCloudConnectorConnectionManager.html#getPoolingProfile()">getPoolingProfile</a></span>()</nobr>
+        
+        <div class="jd-descrdiv">Retrieves poolingProfile
  
 </div>
   
@@ -1551,24 +1553,6 @@ org.mule.api.lifecycle.Initialisable
             void</nobr>
         </td>
         <td class="jd-linkcol" width="100%"><nobr>
-        <span class="sympad"><a href="../../../../../../org/mule/module/mongo/connectivity/MongoCloudConnectorConnectionManager.html#setConnectionPoolingProfile(org.mule.config.PoolingProfile)">setConnectionPoolingProfile</a></span>(PoolingProfile value)</nobr>
-        
-        <div class="jd-descrdiv">Sets connectionPoolingProfile</div>
-  
-  </td></tr>
-
-
-	 
-    <tr class=" api apilevel-" >
-        <td class="jd-typecol"><nobr>
-            
-            
-            
-            
-            
-            void</nobr>
-        </td>
-        <td class="jd-linkcol" width="100%"><nobr>
         <span class="sympad"><a href="../../../../../../org/mule/module/mongo/connectivity/MongoCloudConnectorConnectionManager.html#setConnectionsPerHost(java.lang.Integer)">setConnectionsPerHost</a></span>(Integer value)</nobr>
         
         <div class="jd-descrdiv">Sets connectionsPerHost</div>
@@ -1577,7 +1561,7 @@ org.mule.api.lifecycle.Initialisable
 
 
 	 
-    <tr class="alt-color api apilevel-" >
+    <tr class=" api apilevel-" >
         <td class="jd-typecol"><nobr>
             
             
@@ -1595,7 +1579,7 @@ org.mule.api.lifecycle.Initialisable
 
 
 	 
-    <tr class=" api apilevel-" >
+    <tr class="alt-color api apilevel-" >
         <td class="jd-typecol"><nobr>
             
             
@@ -1613,7 +1597,7 @@ org.mule.api.lifecycle.Initialisable
 
 
 	 
-    <tr class="alt-color api apilevel-" >
+    <tr class=" api apilevel-" >
         <td class="jd-typecol"><nobr>
             
             
@@ -1631,7 +1615,7 @@ org.mule.api.lifecycle.Initialisable
 
 
 	 
-    <tr class=" api apilevel-" >
+    <tr class="alt-color api apilevel-" >
         <td class="jd-typecol"><nobr>
             
             
@@ -1649,7 +1633,7 @@ org.mule.api.lifecycle.Initialisable
 
 
 	 
-    <tr class="alt-color api apilevel-" >
+    <tr class=" api apilevel-" >
         <td class="jd-typecol"><nobr>
             
             
@@ -1667,7 +1651,7 @@ org.mule.api.lifecycle.Initialisable
 
 
 	 
-    <tr class=" api apilevel-" >
+    <tr class="alt-color api apilevel-" >
         <td class="jd-typecol"><nobr>
             
             
@@ -1680,6 +1664,24 @@ org.mule.api.lifecycle.Initialisable
         <span class="sympad"><a href="../../../../../../org/mule/module/mongo/connectivity/MongoCloudConnectorConnectionManager.html#setPassword(java.lang.String)">setPassword</a></span>(String value)</nobr>
         
         <div class="jd-descrdiv">Sets password</div>
+  
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            
+            
+            void</nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad"><a href="../../../../../../org/mule/module/mongo/connectivity/MongoCloudConnectorConnectionManager.html#setPoolingProfile(org.mule.config.PoolingProfile)">setPoolingProfile</a></span>(PoolingProfile value)</nobr>
+        
+        <div class="jd-descrdiv">Sets poolingProfile</div>
   
   </td></tr>
 
@@ -2664,24 +2666,6 @@ From interface
             
             
             
-            PoolingProfile</nobr>
-        </td>
-        <td class="jd-linkcol" width="100%"><nobr>
-        <span class="sympad"><a href="../../../../../../org/mule/module/mongo/connection/ConnectionManager.html#getConnectionPoolingProfile()">getConnectionPoolingProfile</a></span>()</nobr>
-        
-        <div class="jd-descrdiv">Retrieve the connection pooling profile</div>
-  
-  </td></tr>
-
-
-	 
-    <tr class=" api apilevel-" >
-        <td class="jd-typecol"><nobr>
-            abstract
-            
-            
-            
-            
             K</nobr>
         </td>
         <td class="jd-linkcol" width="100%"><nobr>
@@ -2693,7 +2677,7 @@ From interface
 
 
 	 
-    <tr class="alt-color api apilevel-" >
+    <tr class=" api apilevel-" >
         <td class="jd-typecol"><nobr>
             abstract
             
@@ -2711,7 +2695,7 @@ From interface
 
 
 	 
-    <tr class=" api apilevel-" >
+    <tr class="alt-color api apilevel-" >
         <td class="jd-typecol"><nobr>
             abstract
             
@@ -2730,7 +2714,7 @@ From interface
 
 
 	 
-    <tr class="alt-color api apilevel-" >
+    <tr class=" api apilevel-" >
         <td class="jd-typecol"><nobr>
             abstract
             
@@ -2743,24 +2727,6 @@ From interface
         <span class="sympad"><a href="../../../../../../org/mule/module/mongo/connection/ConnectionManager.html#releaseConnection(K, C)">releaseConnection</a></span>(K connectorKey, C connector)</nobr>
         
         <div class="jd-descrdiv">Return a connection to the pool</div>
-  
-  </td></tr>
-
-
-	 
-    <tr class=" api apilevel-" >
-        <td class="jd-typecol"><nobr>
-            abstract
-            
-            
-            
-            
-            void</nobr>
-        </td>
-        <td class="jd-linkcol" width="100%"><nobr>
-        <span class="sympad"><a href="../../../../../../org/mule/module/mongo/connection/ConnectionManager.html#setConnectionPoolingProfile(org.mule.config.PoolingProfile)">setConnectionPoolingProfile</a></span>(PoolingProfile value)</nobr>
-        
-        <div class="jd-descrdiv">Set the connection pooling profile</div>
   
   </td></tr>
 
@@ -2829,7 +2795,7 @@ From interface
         <span class="jd-tagtitle">Constant Value: </span>
         <span>
             
-                "master.1915.dd1962d"
+                "master.1926.b0106b2"
             
         </span>
         </div>
@@ -2868,7 +2834,7 @@ From interface
         <span class="jd-tagtitle">Constant Value: </span>
         <span>
             
-                "3.5.0-SNAPSHOT"
+                "3.5.0-RC1"
             
         </span>
         </div>
@@ -3073,7 +3039,7 @@ From interface
         private 
          
          
-        GenericKeyedObjectPool
+        KeyedObjectPool
       </span>
         connectionPool
     </h4>
@@ -3090,36 +3056,6 @@ From interface
   <div class="jd-tagdata jd-tagdescr"><p>Connector Pool
  
 </p></div>
-
-    
-    </div>
-</div>
-
-
-
-<A NAME="connectionPoolingProfile"></A>
-
-<div class="jd-details api apilevel-"> 
-    <h4 class="jd-details-title">
-      <span class="normal">
-        protected 
-         
-         
-        PoolingProfile
-      </span>
-        connectionPoolingProfile
-    </h4>
-      <div class="api-level">
-        
-
-
-        
-  
-
-      </div>
-    <div class="jd-details-descr">
-      
-  <div class="jd-tagdata jd-tagdescr"><p></p></div>
 
     
     </div>
@@ -3322,6 +3258,36 @@ From interface
         String
       </span>
         password
+    </h4>
+      <div class="api-level">
+        
+
+
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+  <div class="jd-tagdata jd-tagdescr"><p></p></div>
+
+    
+    </div>
+</div>
+
+
+
+<A NAME="poolingProfile"></A>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        protected 
+         
+         
+        PoolingProfile
+      </span>
+        poolingProfile
     </h4>
       <div class="api-level">
         
@@ -3780,44 +3746,6 @@ From interface
   <div class="jd-tagdata jd-tagdescr"><p>Retrieves connectTimeout
  
 </p></div>
-
-    </div>
-</div>
-
-
-<A NAME="getConnectionPoolingProfile()"></A>
-
-<div class="jd-details api apilevel-"> 
-    <h4 class="jd-details-title">
-      <span class="normal">
-        public 
-         
-         
-         
-         
-        PoolingProfile
-      </span>
-      <span class="sympad">getConnectionPoolingProfile</span>
-      <span class="normal">()</span>
-    </h4>
-      <div class="api-level">
-        <div>
-
-</div>
-        
-  
-
-      </div>
-    <div class="jd-details-descr">
-      
-  <div class="jd-tagdata jd-tagdescr"><p>Retrieves connectionPoolingProfile
- 
-</p></div>
-  <div class="jd-tagdata">
-      <h5 class="jd-tagtitle">Returns</h5>
-      <ul class="nolist"><li>PoolingProfile representing the pooling parameters
-</li></ul>
-  </div>
 
     </div>
 </div>
@@ -4299,6 +4227,39 @@ From interface
 </div>
 
 
+<A NAME="getPoolingProfile()"></A>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+         
+         
+         
+         
+        PoolingProfile
+      </span>
+      <span class="sympad">getPoolingProfile</span>
+      <span class="normal">()</span>
+    </h4>
+      <div class="api-level">
+        <div>
+
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+  <div class="jd-tagdata jd-tagdescr"><p>Retrieves poolingProfile
+ 
+</p></div>
+
+    </div>
+</div>
+
+
 <A NAME="getPort()"></A>
 
 <div class="jd-details api apilevel-"> 
@@ -4708,47 +4669,6 @@ From interface
 </div>
 
 
-<A NAME="setConnectionPoolingProfile(org.mule.config.PoolingProfile)"></A>
-
-<div class="jd-details api apilevel-"> 
-    <h4 class="jd-details-title">
-      <span class="normal">
-        public 
-         
-         
-         
-         
-        void
-      </span>
-      <span class="sympad">setConnectionPoolingProfile</span>
-      <span class="normal">(PoolingProfile value)</span>
-    </h4>
-      <div class="api-level">
-        <div>
-
-</div>
-        
-  
-
-      </div>
-    <div class="jd-details-descr">
-      
-  <div class="jd-tagdata jd-tagdescr"><p>Sets connectionPoolingProfile</p></div>
-  <div class="jd-tagdata">
-      <h5 class="jd-tagtitle">Parameters</h5>
-      <table class="jd-tagtable">
-        <tr>
-          <th>value</td>
-          <td>Value to set
-</td>
-        </tr>
-      </table>
-  </div>
-
-    </div>
-</div>
-
-
 <A NAME="setConnectionsPerHost(java.lang.Integer)"></A>
 
 <div class="jd-details api apilevel-"> 
@@ -5021,6 +4941,47 @@ From interface
     <div class="jd-details-descr">
       
   <div class="jd-tagdata jd-tagdescr"><p>Sets password</p></div>
+  <div class="jd-tagdata">
+      <h5 class="jd-tagtitle">Parameters</h5>
+      <table class="jd-tagtable">
+        <tr>
+          <th>value</td>
+          <td>Value to set
+</td>
+        </tr>
+      </table>
+  </div>
+
+    </div>
+</div>
+
+
+<A NAME="setPoolingProfile(org.mule.config.PoolingProfile)"></A>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+         
+         
+         
+         
+        void
+      </span>
+      <span class="sympad">setPoolingProfile</span>
+      <span class="normal">(PoolingProfile value)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+  <div class="jd-tagdata jd-tagdescr"><p>Sets poolingProfile</p></div>
   <div class="jd-tagdata">
       <h5 class="jd-tagtitle">Parameters</h5>
       <table class="jd-tagtable">

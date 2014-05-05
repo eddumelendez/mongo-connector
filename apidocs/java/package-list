@@ -8,6 +8,7 @@ org.mule.module.mongo.config
 org.mule.module.mongo.connection
 org.mule.module.mongo.connectivity
 org.mule.module.mongo.devkit
+org.mule.module.mongo.pooling
 org.mule.module.mongo.process
 org.mule.module.mongo.processors
 org.mule.module.mongo.tools

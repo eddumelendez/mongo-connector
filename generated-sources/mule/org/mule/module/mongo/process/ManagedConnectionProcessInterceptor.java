@@ -20,7 +20,7 @@ import org.mule.security.oauth.callback.ProcessCallback;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@Generated(value = "Mule DevKit Version 3.5.0-SNAPSHOT", date = "2014-04-16T09:55:15-05:00", comments = "Build master.1915.dd1962d")
+@Generated(value = "Mule DevKit Version 3.5.0-RC1", date = "2014-05-05T02:17:19-05:00", comments = "Build master.1926.b0106b2")
 public class ManagedConnectionProcessInterceptor<T >
     extends ExpressionEvaluatorSupport
     implements ProcessInterceptor<T, MongoCloudConnectorConnectionIdentifierAdapter>
@@ -50,10 +50,10 @@ public class ManagedConnectionProcessInterceptor<T >
                 throw new UnableToAcquireConnectionException("Parameter username in method connect can't be null because is not @Optional");
             }
             final String _transformedPassword = ((String) evaluateAndTransform(muleContext, event, connectivityProcessor.typeFor("_passwordType"), null, connectivityProcessor.getPassword()));
-            if (_transformedPassword == null) {
-                throw new UnableToAcquireConnectionException("Parameter password in method connect can't be null because is not @Optional");
-            }
             final String _transformedDatabase = ((String) evaluateAndTransform(muleContext, event, connectivityProcessor.typeFor("_databaseType"), null, connectivityProcessor.getDatabase()));
+            if (_transformedDatabase == null) {
+                throw new UnableToAcquireConnectionException("Parameter database in method connect can't be null because is not @Optional");
+            }
             key = new MongoCloudConnectorConnectionKey(_transformedUsername, _transformedPassword, _transformedDatabase);
         } else {
             key = connectionManager.getEvaluatedConnectionKey(event);

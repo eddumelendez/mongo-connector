@@ -77,10 +77,10 @@ collections of BSON documents.</xs:documentation>
           </xs:attribute>
           <xs:attribute name="password" use="optional" type="xs:string">
             <xs:annotation>
-              <xs:documentation>the password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication</xs:documentation>
+              <xs:documentation>the password to use for authentication. If the password is null or whitespaces only the connector won't use authentication.</xs:documentation>
             </xs:annotation>
           </xs:attribute>
-          <xs:attribute name="database" default="test" use="optional" type="xs:string">
+          <xs:attribute name="database" use="optional" type="xs:string">
             <xs:annotation>
               <xs:documentation>Name of the database</xs:documentation>
             </xs:annotation>
@@ -120,10 +120,10 @@ collections of BSON documents.</xs:documentation>
         </xs:attribute>
         <xs:attribute name="password" use="optional" type="xs:string">
           <xs:annotation>
-            <xs:documentation>the password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication</xs:documentation>
+            <xs:documentation>the password to use for authentication. If the password is null or whitespaces only the connector won't use authentication.</xs:documentation>
           </xs:annotation>
         </xs:attribute>
-        <xs:attribute name="database" default="test" use="optional" type="xs:string">
+        <xs:attribute name="database" use="optional" type="xs:string">
           <xs:annotation>
             <xs:documentation>Name of the database</xs:documentation>
           </xs:annotation>
@@ -152,10 +152,10 @@ collections of BSON documents.</xs:documentation>
         </xs:attribute>
         <xs:attribute name="password" use="optional" type="xs:string">
           <xs:annotation>
-            <xs:documentation>the password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication</xs:documentation>
+            <xs:documentation>the password to use for authentication. If the password is null or whitespaces only the connector won't use authentication.</xs:documentation>
           </xs:annotation>
         </xs:attribute>
-        <xs:attribute name="database" default="test" use="optional" type="xs:string">
+        <xs:attribute name="database" use="optional" type="xs:string">
           <xs:annotation>
             <xs:documentation>Name of the database</xs:documentation>
           </xs:annotation>
@@ -184,10 +184,10 @@ collections of BSON documents.</xs:documentation>
         </xs:attribute>
         <xs:attribute name="password" use="optional" type="xs:string">
           <xs:annotation>
-            <xs:documentation>the password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication</xs:documentation>
+            <xs:documentation>the password to use for authentication. If the password is null or whitespaces only the connector won't use authentication.</xs:documentation>
           </xs:annotation>
         </xs:attribute>
-        <xs:attribute name="database" default="test" use="optional" type="xs:string">
+        <xs:attribute name="database" use="optional" type="xs:string">
           <xs:annotation>
             <xs:documentation>Name of the database</xs:documentation>
           </xs:annotation>
@@ -221,10 +221,10 @@ collections of BSON documents.</xs:documentation>
         </xs:attribute>
         <xs:attribute name="password" use="optional" type="xs:string">
           <xs:annotation>
-            <xs:documentation>the password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication</xs:documentation>
+            <xs:documentation>the password to use for authentication. If the password is null or whitespaces only the connector won't use authentication.</xs:documentation>
           </xs:annotation>
         </xs:attribute>
-        <xs:attribute name="database" default="test" use="optional" type="xs:string">
+        <xs:attribute name="database" use="optional" type="xs:string">
           <xs:annotation>
             <xs:documentation>Name of the database</xs:documentation>
           </xs:annotation>
@@ -259,10 +259,10 @@ nothing.
         </xs:attribute>
         <xs:attribute name="password" use="optional" type="xs:string">
           <xs:annotation>
-            <xs:documentation>the password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication</xs:documentation>
+            <xs:documentation>the password to use for authentication. If the password is null or whitespaces only the connector won't use authentication.</xs:documentation>
           </xs:annotation>
         </xs:attribute>
-        <xs:attribute name="database" default="test" use="optional" type="xs:string">
+        <xs:attribute name="database" use="optional" type="xs:string">
           <xs:annotation>
             <xs:documentation>Name of the database</xs:documentation>
           </xs:annotation>
@@ -311,10 +311,10 @@ nothing.
         </xs:attribute>
         <xs:attribute name="password" use="optional" type="xs:string">
           <xs:annotation>
-            <xs:documentation>the password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication</xs:documentation>
+            <xs:documentation>the password to use for authentication. If the password is null or whitespaces only the connector won't use authentication.</xs:documentation>
           </xs:annotation>
         </xs:attribute>
-        <xs:attribute name="database" default="test" use="optional" type="xs:string">
+        <xs:attribute name="database" use="optional" type="xs:string">
           <xs:annotation>
             <xs:documentation>Name of the database</xs:documentation>
           </xs:annotation>
@@ -358,10 +358,10 @@ nothing.
         </xs:attribute>
         <xs:attribute name="password" use="optional" type="xs:string">
           <xs:annotation>
-            <xs:documentation>the password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication</xs:documentation>
+            <xs:documentation>the password to use for authentication. If the password is null or whitespaces only the connector won't use authentication.</xs:documentation>
           </xs:annotation>
         </xs:attribute>
-        <xs:attribute name="database" default="test" use="optional" type="xs:string">
+        <xs:attribute name="database" use="optional" type="xs:string">
           <xs:annotation>
             <xs:documentation>Name of the database</xs:documentation>
           </xs:annotation>
@@ -434,10 +434,10 @@ values.
         </xs:attribute>
         <xs:attribute name="password" use="optional" type="xs:string">
           <xs:annotation>
-            <xs:documentation>the password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication</xs:documentation>
+            <xs:documentation>the password to use for authentication. If the password is null or whitespaces only the connector won't use authentication.</xs:documentation>
           </xs:annotation>
         </xs:attribute>
-        <xs:attribute name="database" default="test" use="optional" type="xs:string">
+        <xs:attribute name="database" use="optional" type="xs:string">
           <xs:annotation>
             <xs:documentation>Name of the database</xs:documentation>
           </xs:annotation>
@@ -498,10 +498,10 @@ updated.
         </xs:attribute>
         <xs:attribute name="password" use="optional" type="xs:string">
           <xs:annotation>
-            <xs:documentation>the password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication</xs:documentation>
+            <xs:documentation>the password to use for authentication. If the password is null or whitespaces only the connector won't use authentication.</xs:documentation>
           </xs:annotation>
         </xs:attribute>
-        <xs:attribute name="database" default="test" use="optional" type="xs:string">
+        <xs:attribute name="database" use="optional" type="xs:string">
           <xs:annotation>
             <xs:documentation>Name of the database</xs:documentation>
           </xs:annotation>
@@ -588,10 +588,10 @@ updated.
         </xs:attribute>
         <xs:attribute name="password" use="optional" type="xs:string">
           <xs:annotation>
-            <xs:documentation>the password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication</xs:documentation>
+            <xs:documentation>the password to use for authentication. If the password is null or whitespaces only the connector won't use authentication.</xs:documentation>
           </xs:annotation>
         </xs:attribute>
-        <xs:attribute name="database" default="test" use="optional" type="xs:string">
+        <xs:attribute name="database" use="optional" type="xs:string">
           <xs:annotation>
             <xs:documentation>Name of the database</xs:documentation>
           </xs:annotation>
@@ -702,10 +702,10 @@ updated.
         </xs:attribute>
         <xs:attribute name="password" use="optional" type="xs:string">
           <xs:annotation>
-            <xs:documentation>the password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication</xs:documentation>
+            <xs:documentation>the password to use for authentication. If the password is null or whitespaces only the connector won't use authentication.</xs:documentation>
           </xs:annotation>
         </xs:attribute>
-        <xs:attribute name="database" default="test" use="optional" type="xs:string">
+        <xs:attribute name="database" use="optional" type="xs:string">
           <xs:annotation>
             <xs:documentation>Name of the database</xs:documentation>
           </xs:annotation>
@@ -770,10 +770,10 @@ updated.
         </xs:attribute>
         <xs:attribute name="password" use="optional" type="xs:string">
           <xs:annotation>
-            <xs:documentation>the password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication</xs:documentation>
+            <xs:documentation>the password to use for authentication. If the password is null or whitespaces only the connector won't use authentication.</xs:documentation>
           </xs:annotation>
         </xs:attribute>
-        <xs:attribute name="database" default="test" use="optional" type="xs:string">
+        <xs:attribute name="database" use="optional" type="xs:string">
           <xs:annotation>
             <xs:documentation>Name of the database</xs:documentation>
           </xs:annotation>
@@ -888,10 +888,10 @@ updated.
         </xs:attribute>
         <xs:attribute name="password" use="optional" type="xs:string">
           <xs:annotation>
-            <xs:documentation>the password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication</xs:documentation>
+            <xs:documentation>the password to use for authentication. If the password is null or whitespaces only the connector won't use authentication.</xs:documentation>
           </xs:annotation>
         </xs:attribute>
-        <xs:attribute name="database" default="test" use="optional" type="xs:string">
+        <xs:attribute name="database" use="optional" type="xs:string">
           <xs:annotation>
             <xs:documentation>Name of the database</xs:documentation>
           </xs:annotation>
@@ -935,10 +935,10 @@ updated.
         </xs:attribute>
         <xs:attribute name="password" use="optional" type="xs:string">
           <xs:annotation>
-            <xs:documentation>the password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication</xs:documentation>
+            <xs:documentation>the password to use for authentication. If the password is null or whitespaces only the connector won't use authentication.</xs:documentation>
           </xs:annotation>
         </xs:attribute>
-        <xs:attribute name="database" default="test" use="optional" type="xs:string">
+        <xs:attribute name="database" use="optional" type="xs:string">
           <xs:annotation>
             <xs:documentation>Name of the database</xs:documentation>
           </xs:annotation>
@@ -1008,10 +1008,10 @@ updated.
         </xs:attribute>
         <xs:attribute name="password" use="optional" type="xs:string">
           <xs:annotation>
-            <xs:documentation>the password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication</xs:documentation>
+            <xs:documentation>the password to use for authentication. If the password is null or whitespaces only the connector won't use authentication.</xs:documentation>
           </xs:annotation>
         </xs:attribute>
-        <xs:attribute name="database" default="test" use="optional" type="xs:string">
+        <xs:attribute name="database" use="optional" type="xs:string">
           <xs:annotation>
             <xs:documentation>Name of the database</xs:documentation>
           </xs:annotation>
@@ -1057,10 +1057,10 @@ dropping the collection and creating it and its indices again
         </xs:attribute>
         <xs:attribute name="password" use="optional" type="xs:string">
           <xs:annotation>
-            <xs:documentation>the password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication</xs:documentation>
+            <xs:documentation>the password to use for authentication. If the password is null or whitespaces only the connector won't use authentication.</xs:documentation>
           </xs:annotation>
         </xs:attribute>
-        <xs:attribute name="database" default="test" use="optional" type="xs:string">
+        <xs:attribute name="database" use="optional" type="xs:string">
           <xs:annotation>
             <xs:documentation>Name of the database</xs:documentation>
           </xs:annotation>
@@ -1132,10 +1132,10 @@ dropping the collection and creating it and its indices again
         </xs:attribute>
         <xs:attribute name="password" use="optional" type="xs:string">
           <xs:annotation>
-            <xs:documentation>the password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication</xs:documentation>
+            <xs:documentation>the password to use for authentication. If the password is null or whitespaces only the connector won't use authentication.</xs:documentation>
           </xs:annotation>
         </xs:attribute>
-        <xs:attribute name="database" default="test" use="optional" type="xs:string">
+        <xs:attribute name="database" use="optional" type="xs:string">
           <xs:annotation>
             <xs:documentation>Name of the database</xs:documentation>
           </xs:annotation>
@@ -1192,10 +1192,10 @@ MongoDB documentation for writing them.
         </xs:attribute>
         <xs:attribute name="password" use="optional" type="xs:string">
           <xs:annotation>
-            <xs:documentation>the password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication</xs:documentation>
+            <xs:documentation>the password to use for authentication. If the password is null or whitespaces only the connector won't use authentication.</xs:documentation>
           </xs:annotation>
         </xs:attribute>
-        <xs:attribute name="database" default="test" use="optional" type="xs:string">
+        <xs:attribute name="database" use="optional" type="xs:string">
           <xs:annotation>
             <xs:documentation>Name of the database</xs:documentation>
           </xs:annotation>
@@ -1235,10 +1235,10 @@ number of elements in the collection
         </xs:attribute>
         <xs:attribute name="password" use="optional" type="xs:string">
           <xs:annotation>
-            <xs:documentation>the password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication</xs:documentation>
+            <xs:documentation>the password to use for authentication. If the password is null or whitespaces only the connector won't use authentication.</xs:documentation>
           </xs:annotation>
         </xs:attribute>
-        <xs:attribute name="database" default="test" use="optional" type="xs:string">
+        <xs:attribute name="database" use="optional" type="xs:string">
           <xs:annotation>
             <xs:documentation>Name of the database</xs:documentation>
           </xs:annotation>
@@ -1304,10 +1304,10 @@ number of elements in the collection
         </xs:attribute>
         <xs:attribute name="password" use="optional" type="xs:string">
           <xs:annotation>
-            <xs:documentation>the password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication</xs:documentation>
+            <xs:documentation>the password to use for authentication. If the password is null or whitespaces only the connector won't use authentication.</xs:documentation>
           </xs:annotation>
         </xs:attribute>
-        <xs:attribute name="database" default="test" use="optional" type="xs:string">
+        <xs:attribute name="database" use="optional" type="xs:string">
           <xs:annotation>
             <xs:documentation>Name of the database</xs:documentation>
           </xs:annotation>
@@ -1382,10 +1382,10 @@ collection are retrieved. If no fields object is specified, all fields are retri
         </xs:attribute>
         <xs:attribute name="password" use="optional" type="xs:string">
           <xs:annotation>
-            <xs:documentation>the password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication</xs:documentation>
+            <xs:documentation>the password to use for authentication. If the password is null or whitespaces only the connector won't use authentication.</xs:documentation>
           </xs:annotation>
         </xs:attribute>
-        <xs:attribute name="database" default="test" use="optional" type="xs:string">
+        <xs:attribute name="database" use="optional" type="xs:string">
           <xs:annotation>
             <xs:documentation>Name of the database</xs:documentation>
           </xs:annotation>
@@ -1484,10 +1484,10 @@ collection are retrieved. If no fields object is specified, all fields are retri
         </xs:attribute>
         <xs:attribute name="password" use="optional" type="xs:string">
           <xs:annotation>
-            <xs:documentation>the password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication</xs:documentation>
+            <xs:documentation>the password to use for authentication. If the password is null or whitespaces only the connector won't use authentication.</xs:documentation>
           </xs:annotation>
         </xs:attribute>
-        <xs:attribute name="database" default="test" use="optional" type="xs:string">
+        <xs:attribute name="database" use="optional" type="xs:string">
           <xs:annotation>
             <xs:documentation>Name of the database</xs:documentation>
           </xs:annotation>
@@ -1557,10 +1557,10 @@ matches the given query
         </xs:attribute>
         <xs:attribute name="password" use="optional" type="xs:string">
           <xs:annotation>
-            <xs:documentation>the password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication</xs:documentation>
+            <xs:documentation>the password to use for authentication. If the password is null or whitespaces only the connector won't use authentication.</xs:documentation>
           </xs:annotation>
         </xs:attribute>
-        <xs:attribute name="database" default="test" use="optional" type="xs:string">
+        <xs:attribute name="database" use="optional" type="xs:string">
           <xs:annotation>
             <xs:documentation>Name of the database</xs:documentation>
           </xs:annotation>
@@ -1654,10 +1654,10 @@ matches the given query
         </xs:attribute>
         <xs:attribute name="password" use="optional" type="xs:string">
           <xs:annotation>
-            <xs:documentation>the password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication</xs:documentation>
+            <xs:documentation>the password to use for authentication. If the password is null or whitespaces only the connector won't use authentication.</xs:documentation>
           </xs:annotation>
         </xs:attribute>
-        <xs:attribute name="database" default="test" use="optional" type="xs:string">
+        <xs:attribute name="database" use="optional" type="xs:string">
           <xs:annotation>
             <xs:documentation>Name of the database</xs:documentation>
           </xs:annotation>
@@ -1701,10 +1701,10 @@ matches the given query
         </xs:attribute>
         <xs:attribute name="password" use="optional" type="xs:string">
           <xs:annotation>
-            <xs:documentation>the password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication</xs:documentation>
+            <xs:documentation>the password to use for authentication. If the password is null or whitespaces only the connector won't use authentication.</xs:documentation>
           </xs:annotation>
         </xs:attribute>
-        <xs:attribute name="database" default="test" use="optional" type="xs:string">
+        <xs:attribute name="database" use="optional" type="xs:string">
           <xs:annotation>
             <xs:documentation>Name of the database</xs:documentation>
           </xs:annotation>
@@ -1743,10 +1743,10 @@ matches the given query
         </xs:attribute>
         <xs:attribute name="password" use="optional" type="xs:string">
           <xs:annotation>
-            <xs:documentation>the password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication</xs:documentation>
+            <xs:documentation>the password to use for authentication. If the password is null or whitespaces only the connector won't use authentication.</xs:documentation>
           </xs:annotation>
         </xs:attribute>
-        <xs:attribute name="database" default="test" use="optional" type="xs:string">
+        <xs:attribute name="database" use="optional" type="xs:string">
           <xs:annotation>
             <xs:documentation>Name of the database</xs:documentation>
           </xs:annotation>
@@ -1780,10 +1780,10 @@ matches the given query
         </xs:attribute>
         <xs:attribute name="password" use="optional" type="xs:string">
           <xs:annotation>
-            <xs:documentation>the password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication</xs:documentation>
+            <xs:documentation>the password to use for authentication. If the password is null or whitespaces only the connector won't use authentication.</xs:documentation>
           </xs:annotation>
         </xs:attribute>
-        <xs:attribute name="database" default="test" use="optional" type="xs:string">
+        <xs:attribute name="database" use="optional" type="xs:string">
           <xs:annotation>
             <xs:documentation>Name of the database</xs:documentation>
           </xs:annotation>
@@ -1828,10 +1828,10 @@ and extraData, and answers it.
         </xs:attribute>
         <xs:attribute name="password" use="optional" type="xs:string">
           <xs:annotation>
-            <xs:documentation>the password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication</xs:documentation>
+            <xs:documentation>the password to use for authentication. If the password is null or whitespaces only the connector won't use authentication.</xs:documentation>
           </xs:annotation>
         </xs:attribute>
-        <xs:attribute name="database" default="test" use="optional" type="xs:string">
+        <xs:attribute name="database" use="optional" type="xs:string">
           <xs:annotation>
             <xs:documentation>Name of the database</xs:documentation>
           </xs:annotation>
@@ -1865,10 +1865,10 @@ and extraData, and answers it.
         </xs:attribute>
         <xs:attribute name="password" use="optional" type="xs:string">
           <xs:annotation>
-            <xs:documentation>the password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication</xs:documentation>
+            <xs:documentation>the password to use for authentication. If the password is null or whitespaces only the connector won't use authentication.</xs:documentation>
           </xs:annotation>
         </xs:attribute>
-        <xs:attribute name="database" default="test" use="optional" type="xs:string">
+        <xs:attribute name="database" use="optional" type="xs:string">
           <xs:annotation>
             <xs:documentation>Name of the database</xs:documentation>
           </xs:annotation>
@@ -1928,10 +1928,10 @@ and extraData, and answers it.
         </xs:attribute>
         <xs:attribute name="password" use="optional" type="xs:string">
           <xs:annotation>
-            <xs:documentation>the password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication</xs:documentation>
+            <xs:documentation>the password to use for authentication. If the password is null or whitespaces only the connector won't use authentication.</xs:documentation>
           </xs:annotation>
         </xs:attribute>
-        <xs:attribute name="database" default="test" use="optional" type="xs:string">
+        <xs:attribute name="database" use="optional" type="xs:string">
           <xs:annotation>
             <xs:documentation>Name of the database</xs:documentation>
           </xs:annotation>
@@ -1966,10 +1966,10 @@ MongoException is thrown.
         </xs:attribute>
         <xs:attribute name="password" use="optional" type="xs:string">
           <xs:annotation>
-            <xs:documentation>the password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication</xs:documentation>
+            <xs:documentation>the password to use for authentication. If the password is null or whitespaces only the connector won't use authentication.</xs:documentation>
           </xs:annotation>
         </xs:attribute>
-        <xs:attribute name="database" default="test" use="optional" type="xs:string">
+        <xs:attribute name="database" use="optional" type="xs:string">
           <xs:annotation>
             <xs:documentation>Name of the database</xs:documentation>
           </xs:annotation>
@@ -2030,10 +2030,10 @@ MongoException is thrown.
         </xs:attribute>
         <xs:attribute name="password" use="optional" type="xs:string">
           <xs:annotation>
-            <xs:documentation>the password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication</xs:documentation>
+            <xs:documentation>the password to use for authentication. If the password is null or whitespaces only the connector won't use authentication.</xs:documentation>
           </xs:annotation>
         </xs:attribute>
-        <xs:attribute name="database" default="test" use="optional" type="xs:string">
+        <xs:attribute name="database" use="optional" type="xs:string">
           <xs:annotation>
             <xs:documentation>Name of the database</xs:documentation>
           </xs:annotation>
@@ -2068,10 +2068,10 @@ object matches it, a MongoException is thrown.
         </xs:attribute>
         <xs:attribute name="password" use="optional" type="xs:string">
           <xs:annotation>
-            <xs:documentation>the password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication</xs:documentation>
+            <xs:documentation>the password to use for authentication. If the password is null or whitespaces only the connector won't use authentication.</xs:documentation>
           </xs:annotation>
         </xs:attribute>
-        <xs:attribute name="database" default="test" use="optional" type="xs:string">
+        <xs:attribute name="database" use="optional" type="xs:string">
           <xs:annotation>
             <xs:documentation>Name of the database</xs:documentation>
           </xs:annotation>
@@ -2132,10 +2132,10 @@ queryAttributes. If no object matches it, a MongoException is thrown.
         </xs:attribute>
         <xs:attribute name="password" use="optional" type="xs:string">
           <xs:annotation>
-            <xs:documentation>the password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication</xs:documentation>
+            <xs:documentation>the password to use for authentication. If the password is null or whitespaces only the connector won't use authentication.</xs:documentation>
           </xs:annotation>
         </xs:attribute>
-        <xs:attribute name="database" default="test" use="optional" type="xs:string">
+        <xs:attribute name="database" use="optional" type="xs:string">
           <xs:annotation>
             <xs:documentation>Name of the database</xs:documentation>
           </xs:annotation>
@@ -2170,10 +2170,10 @@ specified, all files are listed.
         </xs:attribute>
         <xs:attribute name="password" use="optional" type="xs:string">
           <xs:annotation>
-            <xs:documentation>the password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication</xs:documentation>
+            <xs:documentation>the password to use for authentication. If the password is null or whitespaces only the connector won't use authentication.</xs:documentation>
           </xs:annotation>
         </xs:attribute>
-        <xs:attribute name="database" default="test" use="optional" type="xs:string">
+        <xs:attribute name="database" use="optional" type="xs:string">
           <xs:annotation>
             <xs:documentation>Name of the database</xs:documentation>
           </xs:annotation>
@@ -2234,10 +2234,10 @@ specified, all files are listed.
         </xs:attribute>
         <xs:attribute name="password" use="optional" type="xs:string">
           <xs:annotation>
-            <xs:documentation>the password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication</xs:documentation>
+            <xs:documentation>the password to use for authentication. If the password is null or whitespaces only the connector won't use authentication.</xs:documentation>
           </xs:annotation>
         </xs:attribute>
-        <xs:attribute name="database" default="test" use="optional" type="xs:string">
+        <xs:attribute name="database" use="optional" type="xs:string">
           <xs:annotation>
             <xs:documentation>Name of the database</xs:documentation>
           </xs:annotation>
@@ -2272,10 +2272,10 @@ removed
         </xs:attribute>
         <xs:attribute name="password" use="optional" type="xs:string">
           <xs:annotation>
-            <xs:documentation>the password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication</xs:documentation>
+            <xs:documentation>the password to use for authentication. If the password is null or whitespaces only the connector won't use authentication.</xs:documentation>
           </xs:annotation>
         </xs:attribute>
-        <xs:attribute name="database" default="test" use="optional" type="xs:string">
+        <xs:attribute name="database" use="optional" type="xs:string">
           <xs:annotation>
             <xs:documentation>Name of the database</xs:documentation>
           </xs:annotation>
@@ -2336,10 +2336,10 @@ removed
         </xs:attribute>
         <xs:attribute name="password" use="optional" type="xs:string">
           <xs:annotation>
-            <xs:documentation>the password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication</xs:documentation>
+            <xs:documentation>the password to use for authentication. If the password is null or whitespaces only the connector won't use authentication.</xs:documentation>
           </xs:annotation>
         </xs:attribute>
-        <xs:attribute name="database" default="test" use="optional" type="xs:string">
+        <xs:attribute name="database" use="optional" type="xs:string">
           <xs:annotation>
             <xs:documentation>Name of the database</xs:documentation>
           </xs:annotation>
@@ -2379,10 +2379,10 @@ removed
         </xs:attribute>
         <xs:attribute name="password" use="optional" type="xs:string">
           <xs:annotation>
-            <xs:documentation>the password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication</xs:documentation>
+            <xs:documentation>the password to use for authentication. If the password is null or whitespaces only the connector won't use authentication.</xs:documentation>
           </xs:annotation>
         </xs:attribute>
-        <xs:attribute name="database" default="test" use="optional" type="xs:string">
+        <xs:attribute name="database" use="optional" type="xs:string">
           <xs:annotation>
             <xs:documentation>Name of the database</xs:documentation>
           </xs:annotation>
@@ -2438,10 +2438,10 @@ provided then the default /dump directory is used.
         </xs:attribute>
         <xs:attribute name="password" use="optional" type="xs:string">
           <xs:annotation>
-            <xs:documentation>the password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication</xs:documentation>
+            <xs:documentation>the password to use for authentication. If the password is null or whitespaces only the connector won't use authentication.</xs:documentation>
           </xs:annotation>
         </xs:attribute>
-        <xs:attribute name="database" default="test" use="optional" type="xs:string">
+        <xs:attribute name="database" use="optional" type="xs:string">
           <xs:annotation>
             <xs:documentation>Name of the database</xs:documentation>
           </xs:annotation>
@@ -2481,10 +2481,10 @@ provided then the default /dump directory is used.
         </xs:attribute>
         <xs:attribute name="password" use="optional" type="xs:string">
           <xs:annotation>
-            <xs:documentation>the password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication</xs:documentation>
+            <xs:documentation>the password to use for authentication. If the password is null or whitespaces only the connector won't use authentication.</xs:documentation>
           </xs:annotation>
         </xs:attribute>
-        <xs:attribute name="database" default="test" use="optional" type="xs:string">
+        <xs:attribute name="database" use="optional" type="xs:string">
           <xs:annotation>
             <xs:documentation>Name of the database</xs:documentation>
           </xs:annotation>
@@ -2530,10 +2530,10 @@ does inserts with the data to restore, if existing data is there, it will not be
         </xs:attribute>
         <xs:attribute name="password" use="optional" type="xs:string">
           <xs:annotation>
-            <xs:documentation>the password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication</xs:documentation>
+            <xs:documentation>the password to use for authentication. If the password is null or whitespaces only the connector won't use authentication.</xs:documentation>
           </xs:annotation>
         </xs:attribute>
-        <xs:attribute name="database" default="test" use="optional" type="xs:string">
+        <xs:attribute name="database" use="optional" type="xs:string">
           <xs:annotation>
             <xs:documentation>Name of the database</xs:documentation>
           </xs:annotation>
@@ -2561,10 +2561,10 @@ does inserts with the data to restore, if existing data is there, it will not be
         </xs:attribute>
         <xs:attribute name="password" use="optional" type="xs:string">
           <xs:annotation>
-            <xs:documentation>the password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication</xs:documentation>
+            <xs:documentation>the password to use for authentication. If the password is null or whitespaces only the connector won't use authentication.</xs:documentation>
           </xs:annotation>
         </xs:attribute>
-        <xs:attribute name="database" default="test" use="optional" type="xs:string">
+        <xs:attribute name="database" use="optional" type="xs:string">
           <xs:annotation>
             <xs:documentation>Name of the database</xs:documentation>
           </xs:annotation>
@@ -2592,10 +2592,10 @@ does inserts with the data to restore, if existing data is there, it will not be
         </xs:attribute>
         <xs:attribute name="password" use="optional" type="xs:string">
           <xs:annotation>
-            <xs:documentation>the password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication</xs:documentation>
+            <xs:documentation>the password to use for authentication. If the password is null or whitespaces only the connector won't use authentication.</xs:documentation>
           </xs:annotation>
         </xs:attribute>
-        <xs:attribute name="database" default="test" use="optional" type="xs:string">
+        <xs:attribute name="database" use="optional" type="xs:string">
           <xs:annotation>
             <xs:documentation>Name of the database</xs:documentation>
           </xs:annotation>

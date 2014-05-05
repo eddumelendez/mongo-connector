@@ -17,7 +17,7 @@ import org.springframework.beans.factory.xml.ParserContext;
 import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Element;
 
-@Generated(value = "Mule DevKit Version 3.5.0-SNAPSHOT", date = "2014-04-16T09:55:15-05:00", comments = "Build master.1915.dd1962d")
+@Generated(value = "Mule DevKit Version 3.5.0-RC1", date = "2014-05-05T02:17:19-05:00", comments = "Build master.1926.b0106b2")
 public class MongoCloudConnectorConfigDefinitionParser
     extends AbstractDevkitBasedDefinitionParser
 {
@@ -41,25 +41,25 @@ public class MongoCloudConnectorConfigDefinitionParser
         parseProperty(builder, element, "username", "username");
         parseProperty(builder, element, "password", "password");
         parseProperty(builder, element, "database", "database");
-        BeanDefinitionBuilder connectionPoolingProfileBuilder = BeanDefinitionBuilder.rootBeanDefinition(PoolingProfile.class.getName());
-        Element connectionPoolingProfileElement = DomUtils.getChildElementByTagName(element, "connection-pooling-profile");
-        if (connectionPoolingProfileElement!= null) {
-            parseProperty(connectionPoolingProfileBuilder, connectionPoolingProfileElement, "maxActive");
-            parseProperty(connectionPoolingProfileBuilder, connectionPoolingProfileElement, "maxIdle");
-            parseProperty(connectionPoolingProfileBuilder, connectionPoolingProfileElement, "maxWait");
-            if (hasAttribute(connectionPoolingProfileElement, "exhaustedAction")) {
-                connectionPoolingProfileBuilder.addPropertyValue("exhaustedAction", PoolingProfile.POOL_EXHAUSTED_ACTIONS.get(connectionPoolingProfileElement.getAttribute("exhaustedAction")));
+        BeanDefinitionBuilder poolingProfileBuilder = BeanDefinitionBuilder.rootBeanDefinition(PoolingProfile.class.getName());
+        Element poolingProfileElement = DomUtils.getChildElementByTagName(element, "connection-pooling-profile");
+        if (poolingProfileElement!= null) {
+            parseProperty(poolingProfileBuilder, poolingProfileElement, "maxActive");
+            parseProperty(poolingProfileBuilder, poolingProfileElement, "maxIdle");
+            parseProperty(poolingProfileBuilder, poolingProfileElement, "maxWait");
+            if (hasAttribute(poolingProfileElement, "exhaustedAction")) {
+                poolingProfileBuilder.addPropertyValue("exhaustedAction", PoolingProfile.POOL_EXHAUSTED_ACTIONS.get(poolingProfileElement.getAttribute("exhaustedAction")));
             }
-            if (hasAttribute(connectionPoolingProfileElement, "initialisationPolicy")) {
-                connectionPoolingProfileBuilder.addPropertyValue("initialisationPolicy", PoolingProfile.POOL_INITIALISATION_POLICIES.get(connectionPoolingProfileElement.getAttribute("initialisationPolicy")));
+            if (hasAttribute(poolingProfileElement, "initialisationPolicy")) {
+                poolingProfileBuilder.addPropertyValue("initialisationPolicy", PoolingProfile.POOL_INITIALISATION_POLICIES.get(poolingProfileElement.getAttribute("initialisationPolicy")));
             }
-            if (hasAttribute(connectionPoolingProfileElement, "evictionCheckIntervalMillis")) {
-                parseProperty(connectionPoolingProfileBuilder, connectionPoolingProfileElement, "evictionCheckIntervalMillis");
+            if (hasAttribute(poolingProfileElement, "evictionCheckIntervalMillis")) {
+                parseProperty(poolingProfileBuilder, poolingProfileElement, "evictionCheckIntervalMillis");
             }
-            if (hasAttribute(connectionPoolingProfileElement, "minEvictionMillis")) {
-                parseProperty(connectionPoolingProfileBuilder, connectionPoolingProfileElement, "minEvictionMillis");
+            if (hasAttribute(poolingProfileElement, "minEvictionMillis")) {
+                parseProperty(poolingProfileBuilder, poolingProfileElement, "minEvictionMillis");
             }
-            builder.addPropertyValue("connectionPoolingProfile", connectionPoolingProfileBuilder.getBeanDefinition());
+            builder.addPropertyValue("poolingProfile", poolingProfileBuilder.getBeanDefinition());
         }
         BeanDefinition definition = builder.getBeanDefinition();
         setNoRecurseOnDefinition(definition);

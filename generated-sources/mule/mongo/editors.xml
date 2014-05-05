@@ -144,8 +144,8 @@ collections of BSON documents." caption="Mongo DB" aliasId="org.mule.tooling.ui.
       </group>
       <group caption="Connection" id="connection">
         <string javaType="java.lang.String" required="false" description="The username to use for authentication. NOTE: Please use a dummy user if you have disabled Mongo authentication." caption="Username" name="username"></string>
-        <password javaType="java.lang.String" required="false" description="The password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication." caption="Password" name="password"></password>
-        <string defaultValue="test" javaType="java.lang.String" required="false" description="Name of the database." caption="Database" name="database"></string>
+        <password javaType="java.lang.String" required="false" description="The password to use for authentication. If the password is null or whitespaces only the connector won't use authentication." caption="Password" name="password"></password>
+        <string javaType="java.lang.String" required="false" description="Name of the database." caption="Database" name="database"></string>
       </group>
       <group caption="General" id="general">
         <string defaultValue="localhost" javaType="java.lang.String" required="false" description="The host of the Mongo server, it can also be a list of comma separated hosts for replicas." caption="Host" name="host"></string>
@@ -241,8 +241,8 @@ collections of BSON documents." caption="Mongo DB" aliasId="org.mule.tooling.ui.
     <attribute-category description="Advanced." caption="Advanced">
       <group caption="Connector Configuration Overrides" id="connector Configuration Overrides">
         <string javaType="java.lang.String" required="false" description="The username to use for authentication. NOTE: Please use a dummy user if you have disabled Mongo authentication." caption="Username" name="username"></string>
-        <password javaType="java.lang.String" required="false" description="The password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication." caption="Password" name="password"></password>
-        <string defaultValue="test" javaType="java.lang.String" required="false" description="Name of the database." caption="Database" name="database"></string>
+        <password javaType="java.lang.String" required="false" description="The password to use for authentication. If the password is null or whitespaces only the connector won't use authentication." caption="Password" name="password"></password>
+        <string javaType="java.lang.String" required="false" description="Name of the database." caption="Database" name="database"></string>
       </group>
     </attribute-category>
   </cloud-connector>
@@ -256,8 +256,8 @@ collections of BSON documents." caption="Mongo DB" aliasId="org.mule.tooling.ui.
     <attribute-category description="Advanced." caption="Advanced">
       <group caption="Connector Configuration Overrides" id="connector Configuration Overrides">
         <string javaType="java.lang.String" required="false" description="The username to use for authentication. NOTE: Please use a dummy user if you have disabled Mongo authentication." caption="Username" name="username"></string>
-        <password javaType="java.lang.String" required="false" description="The password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication." caption="Password" name="password"></password>
-        <string defaultValue="test" javaType="java.lang.String" required="false" description="Name of the database." caption="Database" name="database"></string>
+        <password javaType="java.lang.String" required="false" description="The password to use for authentication. If the password is null or whitespaces only the connector won't use authentication." caption="Password" name="password"></password>
+        <string javaType="java.lang.String" required="false" description="Name of the database." caption="Database" name="database"></string>
       </group>
     </attribute-category>
   </cloud-connector>
@@ -273,8 +273,8 @@ collections of BSON documents." caption="Mongo DB" aliasId="org.mule.tooling.ui.
     <attribute-category description="Advanced." caption="Advanced">
       <group caption="Connector Configuration Overrides" id="connector Configuration Overrides">
         <string javaType="java.lang.String" required="false" description="The username to use for authentication. NOTE: Please use a dummy user if you have disabled Mongo authentication." caption="Username" name="username"></string>
-        <password javaType="java.lang.String" required="false" description="The password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication." caption="Password" name="password"></password>
-        <string defaultValue="test" javaType="java.lang.String" required="false" description="Name of the database." caption="Database" name="database"></string>
+        <password javaType="java.lang.String" required="false" description="The password to use for authentication. If the password is null or whitespaces only the connector won't use authentication." caption="Password" name="password"></password>
+        <string javaType="java.lang.String" required="false" description="Name of the database." caption="Database" name="database"></string>
       </group>
     </attribute-category>
   </cloud-connector>
@@ -290,8 +290,8 @@ collections of BSON documents." caption="Mongo DB" aliasId="org.mule.tooling.ui.
     <attribute-category description="Advanced." caption="Advanced">
       <group caption="Connector Configuration Overrides" id="connector Configuration Overrides">
         <string javaType="java.lang.String" required="false" description="The username to use for authentication. NOTE: Please use a dummy user if you have disabled Mongo authentication." caption="Username" name="username"></string>
-        <password javaType="java.lang.String" required="false" description="The password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication." caption="Password" name="password"></password>
-        <string defaultValue="test" javaType="java.lang.String" required="false" description="Name of the database." caption="Database" name="database"></string>
+        <password javaType="java.lang.String" required="false" description="The password to use for authentication. If the password is null or whitespaces only the connector won't use authentication." caption="Password" name="password"></password>
+        <string javaType="java.lang.String" required="false" description="Name of the database." caption="Database" name="database"></string>
       </group>
     </attribute-category>
   </cloud-connector>
@@ -306,8 +306,8 @@ collections of BSON documents." caption="Mongo DB" aliasId="org.mule.tooling.ui.
     <attribute-category description="Advanced." caption="Advanced">
       <group caption="Connector Configuration Overrides" id="connector Configuration Overrides">
         <string javaType="java.lang.String" required="false" description="The username to use for authentication. NOTE: Please use a dummy user if you have disabled Mongo authentication." caption="Username" name="username"></string>
-        <password javaType="java.lang.String" required="false" description="The password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication." caption="Password" name="password"></password>
-        <string defaultValue="test" javaType="java.lang.String" required="false" description="Name of the database." caption="Database" name="database"></string>
+        <password javaType="java.lang.String" required="false" description="The password to use for authentication. If the password is null or whitespaces only the connector won't use authentication." caption="Password" name="password"></password>
+        <string javaType="java.lang.String" required="false" description="Name of the database." caption="Database" name="database"></string>
       </group>
     </attribute-category>
   </cloud-connector>
@@ -325,8 +325,8 @@ collections of BSON documents." caption="Mongo DB" aliasId="org.mule.tooling.ui.
     <attribute-category description="Advanced." caption="Advanced">
       <group caption="Connector Configuration Overrides" id="connector Configuration Overrides">
         <string javaType="java.lang.String" required="false" description="The username to use for authentication. NOTE: Please use a dummy user if you have disabled Mongo authentication." caption="Username" name="username"></string>
-        <password javaType="java.lang.String" required="false" description="The password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication." caption="Password" name="password"></password>
-        <string defaultValue="test" javaType="java.lang.String" required="false" description="Name of the database." caption="Database" name="database"></string>
+        <password javaType="java.lang.String" required="false" description="The password to use for authentication. If the password is null or whitespaces only the connector won't use authentication." caption="Password" name="password"></password>
+        <string javaType="java.lang.String" required="false" description="Name of the database." caption="Database" name="database"></string>
       </group>
     </attribute-category>
   </cloud-connector>
@@ -339,8 +339,8 @@ collections of BSON documents." caption="Mongo DB" aliasId="org.mule.tooling.ui.
     <attribute-category description="Advanced." caption="Advanced">
       <group caption="Connector Configuration Overrides" id="connector Configuration Overrides">
         <string javaType="java.lang.String" required="false" description="The username to use for authentication. NOTE: Please use a dummy user if you have disabled Mongo authentication." caption="Username" name="username"></string>
-        <password javaType="java.lang.String" required="false" description="The password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication." caption="Password" name="password"></password>
-        <string defaultValue="test" javaType="java.lang.String" required="false" description="Name of the database." caption="Database" name="database"></string>
+        <password javaType="java.lang.String" required="false" description="The password to use for authentication. If the password is null or whitespaces only the connector won't use authentication." caption="Password" name="password"></password>
+        <string javaType="java.lang.String" required="false" description="Name of the database." caption="Database" name="database"></string>
       </group>
     </attribute-category>
   </cloud-connector>
@@ -349,8 +349,8 @@ collections of BSON documents." caption="Mongo DB" aliasId="org.mule.tooling.ui.
     <attribute-category description="Advanced." caption="Advanced">
       <group caption="Connector Configuration Overrides" id="connector Configuration Overrides">
         <string javaType="java.lang.String" required="false" description="The username to use for authentication. NOTE: Please use a dummy user if you have disabled Mongo authentication." caption="Username" name="username"></string>
-        <password javaType="java.lang.String" required="false" description="The password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication." caption="Password" name="password"></password>
-        <string defaultValue="test" javaType="java.lang.String" required="false" description="Name of the database." caption="Database" name="database"></string>
+        <password javaType="java.lang.String" required="false" description="The password to use for authentication. If the password is null or whitespaces only the connector won't use authentication." caption="Password" name="password"></password>
+        <string javaType="java.lang.String" required="false" description="Name of the database." caption="Database" name="database"></string>
       </group>
     </attribute-category>
   </cloud-connector>
@@ -364,8 +364,8 @@ collections of BSON documents." caption="Mongo DB" aliasId="org.mule.tooling.ui.
     <attribute-category description="Advanced." caption="Advanced">
       <group caption="Connector Configuration Overrides" id="connector Configuration Overrides">
         <string javaType="java.lang.String" required="false" description="The username to use for authentication. NOTE: Please use a dummy user if you have disabled Mongo authentication." caption="Username" name="username"></string>
-        <password javaType="java.lang.String" required="false" description="The password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication." caption="Password" name="password"></password>
-        <string defaultValue="test" javaType="java.lang.String" required="false" description="Name of the database." caption="Database" name="database"></string>
+        <password javaType="java.lang.String" required="false" description="The password to use for authentication. If the password is null or whitespaces only the connector won't use authentication." caption="Password" name="password"></password>
+        <string javaType="java.lang.String" required="false" description="Name of the database." caption="Database" name="database"></string>
       </group>
     </attribute-category>
   </cloud-connector>
@@ -382,8 +382,8 @@ collections of BSON documents." caption="Mongo DB" aliasId="org.mule.tooling.ui.
     <attribute-category description="Advanced." caption="Advanced">
       <group caption="Connector Configuration Overrides" id="connector Configuration Overrides">
         <string javaType="java.lang.String" required="false" description="The username to use for authentication. NOTE: Please use a dummy user if you have disabled Mongo authentication." caption="Username" name="username"></string>
-        <password javaType="java.lang.String" required="false" description="The password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication." caption="Password" name="password"></password>
-        <string defaultValue="test" javaType="java.lang.String" required="false" description="Name of the database." caption="Database" name="database"></string>
+        <password javaType="java.lang.String" required="false" description="The password to use for authentication. If the password is null or whitespaces only the connector won't use authentication." caption="Password" name="password"></password>
+        <string javaType="java.lang.String" required="false" description="Name of the database." caption="Database" name="database"></string>
       </group>
     </attribute-category>
   </cloud-connector>
@@ -392,8 +392,8 @@ collections of BSON documents." caption="Mongo DB" aliasId="org.mule.tooling.ui.
     <attribute-category description="Advanced." caption="Advanced">
       <group caption="Connector Configuration Overrides" id="connector Configuration Overrides">
         <string javaType="java.lang.String" required="false" description="The username to use for authentication. NOTE: Please use a dummy user if you have disabled Mongo authentication." caption="Username" name="username"></string>
-        <password javaType="java.lang.String" required="false" description="The password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication." caption="Password" name="password"></password>
-        <string defaultValue="test" javaType="java.lang.String" required="false" description="Name of the database." caption="Database" name="database"></string>
+        <password javaType="java.lang.String" required="false" description="The password to use for authentication. If the password is null or whitespaces only the connector won't use authentication." caption="Password" name="password"></password>
+        <string javaType="java.lang.String" required="false" description="Name of the database." caption="Database" name="database"></string>
       </group>
     </attribute-category>
   </cloud-connector>
@@ -407,8 +407,8 @@ collections of BSON documents." caption="Mongo DB" aliasId="org.mule.tooling.ui.
     <attribute-category description="Advanced." caption="Advanced">
       <group caption="Connector Configuration Overrides" id="connector Configuration Overrides">
         <string javaType="java.lang.String" required="false" description="The username to use for authentication. NOTE: Please use a dummy user if you have disabled Mongo authentication." caption="Username" name="username"></string>
-        <password javaType="java.lang.String" required="false" description="The password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication." caption="Password" name="password"></password>
-        <string defaultValue="test" javaType="java.lang.String" required="false" description="Name of the database." caption="Database" name="database"></string>
+        <password javaType="java.lang.String" required="false" description="The password to use for authentication. If the password is null or whitespaces only the connector won't use authentication." caption="Password" name="password"></password>
+        <string javaType="java.lang.String" required="false" description="Name of the database." caption="Database" name="database"></string>
       </group>
     </attribute-category>
   </cloud-connector>
@@ -421,8 +421,8 @@ collections of BSON documents." caption="Mongo DB" aliasId="org.mule.tooling.ui.
     <attribute-category description="Advanced." caption="Advanced">
       <group caption="Connector Configuration Overrides" id="connector Configuration Overrides">
         <string javaType="java.lang.String" required="false" description="The username to use for authentication. NOTE: Please use a dummy user if you have disabled Mongo authentication." caption="Username" name="username"></string>
-        <password javaType="java.lang.String" required="false" description="The password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication." caption="Password" name="password"></password>
-        <string defaultValue="test" javaType="java.lang.String" required="false" description="Name of the database." caption="Database" name="database"></string>
+        <password javaType="java.lang.String" required="false" description="The password to use for authentication. If the password is null or whitespaces only the connector won't use authentication." caption="Password" name="password"></password>
+        <string javaType="java.lang.String" required="false" description="Name of the database." caption="Database" name="database"></string>
       </group>
     </attribute-category>
   </cloud-connector>
@@ -435,8 +435,8 @@ collections of BSON documents." caption="Mongo DB" aliasId="org.mule.tooling.ui.
     <attribute-category description="Advanced." caption="Advanced">
       <group caption="Connector Configuration Overrides" id="connector Configuration Overrides">
         <string javaType="java.lang.String" required="false" description="The username to use for authentication. NOTE: Please use a dummy user if you have disabled Mongo authentication." caption="Username" name="username"></string>
-        <password javaType="java.lang.String" required="false" description="The password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication." caption="Password" name="password"></password>
-        <string defaultValue="test" javaType="java.lang.String" required="false" description="Name of the database." caption="Database" name="database"></string>
+        <password javaType="java.lang.String" required="false" description="The password to use for authentication. If the password is null or whitespaces only the connector won't use authentication." caption="Password" name="password"></password>
+        <string javaType="java.lang.String" required="false" description="Name of the database." caption="Database" name="database"></string>
       </group>
     </attribute-category>
   </cloud-connector>
@@ -449,8 +449,8 @@ collections of BSON documents." caption="Mongo DB" aliasId="org.mule.tooling.ui.
     <attribute-category description="Advanced." caption="Advanced">
       <group caption="Connector Configuration Overrides" id="connector Configuration Overrides">
         <string javaType="java.lang.String" required="false" description="The username to use for authentication. NOTE: Please use a dummy user if you have disabled Mongo authentication." caption="Username" name="username"></string>
-        <password javaType="java.lang.String" required="false" description="The password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication." caption="Password" name="password"></password>
-        <string defaultValue="test" javaType="java.lang.String" required="false" description="Name of the database." caption="Database" name="database"></string>
+        <password javaType="java.lang.String" required="false" description="The password to use for authentication. If the password is null or whitespaces only the connector won't use authentication." caption="Password" name="password"></password>
+        <string javaType="java.lang.String" required="false" description="Name of the database." caption="Database" name="database"></string>
       </group>
     </attribute-category>
   </cloud-connector>
@@ -469,8 +469,8 @@ collections of BSON documents." caption="Mongo DB" aliasId="org.mule.tooling.ui.
     <attribute-category description="Advanced." caption="Advanced">
       <group caption="Connector Configuration Overrides" id="connector Configuration Overrides">
         <string javaType="java.lang.String" required="false" description="The username to use for authentication. NOTE: Please use a dummy user if you have disabled Mongo authentication." caption="Username" name="username"></string>
-        <password javaType="java.lang.String" required="false" description="The password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication." caption="Password" name="password"></password>
-        <string defaultValue="test" javaType="java.lang.String" required="false" description="Name of the database." caption="Database" name="database"></string>
+        <password javaType="java.lang.String" required="false" description="The password to use for authentication. If the password is null or whitespaces only the connector won't use authentication." caption="Password" name="password"></password>
+        <string javaType="java.lang.String" required="false" description="Name of the database." caption="Database" name="database"></string>
       </group>
     </attribute-category>
   </cloud-connector>
@@ -491,8 +491,8 @@ collections of BSON documents." caption="Mongo DB" aliasId="org.mule.tooling.ui.
     <attribute-category description="Advanced." caption="Advanced">
       <group caption="Connector Configuration Overrides" id="connector Configuration Overrides">
         <string javaType="java.lang.String" required="false" description="The username to use for authentication. NOTE: Please use a dummy user if you have disabled Mongo authentication." caption="Username" name="username"></string>
-        <password javaType="java.lang.String" required="false" description="The password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication." caption="Password" name="password"></password>
-        <string defaultValue="test" javaType="java.lang.String" required="false" description="Name of the database." caption="Database" name="database"></string>
+        <password javaType="java.lang.String" required="false" description="The password to use for authentication. If the password is null or whitespaces only the connector won't use authentication." caption="Password" name="password"></password>
+        <string javaType="java.lang.String" required="false" description="Name of the database." caption="Database" name="database"></string>
       </group>
     </attribute-category>
   </cloud-connector>
@@ -505,8 +505,8 @@ collections of BSON documents." caption="Mongo DB" aliasId="org.mule.tooling.ui.
     <attribute-category description="Advanced." caption="Advanced">
       <group caption="Connector Configuration Overrides" id="connector Configuration Overrides">
         <string javaType="java.lang.String" required="false" description="The username to use for authentication. NOTE: Please use a dummy user if you have disabled Mongo authentication." caption="Username" name="username"></string>
-        <password javaType="java.lang.String" required="false" description="The password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication." caption="Password" name="password"></password>
-        <string defaultValue="test" javaType="java.lang.String" required="false" description="Name of the database." caption="Database" name="database"></string>
+        <password javaType="java.lang.String" required="false" description="The password to use for authentication. If the password is null or whitespaces only the connector won't use authentication." caption="Password" name="password"></password>
+        <string javaType="java.lang.String" required="false" description="Name of the database." caption="Database" name="database"></string>
       </group>
     </attribute-category>
   </cloud-connector>
@@ -519,8 +519,8 @@ collections of BSON documents." caption="Mongo DB" aliasId="org.mule.tooling.ui.
     <attribute-category description="Advanced." caption="Advanced">
       <group caption="Connector Configuration Overrides" id="connector Configuration Overrides">
         <string javaType="java.lang.String" required="false" description="The username to use for authentication. NOTE: Please use a dummy user if you have disabled Mongo authentication." caption="Username" name="username"></string>
-        <password javaType="java.lang.String" required="false" description="The password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication." caption="Password" name="password"></password>
-        <string defaultValue="test" javaType="java.lang.String" required="false" description="Name of the database." caption="Database" name="database"></string>
+        <password javaType="java.lang.String" required="false" description="The password to use for authentication. If the password is null or whitespaces only the connector won't use authentication." caption="Password" name="password"></password>
+        <string javaType="java.lang.String" required="false" description="Name of the database." caption="Database" name="database"></string>
       </group>
     </attribute-category>
   </cloud-connector>
@@ -538,8 +538,8 @@ collections of BSON documents." caption="Mongo DB" aliasId="org.mule.tooling.ui.
     <attribute-category description="Advanced." caption="Advanced">
       <group caption="Connector Configuration Overrides" id="connector Configuration Overrides">
         <string javaType="java.lang.String" required="false" description="The username to use for authentication. NOTE: Please use a dummy user if you have disabled Mongo authentication." caption="Username" name="username"></string>
-        <password javaType="java.lang.String" required="false" description="The password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication." caption="Password" name="password"></password>
-        <string defaultValue="test" javaType="java.lang.String" required="false" description="Name of the database." caption="Database" name="database"></string>
+        <password javaType="java.lang.String" required="false" description="The password to use for authentication. If the password is null or whitespaces only the connector won't use authentication." caption="Password" name="password"></password>
+        <string javaType="java.lang.String" required="false" description="Name of the database." caption="Database" name="database"></string>
       </group>
     </attribute-category>
   </cloud-connector>
@@ -559,8 +559,8 @@ collections of BSON documents." caption="Mongo DB" aliasId="org.mule.tooling.ui.
     <attribute-category description="Advanced." caption="Advanced">
       <group caption="Connector Configuration Overrides" id="connector Configuration Overrides">
         <string javaType="java.lang.String" required="false" description="The username to use for authentication. NOTE: Please use a dummy user if you have disabled Mongo authentication." caption="Username" name="username"></string>
-        <password javaType="java.lang.String" required="false" description="The password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication." caption="Password" name="password"></password>
-        <string defaultValue="test" javaType="java.lang.String" required="false" description="Name of the database." caption="Database" name="database"></string>
+        <password javaType="java.lang.String" required="false" description="The password to use for authentication. If the password is null or whitespaces only the connector won't use authentication." caption="Password" name="password"></password>
+        <string javaType="java.lang.String" required="false" description="Name of the database." caption="Database" name="database"></string>
       </group>
     </attribute-category>
   </cloud-connector>
@@ -573,8 +573,8 @@ collections of BSON documents." caption="Mongo DB" aliasId="org.mule.tooling.ui.
     <attribute-category description="Advanced." caption="Advanced">
       <group caption="Connector Configuration Overrides" id="connector Configuration Overrides">
         <string javaType="java.lang.String" required="false" description="The username to use for authentication. NOTE: Please use a dummy user if you have disabled Mongo authentication." caption="Username" name="username"></string>
-        <password javaType="java.lang.String" required="false" description="The password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication." caption="Password" name="password"></password>
-        <string defaultValue="test" javaType="java.lang.String" required="false" description="Name of the database." caption="Database" name="database"></string>
+        <password javaType="java.lang.String" required="false" description="The password to use for authentication. If the password is null or whitespaces only the connector won't use authentication." caption="Password" name="password"></password>
+        <string javaType="java.lang.String" required="false" description="Name of the database." caption="Database" name="database"></string>
       </group>
     </attribute-category>
   </cloud-connector>
@@ -587,8 +587,8 @@ collections of BSON documents." caption="Mongo DB" aliasId="org.mule.tooling.ui.
     <attribute-category description="Advanced." caption="Advanced">
       <group caption="Connector Configuration Overrides" id="connector Configuration Overrides">
         <string javaType="java.lang.String" required="false" description="The username to use for authentication. NOTE: Please use a dummy user if you have disabled Mongo authentication." caption="Username" name="username"></string>
-        <password javaType="java.lang.String" required="false" description="The password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication." caption="Password" name="password"></password>
-        <string defaultValue="test" javaType="java.lang.String" required="false" description="Name of the database." caption="Database" name="database"></string>
+        <password javaType="java.lang.String" required="false" description="The password to use for authentication. If the password is null or whitespaces only the connector won't use authentication." caption="Password" name="password"></password>
+        <string javaType="java.lang.String" required="false" description="Name of the database." caption="Database" name="database"></string>
       </group>
     </attribute-category>
   </cloud-connector>
@@ -602,8 +602,8 @@ collections of BSON documents." caption="Mongo DB" aliasId="org.mule.tooling.ui.
     <attribute-category description="Advanced." caption="Advanced">
       <group caption="Connector Configuration Overrides" id="connector Configuration Overrides">
         <string javaType="java.lang.String" required="false" description="The username to use for authentication. NOTE: Please use a dummy user if you have disabled Mongo authentication." caption="Username" name="username"></string>
-        <password javaType="java.lang.String" required="false" description="The password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication." caption="Password" name="password"></password>
-        <string defaultValue="test" javaType="java.lang.String" required="false" description="Name of the database." caption="Database" name="database"></string>
+        <password javaType="java.lang.String" required="false" description="The password to use for authentication. If the password is null or whitespaces only the connector won't use authentication." caption="Password" name="password"></password>
+        <string javaType="java.lang.String" required="false" description="Name of the database." caption="Database" name="database"></string>
       </group>
     </attribute-category>
   </cloud-connector>
@@ -625,8 +625,8 @@ collections of BSON documents." caption="Mongo DB" aliasId="org.mule.tooling.ui.
     <attribute-category description="Advanced." caption="Advanced">
       <group caption="Connector Configuration Overrides" id="connector Configuration Overrides">
         <string javaType="java.lang.String" required="false" description="The username to use for authentication. NOTE: Please use a dummy user if you have disabled Mongo authentication." caption="Username" name="username"></string>
-        <password javaType="java.lang.String" required="false" description="The password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication." caption="Password" name="password"></password>
-        <string defaultValue="test" javaType="java.lang.String" required="false" description="Name of the database." caption="Database" name="database"></string>
+        <password javaType="java.lang.String" required="false" description="The password to use for authentication. If the password is null or whitespaces only the connector won't use authentication." caption="Password" name="password"></password>
+        <string javaType="java.lang.String" required="false" description="Name of the database." caption="Database" name="database"></string>
       </group>
     </attribute-category>
   </cloud-connector>
@@ -650,8 +650,8 @@ collections of BSON documents." caption="Mongo DB" aliasId="org.mule.tooling.ui.
     <attribute-category description="Advanced." caption="Advanced">
       <group caption="Connector Configuration Overrides" id="connector Configuration Overrides">
         <string javaType="java.lang.String" required="false" description="The username to use for authentication. NOTE: Please use a dummy user if you have disabled Mongo authentication." caption="Username" name="username"></string>
-        <password javaType="java.lang.String" required="false" description="The password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication." caption="Password" name="password"></password>
-        <string defaultValue="test" javaType="java.lang.String" required="false" description="Name of the database." caption="Database" name="database"></string>
+        <password javaType="java.lang.String" required="false" description="The password to use for authentication. If the password is null or whitespaces only the connector won't use authentication." caption="Password" name="password"></password>
+        <string javaType="java.lang.String" required="false" description="Name of the database." caption="Database" name="database"></string>
       </group>
     </attribute-category>
   </cloud-connector>
@@ -660,8 +660,8 @@ collections of BSON documents." caption="Mongo DB" aliasId="org.mule.tooling.ui.
     <attribute-category description="Advanced." caption="Advanced">
       <group caption="Connector Configuration Overrides" id="connector Configuration Overrides">
         <string javaType="java.lang.String" required="false" description="The username to use for authentication. NOTE: Please use a dummy user if you have disabled Mongo authentication." caption="Username" name="username"></string>
-        <password javaType="java.lang.String" required="false" description="The password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication." caption="Password" name="password"></password>
-        <string defaultValue="test" javaType="java.lang.String" required="false" description="Name of the database." caption="Database" name="database"></string>
+        <password javaType="java.lang.String" required="false" description="The password to use for authentication. If the password is null or whitespaces only the connector won't use authentication." caption="Password" name="password"></password>
+        <string javaType="java.lang.String" required="false" description="Name of the database." caption="Database" name="database"></string>
       </group>
     </attribute-category>
   </cloud-connector>
@@ -674,8 +674,8 @@ collections of BSON documents." caption="Mongo DB" aliasId="org.mule.tooling.ui.
     <attribute-category description="Advanced." caption="Advanced">
       <group caption="Connector Configuration Overrides" id="connector Configuration Overrides">
         <string javaType="java.lang.String" required="false" description="The username to use for authentication. NOTE: Please use a dummy user if you have disabled Mongo authentication." caption="Username" name="username"></string>
-        <password javaType="java.lang.String" required="false" description="The password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication." caption="Password" name="password"></password>
-        <string defaultValue="test" javaType="java.lang.String" required="false" description="Name of the database." caption="Database" name="database"></string>
+        <password javaType="java.lang.String" required="false" description="The password to use for authentication. If the password is null or whitespaces only the connector won't use authentication." caption="Password" name="password"></password>
+        <string javaType="java.lang.String" required="false" description="Name of the database." caption="Database" name="database"></string>
       </group>
     </attribute-category>
   </cloud-connector>
@@ -688,8 +688,8 @@ collections of BSON documents." caption="Mongo DB" aliasId="org.mule.tooling.ui.
     <attribute-category description="Advanced." caption="Advanced">
       <group caption="Connector Configuration Overrides" id="connector Configuration Overrides">
         <string javaType="java.lang.String" required="false" description="The username to use for authentication. NOTE: Please use a dummy user if you have disabled Mongo authentication." caption="Username" name="username"></string>
-        <password javaType="java.lang.String" required="false" description="The password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication." caption="Password" name="password"></password>
-        <string defaultValue="test" javaType="java.lang.String" required="false" description="Name of the database." caption="Database" name="database"></string>
+        <password javaType="java.lang.String" required="false" description="The password to use for authentication. If the password is null or whitespaces only the connector won't use authentication." caption="Password" name="password"></password>
+        <string javaType="java.lang.String" required="false" description="Name of the database." caption="Database" name="database"></string>
       </group>
     </attribute-category>
   </cloud-connector>
@@ -702,8 +702,8 @@ collections of BSON documents." caption="Mongo DB" aliasId="org.mule.tooling.ui.
     <attribute-category description="Advanced." caption="Advanced">
       <group caption="Connector Configuration Overrides" id="connector Configuration Overrides">
         <string javaType="java.lang.String" required="false" description="The username to use for authentication. NOTE: Please use a dummy user if you have disabled Mongo authentication." caption="Username" name="username"></string>
-        <password javaType="java.lang.String" required="false" description="The password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication." caption="Password" name="password"></password>
-        <string defaultValue="test" javaType="java.lang.String" required="false" description="Name of the database." caption="Database" name="database"></string>
+        <password javaType="java.lang.String" required="false" description="The password to use for authentication. If the password is null or whitespaces only the connector won't use authentication." caption="Password" name="password"></password>
+        <string javaType="java.lang.String" required="false" description="Name of the database." caption="Database" name="database"></string>
       </group>
     </attribute-category>
   </cloud-connector>
@@ -719,8 +719,8 @@ collections of BSON documents." caption="Mongo DB" aliasId="org.mule.tooling.ui.
     <attribute-category description="Advanced." caption="Advanced">
       <group caption="Connector Configuration Overrides" id="connector Configuration Overrides">
         <string javaType="java.lang.String" required="false" description="The username to use for authentication. NOTE: Please use a dummy user if you have disabled Mongo authentication." caption="Username" name="username"></string>
-        <password javaType="java.lang.String" required="false" description="The password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication." caption="Password" name="password"></password>
-        <string defaultValue="test" javaType="java.lang.String" required="false" description="Name of the database." caption="Database" name="database"></string>
+        <password javaType="java.lang.String" required="false" description="The password to use for authentication. If the password is null or whitespaces only the connector won't use authentication." caption="Password" name="password"></password>
+        <string javaType="java.lang.String" required="false" description="Name of the database." caption="Database" name="database"></string>
       </group>
     </attribute-category>
   </cloud-connector>
@@ -733,8 +733,8 @@ collections of BSON documents." caption="Mongo DB" aliasId="org.mule.tooling.ui.
     <attribute-category description="Advanced." caption="Advanced">
       <group caption="Connector Configuration Overrides" id="connector Configuration Overrides">
         <string javaType="java.lang.String" required="false" description="The username to use for authentication. NOTE: Please use a dummy user if you have disabled Mongo authentication." caption="Username" name="username"></string>
-        <password javaType="java.lang.String" required="false" description="The password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication." caption="Password" name="password"></password>
-        <string defaultValue="test" javaType="java.lang.String" required="false" description="Name of the database." caption="Database" name="database"></string>
+        <password javaType="java.lang.String" required="false" description="The password to use for authentication. If the password is null or whitespaces only the connector won't use authentication." caption="Password" name="password"></password>
+        <string javaType="java.lang.String" required="false" description="Name of the database." caption="Database" name="database"></string>
       </group>
     </attribute-category>
   </cloud-connector>
@@ -747,8 +747,8 @@ collections of BSON documents." caption="Mongo DB" aliasId="org.mule.tooling.ui.
     <attribute-category description="Advanced." caption="Advanced">
       <group caption="Connector Configuration Overrides" id="connector Configuration Overrides">
         <string javaType="java.lang.String" required="false" description="The username to use for authentication. NOTE: Please use a dummy user if you have disabled Mongo authentication." caption="Username" name="username"></string>
-        <password javaType="java.lang.String" required="false" description="The password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication." caption="Password" name="password"></password>
-        <string defaultValue="test" javaType="java.lang.String" required="false" description="Name of the database." caption="Database" name="database"></string>
+        <password javaType="java.lang.String" required="false" description="The password to use for authentication. If the password is null or whitespaces only the connector won't use authentication." caption="Password" name="password"></password>
+        <string javaType="java.lang.String" required="false" description="Name of the database." caption="Database" name="database"></string>
       </group>
     </attribute-category>
   </cloud-connector>
@@ -770,8 +770,8 @@ collections of BSON documents." caption="Mongo DB" aliasId="org.mule.tooling.ui.
     <attribute-category description="Advanced." caption="Advanced">
       <group caption="Connector Configuration Overrides" id="connector Configuration Overrides">
         <string javaType="java.lang.String" required="false" description="The username to use for authentication. NOTE: Please use a dummy user if you have disabled Mongo authentication." caption="Username" name="username"></string>
-        <password javaType="java.lang.String" required="false" description="The password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication." caption="Password" name="password"></password>
-        <string defaultValue="test" javaType="java.lang.String" required="false" description="Name of the database." caption="Database" name="database"></string>
+        <password javaType="java.lang.String" required="false" description="The password to use for authentication. If the password is null or whitespaces only the connector won't use authentication." caption="Password" name="password"></password>
+        <string javaType="java.lang.String" required="false" description="Name of the database." caption="Database" name="database"></string>
       </group>
     </attribute-category>
   </cloud-connector>
@@ -795,8 +795,8 @@ collections of BSON documents." caption="Mongo DB" aliasId="org.mule.tooling.ui.
     <attribute-category description="Advanced." caption="Advanced">
       <group caption="Connector Configuration Overrides" id="connector Configuration Overrides">
         <string javaType="java.lang.String" required="false" description="The username to use for authentication. NOTE: Please use a dummy user if you have disabled Mongo authentication." caption="Username" name="username"></string>
-        <password javaType="java.lang.String" required="false" description="The password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication." caption="Password" name="password"></password>
-        <string defaultValue="test" javaType="java.lang.String" required="false" description="Name of the database." caption="Database" name="database"></string>
+        <password javaType="java.lang.String" required="false" description="The password to use for authentication. If the password is null or whitespaces only the connector won't use authentication." caption="Password" name="password"></password>
+        <string javaType="java.lang.String" required="false" description="Name of the database." caption="Database" name="database"></string>
       </group>
     </attribute-category>
   </cloud-connector>
@@ -811,8 +811,8 @@ collections of BSON documents." caption="Mongo DB" aliasId="org.mule.tooling.ui.
     <attribute-category description="Advanced." caption="Advanced">
       <group caption="Connector Configuration Overrides" id="connector Configuration Overrides">
         <string javaType="java.lang.String" required="false" description="The username to use for authentication. NOTE: Please use a dummy user if you have disabled Mongo authentication." caption="Username" name="username"></string>
-        <password javaType="java.lang.String" required="false" description="The password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication." caption="Password" name="password"></password>
-        <string defaultValue="test" javaType="java.lang.String" required="false" description="Name of the database." caption="Database" name="database"></string>
+        <password javaType="java.lang.String" required="false" description="The password to use for authentication. If the password is null or whitespaces only the connector won't use authentication." caption="Password" name="password"></password>
+        <string javaType="java.lang.String" required="false" description="Name of the database." caption="Database" name="database"></string>
       </group>
     </attribute-category>
   </cloud-connector>
@@ -834,8 +834,8 @@ collections of BSON documents." caption="Mongo DB" aliasId="org.mule.tooling.ui.
     <attribute-category description="Advanced." caption="Advanced">
       <group caption="Connector Configuration Overrides" id="connector Configuration Overrides">
         <string javaType="java.lang.String" required="false" description="The username to use for authentication. NOTE: Please use a dummy user if you have disabled Mongo authentication." caption="Username" name="username"></string>
-        <password javaType="java.lang.String" required="false" description="The password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication." caption="Password" name="password"></password>
-        <string defaultValue="test" javaType="java.lang.String" required="false" description="Name of the database." caption="Database" name="database"></string>
+        <password javaType="java.lang.String" required="false" description="The password to use for authentication. If the password is null or whitespaces only the connector won't use authentication." caption="Password" name="password"></password>
+        <string javaType="java.lang.String" required="false" description="Name of the database." caption="Database" name="database"></string>
       </group>
     </attribute-category>
   </cloud-connector>
@@ -859,8 +859,8 @@ collections of BSON documents." caption="Mongo DB" aliasId="org.mule.tooling.ui.
     <attribute-category description="Advanced." caption="Advanced">
       <group caption="Connector Configuration Overrides" id="connector Configuration Overrides">
         <string javaType="java.lang.String" required="false" description="The username to use for authentication. NOTE: Please use a dummy user if you have disabled Mongo authentication." caption="Username" name="username"></string>
-        <password javaType="java.lang.String" required="false" description="The password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication." caption="Password" name="password"></password>
-        <string defaultValue="test" javaType="java.lang.String" required="false" description="Name of the database." caption="Database" name="database"></string>
+        <password javaType="java.lang.String" required="false" description="The password to use for authentication. If the password is null or whitespaces only the connector won't use authentication." caption="Password" name="password"></password>
+        <string javaType="java.lang.String" required="false" description="Name of the database." caption="Database" name="database"></string>
       </group>
     </attribute-category>
   </cloud-connector>
@@ -869,8 +869,8 @@ collections of BSON documents." caption="Mongo DB" aliasId="org.mule.tooling.ui.
     <attribute-category description="Advanced." caption="Advanced">
       <group caption="Connector Configuration Overrides" id="connector Configuration Overrides">
         <string javaType="java.lang.String" required="false" description="The username to use for authentication. NOTE: Please use a dummy user if you have disabled Mongo authentication." caption="Username" name="username"></string>
-        <password javaType="java.lang.String" required="false" description="The password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication." caption="Password" name="password"></password>
-        <string defaultValue="test" javaType="java.lang.String" required="false" description="Name of the database." caption="Database" name="database"></string>
+        <password javaType="java.lang.String" required="false" description="The password to use for authentication. If the password is null or whitespaces only the connector won't use authentication." caption="Password" name="password"></password>
+        <string javaType="java.lang.String" required="false" description="Name of the database." caption="Database" name="database"></string>
       </group>
     </attribute-category>
   </cloud-connector>
@@ -895,8 +895,8 @@ collections of BSON documents." caption="Mongo DB" aliasId="org.mule.tooling.ui.
     <attribute-category description="Advanced." caption="Advanced">
       <group caption="Connector Configuration Overrides" id="connector Configuration Overrides">
         <string javaType="java.lang.String" required="false" description="The username to use for authentication. NOTE: Please use a dummy user if you have disabled Mongo authentication." caption="Username" name="username"></string>
-        <password javaType="java.lang.String" required="false" description="The password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication." caption="Password" name="password"></password>
-        <string defaultValue="test" javaType="java.lang.String" required="false" description="Name of the database." caption="Database" name="database"></string>
+        <password javaType="java.lang.String" required="false" description="The password to use for authentication. If the password is null or whitespaces only the connector won't use authentication." caption="Password" name="password"></password>
+        <string javaType="java.lang.String" required="false" description="Name of the database." caption="Database" name="database"></string>
       </group>
     </attribute-category>
   </cloud-connector>
@@ -922,8 +922,8 @@ collections of BSON documents." caption="Mongo DB" aliasId="org.mule.tooling.ui.
     <attribute-category description="Advanced." caption="Advanced">
       <group caption="Connector Configuration Overrides" id="connector Configuration Overrides">
         <string javaType="java.lang.String" required="false" description="The username to use for authentication. NOTE: Please use a dummy user if you have disabled Mongo authentication." caption="Username" name="username"></string>
-        <password javaType="java.lang.String" required="false" description="The password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication." caption="Password" name="password"></password>
-        <string defaultValue="test" javaType="java.lang.String" required="false" description="Name of the database." caption="Database" name="database"></string>
+        <password javaType="java.lang.String" required="false" description="The password to use for authentication. If the password is null or whitespaces only the connector won't use authentication." caption="Password" name="password"></password>
+        <string javaType="java.lang.String" required="false" description="Name of the database." caption="Database" name="database"></string>
       </group>
     </attribute-category>
   </cloud-connector>
@@ -949,8 +949,8 @@ collections of BSON documents." caption="Mongo DB" aliasId="org.mule.tooling.ui.
     <attribute-category description="Advanced." caption="Advanced">
       <group caption="Connector Configuration Overrides" id="connector Configuration Overrides">
         <string javaType="java.lang.String" required="false" description="The username to use for authentication. NOTE: Please use a dummy user if you have disabled Mongo authentication." caption="Username" name="username"></string>
-        <password javaType="java.lang.String" required="false" description="The password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication." caption="Password" name="password"></password>
-        <string defaultValue="test" javaType="java.lang.String" required="false" description="Name of the database." caption="Database" name="database"></string>
+        <password javaType="java.lang.String" required="false" description="The password to use for authentication. If the password is null or whitespaces only the connector won't use authentication." caption="Password" name="password"></password>
+        <string javaType="java.lang.String" required="false" description="Name of the database." caption="Database" name="database"></string>
       </group>
     </attribute-category>
   </cloud-connector>
@@ -979,8 +979,8 @@ collections of BSON documents." caption="Mongo DB" aliasId="org.mule.tooling.ui.
     <attribute-category description="Advanced." caption="Advanced">
       <group caption="Connector Configuration Overrides" id="connector Configuration Overrides">
         <string javaType="java.lang.String" required="false" description="The username to use for authentication. NOTE: Please use a dummy user if you have disabled Mongo authentication." caption="Username" name="username"></string>
-        <password javaType="java.lang.String" required="false" description="The password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication." caption="Password" name="password"></password>
-        <string defaultValue="test" javaType="java.lang.String" required="false" description="Name of the database." caption="Database" name="database"></string>
+        <password javaType="java.lang.String" required="false" description="The password to use for authentication. If the password is null or whitespaces only the connector won't use authentication." caption="Password" name="password"></password>
+        <string javaType="java.lang.String" required="false" description="Name of the database." caption="Database" name="database"></string>
       </group>
     </attribute-category>
   </cloud-connector>
@@ -1005,8 +1005,8 @@ collections of BSON documents." caption="Mongo DB" aliasId="org.mule.tooling.ui.
     <attribute-category description="Advanced." caption="Advanced">
       <group caption="Connector Configuration Overrides" id="connector Configuration Overrides">
         <string javaType="java.lang.String" required="false" description="The username to use for authentication. NOTE: Please use a dummy user if you have disabled Mongo authentication." caption="Username" name="username"></string>
-        <password javaType="java.lang.String" required="false" description="The password to use for authentication. NOTE: Please use a dummy password if you have disabled Mongo authentication." caption="Password" name="password"></password>
-        <string defaultValue="test" javaType="java.lang.String" required="false" description="Name of the database." caption="Database" name="database"></string>
+        <password javaType="java.lang.String" required="false" description="The password to use for authentication. If the password is null or whitespaces only the connector won't use authentication." caption="Password" name="password"></password>
+        <string javaType="java.lang.String" required="false" description="Name of the database." caption="Database" name="database"></string>
       </group>
     </attribute-category>
   </cloud-connector>

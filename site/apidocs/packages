@@ -11,4 +11,5 @@ org.mule.module.mongo.api.transformers
 org.mule.module.mongo.process
 org.mule.module.mongo.devkit
 org.mule.module.mongo.adapters
+org.mule.module.mongo.pooling
 org.mule.module.mongo.processors

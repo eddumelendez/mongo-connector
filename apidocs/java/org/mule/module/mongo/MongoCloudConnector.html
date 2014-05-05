@@ -266,6 +266,8 @@
     <li class="api apilevel-">
   <a href="../../../../../java/org/mule/module/mongo/devkit/package-summary.html">org.mule.module.mongo.devkit</a></li>
     <li class="api apilevel-">
+  <a href="../../../../../java/org/mule/module/mongo/pooling/package-summary.html">org.mule.module.mongo.pooling</a></li>
+    <li class="api apilevel-">
   <a href="../../../../../java/org/mule/module/mongo/process/package-summary.html">org.mule.module.mongo.process</a></li>
     <li class="api apilevel-">
   <a href="../../../../../java/org/mule/module/mongo/processors/package-summary.html">org.mule.module.mongo.processors</a></li>
@@ -3057,8 +3059,8 @@ From class
         </tr>
         <tr>
           <th>password</td>
-          <td>The password to use for authentication. NOTE: Please use a dummy password if
-            you have disabled Mongo authentication</td>
+          <td>The password to use for authentication. If the password is null or whitespaces only the connector
+                 won't use authentication.</td>
         </tr>
         <tr>
           <th>database</td>
