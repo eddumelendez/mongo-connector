@@ -1117,16 +1117,16 @@ public class MongoCloudConnector
      * 
      * @param username the username to use for authentication. NOTE: Please use a dummy user if you
      *            have disabled Mongo authentication
-     * @param password the password to use for authentication. NOTE: Please use a dummy password if
-     *            you have disabled Mongo authentication
+     * @param password the password to use for authentication. If the password is null or whitespaces only the connector
+     *                 won't use authentication.
      * @param database Name of the database
      * @return the newly created {@link MongoSession}
      * @throws org.mule.api.ConnectionException
      */
     @Connect
     public void connect(@ConnectionKey final String username,
-                        @Password final String password,
-                        @ConnectionKey @Optional @Default("test") final String database) throws ConnectionException
+                        @Optional @Password final String password,
+                        @ConnectionKey final String database) throws ConnectionException
     {
         try
         {
@@ -1249,7 +1249,7 @@ public class MongoCloudConnector
                            final String database) throws ConnectionException
     {
         final DB db = mongo.getDB(database);
-        if (password != null)
+        if (StringUtils.isNotBlank(password))
         {
             Validate.notNull(username, "Username must not be null if password is set");
             if (!db.isAuthenticated())
