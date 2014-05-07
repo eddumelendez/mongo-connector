@@ -33,6 +33,7 @@ public class ListCollectionTestCases extends MongoTestParent {
 			collectionNames = getBeanFromContext("listCollections");
 
 			for (String collectionName : collectionNames) {
+				upsertOnTestRunMessage("collection", collectionName);
 				runFlowAndGetPayload("create-collection");
 			}
 

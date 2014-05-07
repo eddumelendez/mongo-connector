@@ -29,8 +29,8 @@ public class FindOneFileTestCases extends MongoTestParent {
 		initializeTestRunMessage("findOneFile");
 
 		createFileFromPayload(getTestRunMessageValue("filename1"));
-		createFileFromPayload(getTestRunMessageValue("filename1"));
 		createFileFromPayload(getTestRunMessageValue("filename2"));
+		createFileFromPayload(getTestRunMessageValue("filename3"));
 	}
 
 	@After
@@ -41,7 +41,7 @@ public class FindOneFileTestCases extends MongoTestParent {
 	@Category({ RegressionTests.class })
 	@Test
 	public void testFindOneFile() {
-		try {
+		try {			
 			((DBObject) getTestRunMessageValue("queryRef")).put("filename", getTestRunMessageValue("filename1"));
 			DBObject dbObj = runFlowAndGetPayload("find-one-file");
 			

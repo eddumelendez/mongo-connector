@@ -86,15 +86,12 @@ public class MongoTestParent extends ConnectorTestCase {
 		GridFSInputFile res = null;
 		try {
 			File file = folder.newFile(filename);
+
 			upsertOnTestRunMessage("filename", filename);
-			MuleEvent event = getTestEvent(file);
-			event.setSessionVariable("filename", filename);
-			event.setSessionVariable("metaDataRef", dbObj);
+			upsertOnTestRunMessage("metadataRef", dbObj);
+			upsertOnTestRunMessage("payloadContent", file);
 
 			res = runFlowAndGetPayload("create-file-from-payload");
-
-
-		
 		} catch (Exception e) {
 	         fail(ConnectorTestUtils.getStackTrace(e));
 	    }
