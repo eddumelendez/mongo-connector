@@ -48,7 +48,7 @@ public class ListFilesTestCases extends MongoTestParent {
 	public void testListFiles_emptyQuery() {
 		MuleMessage response = null;
 		try {
-			response = runFlowAndGetPayload("list-files");
+			response = runFlowAndGetMessage("list-files");
 
 
 		assertNotNull(response);

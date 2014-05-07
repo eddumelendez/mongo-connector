@@ -43,7 +43,7 @@ public class GetFileContentUsingQueryMapTestCases extends MongoTestParent {
 	@Test
 	public void testGetFileContentUsingQueryMap() {
 		try {
-			MuleMessage response = runFlowAndGetPayload("get-file-content-using-query-map");
+			MuleMessage response = runFlowAndGetMessage("get-file-content-using-query-map");
 			
 			assertNotNull(response);
 			assertNotNull(response.getPayload());

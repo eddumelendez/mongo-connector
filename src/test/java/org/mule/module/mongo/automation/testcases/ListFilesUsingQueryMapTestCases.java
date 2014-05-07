@@ -48,7 +48,7 @@ public class ListFilesUsingQueryMapTestCases extends MongoTestParent {
 	public void testListFilesUsingQueryMap_emptyQuery() {
 		MuleMessage response = null;
 		try {
-			response = runFlowAndGetPayload("list-files-using-query-map-empty-query");
+			response = runFlowAndGetMessage("list-files-using-query-map-empty-query");
 
 
 		assertNotNull(response);
@@ -72,7 +72,7 @@ public class ListFilesUsingQueryMapTestCases extends MongoTestParent {
 	public void testListFilesUsingQueryMap_nonemptyQuery() {
 		MuleMessage response = null;
 		try {
-			response = runFlowAndGetPayload("list-files-using-query-map-non-empty-query");
+			response = runFlowAndGetMessage("list-files-using-query-map-non-empty-query");
 
 
 		assertNotNull(response);

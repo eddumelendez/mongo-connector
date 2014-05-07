@@ -48,11 +48,10 @@ public class GetFileContentTestCases extends MongoTestParent {
 			DBObject queryRef = (DBObject) getTestRunMessageValue("queryRef");
 			queryRef.put("filename", getTestRunMessageValue("filename1"));
 			
-			MuleMessage response = runFlowAndGetPayload("get-file-content");
+			Object response = runFlowAndGetPayload("get-file-content");
 			
 			assertNotNull(response);
-			assertNotNull(response.getPayload());
-			assertTrue(response.getPayload() instanceof InputStream);
+			assertTrue(response instanceof InputStream);
 		} catch (Exception e) {
 	         fail(ConnectorTestUtils.getStackTrace(e));
 	    }

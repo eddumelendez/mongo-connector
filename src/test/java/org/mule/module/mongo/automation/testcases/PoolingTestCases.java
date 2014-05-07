@@ -47,7 +47,7 @@ public class PoolingTestCases extends MongoTestParent {
 
         insertObjects(getEmptyDBObjects(numObjects));
 
-        Integer startingConnections = runFlowAndGetPayload("count-open-connections");
+        Integer startingConnections = Integer.parseInt((String) runFlowAndGetPayload("count-open-connections"));
         
         upsertOnTestRunMessage("queryRef", new BasicDBObject());
 
@@ -60,6 +60,6 @@ public class PoolingTestCases extends MongoTestParent {
 
         }
 
-        int newConnections = ((Integer) runFlowAndGetPayload("count-open-connections")) - startingConnections;
+        int newConnections = Integer.parseInt((String) runFlowAndGetPayload("count-open-connections")) - startingConnections;
         assertTrue("Too many new connections (" + newConnections + ", ", newConnections <= 2);
     }}
