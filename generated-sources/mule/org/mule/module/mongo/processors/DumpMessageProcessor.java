@@ -19,7 +19,7 @@ import org.mule.security.oauth.callback.ProcessCallback;
  * DumpMessageProcessor invokes the {@link org.mule.module.mongo.MongoCloudConnector#dump(java.lang.String, java.lang.String, boolean, boolean, int)} method in {@link MongoCloudConnector }. For each argument there is a field in this processor to match it.  Before invoking the actual method the processor will evaluate and transform where possible to the expected argument type.
  * 
  */
-@Generated(value = "Mule DevKit Version 3.5.0-RC1", date = "2014-05-08T10:05:29-05:00", comments = "Build master.1926.b0106b2")
+@Generated(value = "Mule DevKit Version 3.5.0-RC1", date = "2014-05-08T04:40:43-05:00", comments = "Build master.1926.b0106b2")
 public class DumpMessageProcessor
     extends AbstractConnectedProcessor
     implements MessageProcessor

@@ -2608,30 +2608,6 @@ does inserts with the data to restore, if existing data is there, it will not be
   <xs:element xmlns:mule="http://www.mulesoft.org/schema/mule/core" name="bson-list-to-json" substitutionGroup="mule:abstract-transformer" type="mule:abstractTransformerType"></xs:element>
   <xs:element xmlns:mule="http://www.mulesoft.org/schema/mule/core" name="mongo-collection-to-json" substitutionGroup="mule:abstract-transformer" type="mule:abstractTransformerType"></xs:element>
   <xs:element xmlns:mule="http://www.mulesoft.org/schema/mule/core" name="db-object-to-map" substitutionGroup="mule:abstract-transformer" type="mule:abstractTransformerType"></xs:element>
-  <xs:simpleType name="IndexOrderEnumType">
-    <xs:annotation>
-      <xs:documentation></xs:documentation>
-    </xs:annotation>
-    <xs:union>
-      <xs:simpleType>
-        <xs:restriction base="xs:string">
-          <xs:enumeration value="ASC">
-            <xs:annotation>
-              <xs:documentation></xs:documentation>
-            </xs:annotation>
-          </xs:enumeration>
-          <xs:enumeration value="DESC">
-            <xs:annotation>
-              <xs:documentation></xs:documentation>
-            </xs:annotation>
-          </xs:enumeration>
-        </xs:restriction>
-      </xs:simpleType>
-      <xs:simpleType>
-        <xs:restriction xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:propertyPlaceholderType"></xs:restriction>
-      </xs:simpleType>
-    </xs:union>
-  </xs:simpleType>
   <xs:simpleType name="WriteConcernEnumType">
     <xs:annotation>
       <xs:documentation>An enum wrapper of</xs:documentation>
@@ -2670,6 +2646,30 @@ least 2 servers for the write operation</xs:documentation>
           <xs:enumeration value="DATABASE_DEFAULT">
             <xs:annotation>
               <xs:documentation>Database default write access</xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:simpleType>
+        <xs:restriction xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:propertyPlaceholderType"></xs:restriction>
+      </xs:simpleType>
+    </xs:union>
+  </xs:simpleType>
+  <xs:simpleType name="IndexOrderEnumType">
+    <xs:annotation>
+      <xs:documentation></xs:documentation>
+    </xs:annotation>
+    <xs:union>
+      <xs:simpleType>
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="ASC">
+            <xs:annotation>
+              <xs:documentation></xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="DESC">
+            <xs:annotation>
+              <xs:documentation></xs:documentation>
             </xs:annotation>
           </xs:enumeration>
         </xs:restriction>
