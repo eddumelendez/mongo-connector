@@ -15,12 +15,55 @@ Supported Mule Runtime Versions
 
 New Features and Functionality
 ------------------------------
-- Upgraded Devkit to 3.5.0-SNAPSHOT
+- Migrated to Devkit 3.5.0
 - Removed @Default from database in @Connect
 - Upgraded test framework version to 2.0.6
 - Fixed test cases
 	- Tests working on files where set to use the payloadContent attribute
 - Supported MongoDB version: 2.6.1
+- Supported operations:
+	- addUser
+	- countObjects
+	- countObjectsUsingQueryMap
+	- createCollection
+	- createFileFromPayload
+	- createIndex
+	- dropCollection
+	- dropDatabase
+	- dropIndex
+	- dump
+	- executeCommand
+	- existsCollection
+	- findFiles
+	- findFilesUsingQueryMap
+	- findObjects
+	- findObjectsUsingQueryMap
+	- findOneFile
+	- findOneFileUsingQueryMap
+	- findOneObject
+	- findOneObjectUsingQueryMap
+	- getFileContent
+	- getFileContentUsingQueryMap
+	- incrementDump
+	- insertObjectFromMap
+	- insertObject
+	- listCollection
+	- listFiles
+	- listFilesUsingQueryMap
+	- listIndices
+	- MapReduceObjects
+	- RemoveFiles
+	- RemoveFilesUsingQueryMap,
+	- RemoveObjects
+	- RemoveObjectsUsingQueryMap,
+	- Restore
+	- SaveObjectFromMap
+	- SaveObject
+	- UpdateObjectsByFunction
+	- UpdateObjectsByFunctionUsingMap
+	- UpdateObjects
+	- UpdateObjectsUsingMap
+	- UpdateObjectsUsingQueryMap
 
 Closed Issues in this release
 ------------------------------
