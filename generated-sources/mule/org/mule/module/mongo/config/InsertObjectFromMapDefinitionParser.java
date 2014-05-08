@@ -16,7 +16,7 @@ import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.xml.ParserContext;
 import org.w3c.dom.Element;
 
-@Generated(value = "Mule DevKit Version 3.5.0-RC1", date = "2014-05-07T10:11:10-05:00", comments = "Build master.1926.b0106b2")
+@Generated(value = "Mule DevKit Version 3.5.0-RC1", date = "2014-05-08T09:59:09-05:00", comments = "Build master.1926.b0106b2")
 public class InsertObjectFromMapDefinitionParser
     extends AbstractDevkitBasedDefinitionParser
 {
