@@ -36,7 +36,7 @@ import org.mule.module.mongo.pooling.DevkitGenericKeyedObjectPool;
  * A {@code MongoCloudConnectorConnectionManager} is a wrapper around {@link MongoCloudConnector } that adds connection management capabilities to the pojo.
  * 
  */
-@Generated(value = "Mule DevKit Version 3.5.0-RC1", date = "2014-05-08T04:40:43-05:00", comments = "Build master.1926.b0106b2")
+@Generated(value = "Mule DevKit Version 3.5.0-RC1", date = "2014-05-09T11:43:59-05:00", comments = "Build master.1926.b0106b2")
 public class MongoCloudConnectorConnectionManager
     extends ExpressionEvaluatorSupport
     implements MetadataAware, MuleContextAware, ProcessAdapter<MongoCloudConnectorConnectionIdentifierAdapter> , Capabilities, Disposable, Initialisable, Testable, ConnectionManager<MongoCloudConnectorConnectionKey, MongoCloudConnectorConnectionIdentifierAdapter>
