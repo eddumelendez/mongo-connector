@@ -65,6 +65,49 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
@@ -155,7 +198,7 @@
       <a href="http://www.mulesoft.com" tabindex="-1">
       <img src="../../../../../../assets//images/mulesoft-logo-final.gif" alt="MuleSoft" border="0" id="mulesoftlogo"></a><br/>
       
-  <div id="search" >
+  <div id="searchContainer" >
       <div id="searchForm">
           <form accept-charset="utf-8" class="gsc-search-box" 
                 onsubmit="return submit_search()">
@@ -215,10 +258,6 @@
     <li class="api apilevel-">
   <a href="../../../../../../java/org/mule/module/mongo/api/transformers/package-summary.html">org.mule.module.mongo.api.transformers</a></li>
     <li class="api apilevel-">
-  <a href="../../../../../../java/org/mule/module/mongo/basic/package-summary.html">org.mule.module.mongo.basic</a></li>
-    <li class="api apilevel-">
-  <a href="../../../../../../java/org/mule/module/mongo/callback/package-summary.html">org.mule.module.mongo.callback</a></li>
-    <li class="api apilevel-">
   <a href="../../../../../../java/org/mule/module/mongo/config/package-summary.html">org.mule.module.mongo.config</a></li>
     <li class="api apilevel-">
   <a href="../../../../../../java/org/mule/module/mongo/connection/package-summary.html">org.mule.module.mongo.connection</a></li>
@@ -227,7 +266,7 @@
     <li class="api apilevel-">
   <a href="../../../../../../java/org/mule/module/mongo/devkit/package-summary.html">org.mule.module.mongo.devkit</a></li>
     <li class="api apilevel-">
-  <a href="../../../../../../java/org/mule/module/mongo/oauth/package-summary.html">org.mule.module.mongo.oauth</a></li>
+  <a href="../../../../../../java/org/mule/module/mongo/pooling/package-summary.html">org.mule.module.mongo.pooling</a></li>
     <li class="api apilevel-">
   <a href="../../../../../../java/org/mule/module/mongo/process/package-summary.html">org.mule.module.mongo.process</a></li>
     <li class="api apilevel-">
@@ -390,7 +429,7 @@ Summary:
   
       implements 
       
-        <a href="../../../../../../java/org/mule/module/mongo/basic/Capabilities.html">Capabilities</a> 
+        Capabilities 
       
   
   
@@ -848,7 +887,7 @@ Summary:
             boolean</nobr>
         </td>
         <td class="jd-linkcol" width="100%"><nobr>
-        <span class="sympad"><a href="../../../../../../org/mule/module/mongo/adapters/MongoCloudConnectorCapabilitiesAdapter.html#isCapableOf(org.mule.module.mongo.basic.Capability)">isCapableOf</a></span>(<a href="../../../../../../java/org/mule/module/mongo/basic/Capability.html">Capability</a> capability)</nobr>
+        <span class="sympad"><a href="../../../../../../org/mule/module/mongo/adapters/MongoCloudConnectorCapabilitiesAdapter.html#isCapableOf(org.mule.api.devkit.capability.ModuleCapability)">isCapableOf</a></span>(ModuleCapability capability)</nobr>
         
         <div class="jd-descrdiv">Returns true if this module implements such capability
  
@@ -2392,19 +2431,19 @@ From class
 
 <tr class="api apilevel-" >
 <td colspan="12">
-  <a href="#" onclick="return toggleInherited(this, null)" id="inherited-methods-org.mule.module.mongo.basic.Capabilities" class="jd-expando-trigger closed"
-          ><img id="inherited-methods-org.mule.module.mongo.basic.Capabilities-trigger"
+  <a href="#" onclick="return toggleInherited(this, null)" id="inherited-methods-org.mule.api.devkit.capability.Capabilities" class="jd-expando-trigger closed"
+          ><img id="inherited-methods-org.mule.api.devkit.capability.Capabilities-trigger"
           src="../../../../../../assets/images/triangle-closed.png"
           class="jd-expando-trigger-img" /></a>
 From interface
 
-  <a href="../../../../../../org/mule/module/mongo/basic/Capabilities.html">org.mule.module.mongo.basic.Capabilities</a>
+  org.mule.api.devkit.capability.Capabilities
 
-<div id="inherited-methods-org.mule.module.mongo.basic.Capabilities">
-  <div id="inherited-methods-org.mule.module.mongo.basic.Capabilities-list"
+<div id="inherited-methods-org.mule.api.devkit.capability.Capabilities">
+  <div id="inherited-methods-org.mule.api.devkit.capability.Capabilities-list"
         class="jd-inheritedlinks">
   </div>
-  <div id="inherited-methods-org.mule.module.mongo.basic.Capabilities-summary" style="display: none;">
+  <div id="inherited-methods-org.mule.api.devkit.capability.Capabilities-summary" style="display: none;">
     <table class="jd-sumtable-expando">
     
 
@@ -2420,11 +2459,8 @@ From interface
             boolean</nobr>
         </td>
         <td class="jd-linkcol" width="100%"><nobr>
-        <span class="sympad"><a href="../../../../../../org/mule/module/mongo/basic/Capabilities.html#isCapableOf(org.mule.module.mongo.basic.Capability)">isCapableOf</a></span>(<a href="../../../../../../java/org/mule/module/mongo/basic/Capability.html">Capability</a> capability)</nobr>
+        <span class="sympad">isCapableOf</span>(ModuleCapability arg0)</nobr>
         
-        <div class="jd-descrdiv">Returns true if this module implements such
- capability</div>
-  
   </td></tr>
 
 
@@ -2514,7 +2550,7 @@ From interface
 
 
 
-<A NAME="isCapableOf(org.mule.module.mongo.basic.Capability)"></A>
+<A NAME="isCapableOf(org.mule.api.devkit.capability.ModuleCapability)"></A>
 
 <div class="jd-details api apilevel-"> 
     <h4 class="jd-details-title">
@@ -2527,7 +2563,7 @@ From interface
         boolean
       </span>
       <span class="sympad">isCapableOf</span>
-      <span class="normal">(<a href="../../../../../../java/org/mule/module/mongo/basic/Capability.html">Capability</a> capability)</span>
+      <span class="normal">(ModuleCapability capability)</span>
     </h4>
       <div class="api-level">
         <div>
@@ -2547,14 +2583,9 @@ From interface
       <table class="jd-tagtable">
         <tr>
           <th>capability</td>
-          <td>The capability to test for</td>
+          <td></td>
         </tr>
       </table>
-  </div>
-  <div class="jd-tagdata">
-      <h5 class="jd-tagtitle">Returns</h5>
-      <ul class="nolist"><li>True if it does, false otherwise
-</li></ul>
   </div>
 
     </div>
