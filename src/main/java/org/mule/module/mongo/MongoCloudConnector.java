@@ -1123,7 +1123,7 @@ public class MongoCloudConnector
      * @return the newly created {@link MongoSession}
      * @throws org.mule.api.ConnectionException
      */
-    @Connect
+    @Connect(strategy = ConnectStrategy.SINGLE_INSTANCE)
     public void connect(@ConnectionKey final String username,
                         @Optional @Password final String password,
                         @ConnectionKey final String database) throws ConnectionException
