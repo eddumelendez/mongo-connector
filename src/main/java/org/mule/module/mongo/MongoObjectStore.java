@@ -184,14 +184,14 @@ public class MongoObjectStore implements PartitionableExpirableObjectStore<Seria
         final ObjectId objectId = getObjectIdFromKey(key);
         final DBObject query = getQueryForObjectId(objectId);
         final String collection = getCollectionName(partitionName);
-        return mongoClient.findObjects(collection, query, NO_FIELD_LIST, null, null).iterator().hasNext();
+        return mongoClient.findObjects(collection, query, NO_FIELD_LIST, null, null, null).iterator().hasNext();
     }
 
     public List<Serializable> allKeys(final String partitionName) throws ObjectStoreException
     {
         final String collection = getCollectionName(partitionName);
         final Iterable<DBObject> keyObjects = mongoClient.findObjects(collection, new BasicDBObject(),
-            Arrays.asList(KEY_FIELD), null, null);
+            Arrays.asList(KEY_FIELD), null, null, null);
 
         final ArrayList<Serializable> results = new ArrayList<Serializable>();
         for (final DBObject keyObject : keyObjects)
@@ -390,7 +390,7 @@ public class MongoObjectStore implements PartitionableExpirableObjectStore<Seria
         throws ObjectDoesNotExistException
     {
         final Iterator<DBObject> iterator = mongoClient.findObjects(collection, query,
-            Arrays.asList(VALUE_FIELD), null, null).iterator();
+            Arrays.asList(VALUE_FIELD), null, null, null).iterator();
 
         if (!iterator.hasNext())
         {

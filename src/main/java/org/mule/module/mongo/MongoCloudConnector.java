@@ -583,9 +583,10 @@ public class MongoCloudConnector
                                           @Optional @Default("") final DBObject query,
                                           @Placement(group = "Fields") @Optional final List<String> fields,
                                           @Optional final Integer numToSkip,
-                                          @Optional final Integer limit)
+                                          @Optional final Integer limit,
+                                          @Optional DBObject sortBy)
     {
-        return client.findObjects(collection, query, fields, numToSkip, limit);
+        return client.findObjects(collection, query, fields, numToSkip, limit, sortBy);
     }
 
     /**
@@ -607,9 +608,10 @@ public class MongoCloudConnector
                                                        @Placement(group = "Query Attributes") @Optional final Map<String, Object> queryAttributes,
                                                        @Placement(group = "Fields") @Optional final List<String> fields,
                                                        @Optional final Integer numToSkip,
-                                                       @Optional final Integer limit)
+                                                       @Optional final Integer limit,
+                                                       @Optional DBObject sortBy)
     {
-        return client.findObjects(collection, (DBObject) adapt(queryAttributes), fields, numToSkip, limit);
+        return client.findObjects(collection, (DBObject) adapt(queryAttributes), fields, numToSkip, limit, sortBy);
     }
 
     /**
