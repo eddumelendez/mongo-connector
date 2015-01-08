@@ -67,9 +67,55 @@ public class RestoreFile implements Comparable<RestoreFile>
     {
         return collection;
     }
-
+    
     public int compareTo(RestoreFile restoreFile)
     {
         return collection.compareTo(restoreFile.getCollection());
+    }
+    
+    @Override
+    public boolean equals(Object obj)
+    {
+    	if (this == obj)
+    	{
+            return true;
+    	}
+    	
+        if (obj == null)
+        {
+            return false;
+        }
+        
+        if (getClass() != obj.getClass())
+        {
+            return false;
+        }
+        
+        RestoreFile other = (RestoreFile) obj;
+        if (file == null)
+        {
+            if (other.file != null)
+            {
+                return false;
+            }
+        }
+        
+        if (collection == null)
+        {
+        	if (other.collection != null)
+        	{
+        		return false;
+        	}
+        } 
+        else if (!file.equals(other.file))
+        {
+            return false;
+        }
+        else if (!collection.equals(other.collection))
+        {
+        	return false;
+        }
+        
+        return true;
     }
 }
