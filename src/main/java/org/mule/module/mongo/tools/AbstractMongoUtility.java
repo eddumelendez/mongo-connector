@@ -15,7 +15,7 @@ import java.util.concurrent.Future;
 
 public abstract class AbstractMongoUtility
 {
-    public void propagateException(Future<Void> future) throws RuntimeException
+    public void propagateException(Future<Void> future)
     {
         try
         {
