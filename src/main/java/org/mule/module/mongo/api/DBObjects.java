@@ -80,19 +80,19 @@ public final class DBObjects
     @SuppressWarnings("unchecked")
     public static Object adapt(Object o)
     {
-    	Object obj = null;
-        if (o instanceof DBObject)
+    	Object obj = o;
+        if (obj instanceof DBObject)
         {
-            adaptObjectId((DBObject) o);
-            adaptAttributes((DBObject) o);
+            adaptObjectId((DBObject) obj);
+            adaptAttributes((DBObject) obj);
         }
-        else if (o instanceof Map<?, ?>)
+        else if (obj instanceof Map<?, ?>)
         {
             obj = adapt(fromMap((Map<String, Object>) o));
         }
-        else if (o instanceof List<?>)
+        else if (obj instanceof List<?>)
         {
-            adaptElements(o);
+            adaptElements(obj);
         }
         return obj;
     }
@@ -117,8 +117,8 @@ public final class DBObjects
     private static void adaptObjectId(DBObject o)
     {
         Object id = o.get("_id");
-        Matcher m;
-        if (id != null && id instanceof String && (m = objectIdMatcher(id)).matches())
+        Matcher m = objectIdMatcher(id);
+        if (id != null && id instanceof String && (m.matches()))
         {
             o.put("_id", new ObjectId(m.group(1)));
         }
