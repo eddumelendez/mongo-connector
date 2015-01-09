@@ -116,10 +116,15 @@ public final class DBObjects
     private static void adaptObjectId(DBObject o)
     {
         Object id = o.get("_id");
-        Matcher m = objectIdMatcher(id);
-        if (id != null && id instanceof String && (m.matches()))
+
+        if (id != null && id instanceof String)
         {
-            o.put("_id", new ObjectId(m.group(1)));
+        	Matcher m = objectIdMatcher(id);
+        	
+        	if (m.matches())
+        	{
+        		o.put("_id", new ObjectId(m.group(1)));
+        	}
         }
     }
 
