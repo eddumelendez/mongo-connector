@@ -63,7 +63,7 @@ import com.mongodb.util.JSON;
 @Connector(name = "mongo", schemaVersion = "2.0", friendlyName = "Mongo DB", minMuleVersion = "3.5", metaData = MetaDataSwitch.OFF)
 public class MongoCloudConnector
 {
-    private static final Logger LOGGER = LoggerFactory.getLogger(MongoCloudConnector.class);
+    private static final Logger logger = LoggerFactory.getLogger(MongoCloudConnector.class);
 
     private static final String CAPPED_DEFAULT_VALUE = "false";
     private static final String WRITE_CONCERN_DEFAULT_VALUE = "DATABASE_DEFAULT";
@@ -1134,13 +1134,10 @@ public class MongoCloudConnector
             
             this.client = new MongoClientImpl(getDatabase(mongo, username, password, database));
         }
-        catch (final MongoException me)
+        catch (final UnknownHostException ex)
         {
-            throw new ConnectionException(ConnectionExceptionCode.UNKNOWN, null, me.getMessage());
-        }
-        catch (final UnknownHostException e)
-        {
-            throw new ConnectionException(ConnectionExceptionCode.UNKNOWN_HOST, null, e.getMessage());
+        	logger.info(ex.getMessage(), ex); 
+        	throw new ConnectionException(ConnectionExceptionCode.UNKNOWN_HOST, ex.getLocalizedMessage(), ex.getMessage(), ex.getCause());
         }
     }
 
@@ -1206,7 +1203,7 @@ public class MongoCloudConnector
             }
             catch (final Exception e)
             {
-                LOGGER.warn("Failed to properly close client: " + client, e);
+                logger.warn("Failed to properly close client: " + client, e);
             }
             finally
             {
@@ -1222,7 +1219,7 @@ public class MongoCloudConnector
             }
             catch (final Exception e)
             {
-                LOGGER.warn("Failed to properly close mongo: " + mongo, e);
+                logger.warn("Failed to properly close mongo: " + mongo, e);
             }
             finally
             {

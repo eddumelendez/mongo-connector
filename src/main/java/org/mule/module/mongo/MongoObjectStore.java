@@ -114,7 +114,7 @@ public class MongoObjectStore implements PartitionableExpirableObjectStore<Seria
     @PostConstruct
     public void initialize() throws UnknownHostException
     {
-        final DB db = new Mongo(host, port).getDB(database);
+        final DB db = new com.mongodb.MongoClient(host, port).getDB(database);
         if (StringUtils.isNotEmpty(password))
         {
             Validate.notEmpty(username, "Username must not be empty if password is set");
@@ -193,7 +193,7 @@ public class MongoObjectStore implements PartitionableExpirableObjectStore<Seria
         final Iterable<DBObject> keyObjects = mongoClient.findObjects(collection, new BasicDBObject(),
             Arrays.asList(KEY_FIELD), null, null);
 
-        final ArrayList<Serializable> results = new ArrayList<Serializable>();
+        final List<Serializable> results = new ArrayList<Serializable>();
         for (final DBObject keyObject : keyObjects)
         {
             results.add((Serializable) SerializationUtils.deserialize((byte[]) keyObject.get(KEY_FIELD)));
@@ -203,7 +203,7 @@ public class MongoObjectStore implements PartitionableExpirableObjectStore<Seria
 
     public List<String> allPartitions() throws ObjectStoreException
     {
-        final ArrayList<String> results = new ArrayList<String>();
+        final List<String> results = new ArrayList<String>();
 
         for (final String collection : mongoClient.listCollections())
         {

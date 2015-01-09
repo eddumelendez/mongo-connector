@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
  */
 public final class MongoClientAdaptor
 {
-    private static Logger log = LoggerFactory.getLogger(MongoCloudConnector.class);
+    private static final Logger logger = LoggerFactory.getLogger(MongoCloudConnector.class);
 
     private MongoClientAdaptor()
     {
@@ -37,25 +37,24 @@ public final class MongoClientAdaptor
                 {
                     try
                     {
-                        if (log.isDebugEnabled())
+                        if (logger.isDebugEnabled())
                         {
-                            log.debug("Entering {} with args {}", method.getName(), args);
+                            logger.debug("Entering {} with args {}", method.getName(), args);
                         }
                         Object ret = method.invoke(receptor, args);
-                        if (log.isDebugEnabled())
+                        if (logger.isDebugEnabled())
                         {
-                            log.debug("Returning from {} with value {}", method.getName(), ret);
+                            logger.debug("Returning from {} with value {}", method.getName(), ret);
                         }
                         return ret;
                     }
                     catch (InvocationTargetException e)
                     {
-                        if (log.isWarnEnabled())
+                        if (logger.isWarnEnabled())
                         {
-                            log.warn("An exception was thrown while invoking {}: {}", method.getName(),
-                                e.getCause());
+                            logger.warn("An exception was thrown while invoking {}: {}", method.getName(),e);
                         }
-                        throw e.getCause();
+                        throw new RuntimeException(e.getMessage(),e);
                     }
                 }
             });

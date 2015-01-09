@@ -118,4 +118,10 @@ public class RestoreFile implements Comparable<RestoreFile>
         
         return true;
     }
+    
+    @Override
+    public int hashCode()
+    {
+    	return collection.hashCode();
+    }
 }
