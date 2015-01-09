@@ -102,27 +102,23 @@ public class MongoRestoreDirectory implements Callable<Void>
 
     private void processRestoreFiles(File input, List<RestoreFile> restoreFiles) throws IOException
     {
-    	File unzippedFolder;
     	if(ZipUtils.isZipFile(input))
         {
-    		unzippedFolder = new File(BackupUtils.removeExtension(input.getPath()));
+    		File unzippedFolder = new File(BackupUtils.removeExtension(input.getPath()));
     		org.mule.util.FileUtils.unzip(input, unzippedFolder);
+    		input = unzippedFolder;
         }
-    	else
-    	{
-    		unzippedFolder = input;
-    	}
     	
-    	if(unzippedFolder.isDirectory())
+    	if(input.isDirectory())
         {
             for(@SuppressWarnings("unused") File file : input.listFiles())
             {
-                processRestoreFiles(unzippedFolder, restoreFiles);
+                processRestoreFiles(input, restoreFiles);
             }
         }
-        else if(BackupUtils.isBsonFile(unzippedFolder))
+        else if(BackupUtils.isBsonFile(input))
         {
-            restoreFiles.add(new RestoreFile(unzippedFolder));
+            restoreFiles.add(new RestoreFile(input));
         }
     }
 
