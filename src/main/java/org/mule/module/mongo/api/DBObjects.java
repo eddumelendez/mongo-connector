@@ -80,6 +80,7 @@ public final class DBObjects
     @SuppressWarnings("unchecked")
     public static Object adapt(Object o)
     {
+    	Object obj = null;
         if (o instanceof DBObject)
         {
             adaptObjectId((DBObject) o);
@@ -87,13 +88,13 @@ public final class DBObjects
         }
         else if (o instanceof Map<?, ?>)
         {
-            o = adapt(fromMap((Map<String, Object>) o));
+            obj = adapt(fromMap((Map<String, Object>) o));
         }
         else if (o instanceof List<?>)
         {
             adaptElements(o);
         }
-        return o;
+        return obj;
     }
 
     @SuppressWarnings("unchecked")
