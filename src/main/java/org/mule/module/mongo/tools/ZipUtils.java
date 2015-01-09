@@ -19,7 +19,8 @@ public class ZipUtils
 {
     private static final String ZIP_EXTENSION = "zip";
     
-    private ZipUtils(){}
+    private ZipUtils() {
+    }
     
     public static void zipDirectory(String dbDumpPath) throws IOException
     {

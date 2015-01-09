@@ -16,5 +16,6 @@ public class BackupConstants
     public static final String TIMESTAMP_FIELD = "ts";
     public static final String NAMESPACE_FIELD = "ns";
     
-    private BackupConstants(){}
+    private BackupConstants() {
+    }
 }
