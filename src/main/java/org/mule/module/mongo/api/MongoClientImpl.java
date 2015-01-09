@@ -174,7 +174,10 @@ public class MongoClientImpl implements MongoClient
         db.getCollection(collection).insert(object,
             writeConcern.toMongoWriteConcern(db));
         final ObjectId id = (ObjectId) object.get("_id");
-        if (id == null) return null;
+        if (id == null)
+        { 
+        	return null;
+        }
 
         return id.toStringMongod();
     }

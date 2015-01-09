@@ -1249,13 +1249,10 @@ public class MongoCloudConnector
         if (StringUtils.isNotBlank(password))
         {
             Validate.notNull(username, "Username must not be null if password is set");
-            if (!db.isAuthenticated())
+            if (!db.isAuthenticated() && !db.authenticate(username, password.toCharArray()))
             {
-                if (!db.authenticate(username, password.toCharArray()))
-                {
-                    throw new ConnectionException(ConnectionExceptionCode.INCORRECT_CREDENTIALS, null,
+                throw new ConnectionException(ConnectionExceptionCode.INCORRECT_CREDENTIALS, null,
                         "Couldn't connect with the given credentials");
-                }
             }
         }
         return db;

@@ -46,13 +46,9 @@ public class MongoRestoreDirectory implements Callable<Void>
         {
             if(!isOplog(restoreFile.getCollection()))
             {
-                if(drop)
+                if(drop && !BackupUtils.isSystemCollection(restoreFile.getCollection()))
                 {
-                    // System collections cannot be dropped
-                    if(!BackupUtils.isSystemCollection(restoreFile.getCollection()))
-                    {
-                        mongoClient.dropCollection(restoreFile.getCollection());
-                    }
+                	mongoClient.dropCollection(restoreFile.getCollection());
                 }
 
                 DBCollection dbCollection = mongoClient.getCollection(restoreFile.getCollection());
