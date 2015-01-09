@@ -144,9 +144,9 @@ public class MongoObjectStore implements PartitionableExpirableObjectStore<Seria
         return allKeys(OBJECTSTORE_DEFAULT_PARTITION_NAME);
     }
 
-    public void expire(final int entryTTL, final int maxEntries) throws ObjectStoreException
+    public void expire(final int entryTtl, final int maxEntries) throws ObjectStoreException
     {
-        expire(entryTTL, maxEntries, OBJECTSTORE_DEFAULT_PARTITION_NAME);
+        expire(entryTtl, maxEntries, OBJECTSTORE_DEFAULT_PARTITION_NAME);
     }
 
     public boolean contains(final Serializable key) throws ObjectStoreException
@@ -274,11 +274,11 @@ public class MongoObjectStore implements PartitionableExpirableObjectStore<Seria
         // NOOP
     }
 
-    public void expire(final int entryTTL, final int ignored_maxEntries, final String partitionName)
+    public void expire(final int entryTtl, final int ignoredMaxEntries, final String partitionName)
         throws ObjectStoreException
     {
         final String collection = getCollectionName(partitionName);
-        final long expireAt = System.currentTimeMillis() - entryTTL;
+        final long expireAt = System.currentTimeMillis() - entryTtl;
         final DBObject query = QueryBuilder.start(TIMESTAMP_FIELD).lessThan(expireAt).get();
         mongoClient.removeObjects(collection, query, getWriteConcern());
     }
@@ -371,13 +371,14 @@ public class MongoObjectStore implements PartitionableExpirableObjectStore<Seria
     private ObjectId getObjectIdFromKey(final byte[] keyAsBytes)
     {
         // hash the key and combine the resulting 16 bytes down to 12
-        final byte[] md5Digest = DigestUtils.md5Digest(keyAsBytes);
+    	final ObjectId objectId;
+    	final byte[] md5Digest = DigestUtils.md5Digest(keyAsBytes);
         final byte[] id = ArrayUtils.subarray(md5Digest, 0, 12);
         for (int i = 0; i < 4; i++)
         {
             id[i * 3] = (byte) (id[i * 3] ^ md5Digest[12 + i]);
         }
-        final ObjectId objectId = new ObjectId(id);
+        objectId = new ObjectId(id);
         return objectId;
     }
 
