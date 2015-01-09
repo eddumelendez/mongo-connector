@@ -55,8 +55,8 @@ public class MongoDump extends AbstractMongoUtility
         Validate.notNull(outputDirectory);
         Validate.notNull(outputName);
         Validate.notNull(database);
-        String opName = outputName;
-        opName += appendTimestamp();
+        
+        outputName += appendTimestamp();
 
         initOplog(database);
 
@@ -64,7 +64,7 @@ public class MongoDump extends AbstractMongoUtility
         if (collections != null)
         {
             final ExecutorService executor = Executors.newFixedThreadPool(threads);
-            final DumpWriter dumpWriter = new BsonDumpWriter(outputDirectory, opName);
+            final DumpWriter dumpWriter = new BsonDumpWriter(outputDirectory, outputName);
             for (final String collectionName : collections)
             {
                 final DBCollection dbCollection = mongoClient.getCollection(collectionName);
@@ -102,7 +102,7 @@ public class MongoDump extends AbstractMongoUtility
 
                 if (zip)
                 {
-                    final String dbDumpPath = outputDirectory + File.separator + opName;
+                    final String dbDumpPath = outputDirectory + File.separator + outputName;
                     ZipUtils.zipDirectory(dbDumpPath);
                     FileUtils.deleteDirectory(new File(dbDumpPath));
                 }
