@@ -48,18 +48,17 @@ public class MongoCollection extends AbstractCollection<DBObject>
     }
 
     @Override
-    public int size()
-    {
-        warnEagerMessage("size");
-        int i = 0;
-        for (Iterator<? extends DBObject> it = o.iterator(); it.hasNext();) {
-        	i++;
-        }
-//        for (@SuppressWarnings("unused") Object o : this) {
-//            i++;
-//        }
-        return i;
-    }
+	public int size()
+	{
+    	warnEagerMessage("size");
+    	int i = 0;
+    	for (@SuppressWarnings("unused")
+    	Object o : this)
+    	{
+    		i++;
+    	}
+    	return i;
+	}
 
     /**
      * Same impl that those found in Object, in order to avoid eager elements
