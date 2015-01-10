@@ -80,20 +80,21 @@ public final class DBObjects
     @SuppressWarnings("unchecked")
     public static Object adapt(Object o)
     {
-    	if (o instanceof DBObject)
+    	Object obj = o;
+    	if (obj instanceof DBObject)
         {
-            adaptObjectId((DBObject) o);
-            adaptAttributes((DBObject) o);
+            adaptObjectId((DBObject) obj);
+            adaptAttributes((DBObject) obj);
         }
-        else if (o instanceof Map<?, ?>)
+        else if (obj instanceof Map<?, ?>)
         {
-            o = adapt(fromMap((Map<String, Object>) o));
+            obj = adapt(fromMap((Map<String, Object>) o));
         }
-        else if (o instanceof List<?>)
+        else if (obj instanceof List<?>)
         {
-            adaptElements(o);
+            adaptElements(obj);
         }
-        return o;
+        return obj;
     }
 
     @SuppressWarnings("unchecked")
