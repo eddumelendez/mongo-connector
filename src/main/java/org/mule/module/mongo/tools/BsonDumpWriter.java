@@ -16,13 +16,13 @@ import java.io.IOException;
 
 import org.bson.BSON;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
 
 public class BsonDumpWriter extends DumpWriter
 {
     private static final String BSON_EXTENSION = "bson";
-    private static final Logger logger = LoggerFactory.getLogger(BsonDumpWriter.class);
+    //private static final Logger logger = LoggerFactory.getLogger(BsonDumpWriter.class);
 
     public BsonDumpWriter(String outputDirectory, String database)
     {
@@ -45,18 +45,14 @@ public class BsonDumpWriter extends DumpWriter
     {
         FileOutputStream outputStream = null;
         File outputFile = new File(getFilePath(collection));
-        outputFile.getParentFile().mkdirs();
         
         try
         {
-            if(!outputFile.getParentFile().mkdirs())
-            {
-                logger.info("mkdirs() operation failed: It may have succeeded in creating some of the necessary parent directories.");
-            }
-            else
+            if(outputFile.getParentFile().mkdirs())
             {
                 outputStream = new FileOutputStream(outputFile, true);
                 outputStream.write(BSON.encode(dbObject));
+                //logger.info("mkdirs() operation failed: It may have succeeded in creating some of the necessary parent directories.");
             }
         }
         finally
