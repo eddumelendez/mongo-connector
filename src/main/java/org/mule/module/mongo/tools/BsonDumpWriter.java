@@ -13,12 +13,8 @@ import com.mongodb.DBObject;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.UnknownHostException;
 
 import org.bson.BSON;
-import org.mule.module.mongo.MongoCloudConnector;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class BsonDumpWriter extends DumpWriter
 {
