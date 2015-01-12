@@ -372,7 +372,7 @@ public class MongoObjectStore implements PartitionableExpirableObjectStore<Seria
     {
         // hash the key and combine the resulting 16 bytes down to 12
         final ObjectId objectId;
-    	final byte[] md5Digest = DigestUtils.md5Digest(keyAsBytes);
+        final byte[] md5Digest = DigestUtils.md5Digest(keyAsBytes);
         final byte[] id = ArrayUtils.subarray(md5Digest, 0, 12);
         for (int i = 0; i < 4; i++)
         {

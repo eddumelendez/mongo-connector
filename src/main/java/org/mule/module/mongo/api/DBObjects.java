@@ -81,7 +81,7 @@ public final class DBObjects
     public static Object adapt(Object o)
     {
         Object obj = o;
-    	if (obj instanceof DBObject)
+        if (obj instanceof DBObject)
         {
             adaptObjectId((DBObject) obj);
             adaptAttributes((DBObject) obj);
@@ -122,7 +122,7 @@ public final class DBObjects
         {
             Matcher m = objectIdMatcher(id);
         	
-        	if (m.matches())
+            if (m.matches())
         	{
                 o.put("_id", new ObjectId(m.group(1)));
         	}
