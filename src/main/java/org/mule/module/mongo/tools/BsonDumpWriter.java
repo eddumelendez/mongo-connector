@@ -13,12 +13,17 @@ import com.mongodb.DBObject;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.UnknownHostException;
 
 import org.bson.BSON;
+import org.mule.module.mongo.MongoCloudConnector;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class BsonDumpWriter extends DumpWriter
 {
     private static final String BSON_EXTENSION = "bson";
+    private static final Logger logger = LoggerFactory.getLogger(BsonDumpWriter.class);
 
     public BsonDumpWriter(String outputDirectory, String database)
     {
@@ -41,11 +46,18 @@ public class BsonDumpWriter extends DumpWriter
     {
         FileOutputStream outputStream = null;
         File outputFile = new File(getFilePath(collection));
-        outputFile.getParentFile().mkdirs();
+        
         try
         {
-            outputStream = new FileOutputStream(outputFile, true);
-            outputStream.write(BSON.encode(dbObject));
+        	if(!outputFile.getParentFile().mkdirs())
+            {
+            	logger.info("mkdirs() operation failed: It may have succeeded in creating some of the necessary parent directories."); 
+            }
+        	else
+        	{
+        		outputStream = new FileOutputStream(outputFile, true);
+        		outputStream.write(BSON.encode(dbObject));
+        	}
         }
         finally
         {
