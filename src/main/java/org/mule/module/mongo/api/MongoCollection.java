@@ -50,14 +50,14 @@ public class MongoCollection extends AbstractCollection<DBObject>
     @Override
 	public int size()
 	{
-    	warnEagerMessage("size");
+        warnEagerMessage("size");
     	int i = 0;
     	for (@SuppressWarnings("unused")
     	Object o : this)
     	{
-    		i++;
+            i++;
     	}
-    	return i;
+        return i;
 	}
 
     /**
