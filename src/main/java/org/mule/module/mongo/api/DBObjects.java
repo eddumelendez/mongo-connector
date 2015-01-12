@@ -59,12 +59,12 @@ public final class DBObjects
     
     public static DBObject fromFunction(String function, DBObject dbObject)
     {
-    	return new BasicDBObject(function, dbObject);
+        return new BasicDBObject(function, dbObject);
     }
     
     public static DBObject fromCommand(String commandName, String commandValue)
     {
-    	DBObject dbObject;
+        DBObject dbObject;
     	if (commandValue == null)
     	{
     		dbObject = new BasicDBObject(commandName, 1);
