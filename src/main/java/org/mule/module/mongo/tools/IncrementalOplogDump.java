@@ -113,7 +113,7 @@ public class IncrementalOplogDump implements Callable<Void>
         }
         catch(NullPointerException ne)
         {
-        	throw new RuntimeException(ne.getMessage(),ne);
+            throw new RuntimeException(ne.getMessage(),ne);
         }
         finally
         {

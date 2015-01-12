@@ -40,9 +40,9 @@ public abstract class DumpWriter
                 .append(File.separator);
 
         }
-            path.append(collection)
-                .append(".")
-                .append(getExtension());
+        path.append(collection)
+            .append(".")
+            .append(getExtension());
         return path.toString();
     }
 

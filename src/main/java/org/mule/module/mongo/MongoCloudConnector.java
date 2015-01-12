@@ -1138,7 +1138,7 @@ public class MongoCloudConnector
         }
         catch (final UnknownHostException ex)
         {
-        	logger.info(ex.getMessage(), ex); 
+            logger.info(ex.getMessage(), ex); 
         	throw new ConnectionException(ConnectionExceptionCode.UNKNOWN_HOST, ex.getLocalizedMessage(), ex.getMessage(), ex.getCause());
         }
     }

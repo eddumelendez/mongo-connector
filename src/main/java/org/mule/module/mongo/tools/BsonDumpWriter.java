@@ -45,7 +45,7 @@ public class BsonDumpWriter extends DumpWriter
         
         try
         {
-        	outputStream = new FileOutputStream(outputFile, true);
+            outputStream = new FileOutputStream(outputFile, true);
         	outputStream.write(BSON.encode(dbObject));
         }
         finally

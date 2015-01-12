@@ -61,7 +61,7 @@ public class ZipUtils
             }
             finally
             {
-            	fileInputStream.close();
+                fileInputStream.close();
             }
         }
     }

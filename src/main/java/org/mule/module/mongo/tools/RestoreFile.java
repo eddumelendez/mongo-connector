@@ -76,7 +76,7 @@ public class RestoreFile implements Comparable<RestoreFile>
     @Override
     public boolean equals(Object obj)
     {
-    	if (this == obj)
+        if (this == obj)
     	{
             return true;
     	}
@@ -89,7 +89,7 @@ public class RestoreFile implements Comparable<RestoreFile>
         RestoreFile other = (RestoreFile) obj;
         if ((file == null && other.file != null) || (collection == null && other.collection != null ))
         {
-        	return false;
+            return false;
         }
         else if (!file.equals(other.file) || !collection.equals(other.collection))
         {
@@ -102,6 +102,6 @@ public class RestoreFile implements Comparable<RestoreFile>
     @Override
     public int hashCode()
     {
-    	return collection.hashCode();
+        return collection.hashCode();
     }
 }

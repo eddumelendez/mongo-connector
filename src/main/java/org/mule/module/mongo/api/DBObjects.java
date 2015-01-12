@@ -65,22 +65,22 @@ public final class DBObjects
     public static DBObject fromCommand(String commandName, String commandValue)
     {
         DBObject dbObject;
-    	if (commandValue == null)
+        if (commandValue == null)
     	{
-    		dbObject = new BasicDBObject(commandName, 1);
+            dbObject = new BasicDBObject(commandName, 1);
     	}
     	else
     	{
-    		dbObject = new BasicDBObject(commandName, commandValue);
+            dbObject = new BasicDBObject(commandName, commandValue);
     	}
     	
-    	return dbObject;
+        return dbObject;
     }
 
     @SuppressWarnings("unchecked")
     public static Object adapt(Object o)
     {
-    	Object obj = o;
+        Object obj = o;
     	if (obj instanceof DBObject)
         {
             adaptObjectId((DBObject) obj);
@@ -120,11 +120,11 @@ public final class DBObjects
 
         if (id != null && id instanceof String)
         {
-        	Matcher m = objectIdMatcher(id);
+            Matcher m = objectIdMatcher(id);
         	
         	if (m.matches())
         	{
-        		o.put("_id", new ObjectId(m.group(1)));
+                o.put("_id", new ObjectId(m.group(1)));
         	}
         }
     }

@@ -157,9 +157,9 @@ public class MongoClientImpl implements MongoClient
         final DBObject element = db.getCollection(collection).findOne(query,
             FieldsSet.from(fields));
         
-		if (element == null && failOnNotFound)
+        if (element == null && failOnNotFound)
 		{
-			throw new MongoException("No object found for query " + query);
+            throw new MongoException("No object found for query " + query);
 		}
         return element;
     }
@@ -176,7 +176,7 @@ public class MongoClientImpl implements MongoClient
         final ObjectId id = (ObjectId) object.get("_id");
         if (id == null)
         { 
-        	return null;
+            return null;
         }
 
         return id.toStringMongod();

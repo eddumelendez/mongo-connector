@@ -48,7 +48,7 @@ public class MongoRestoreDirectory implements Callable<Void>
             {
                 if(drop && !BackupUtils.isSystemCollection(restoreFile.getCollection()))
                 {
-                	mongoClient.dropCollection(restoreFile.getCollection());
+                    mongoClient.dropCollection(restoreFile.getCollection());
                 }
 
                 DBCollection dbCollection = mongoClient.getCollection(restoreFile.getCollection());
@@ -102,18 +102,18 @@ public class MongoRestoreDirectory implements Callable<Void>
 
     private void processRestoreFiles(File input, List<RestoreFile> restoreFiles) throws IOException
     {
-    	File unzippedFolder;
+        File unzippedFolder;
     	if(ZipUtils.isZipFile(input))
         {
-    		unzippedFolder = new File(BackupUtils.removeExtension(input.getPath()));
+            unzippedFolder = new File(BackupUtils.removeExtension(input.getPath()));
     		org.mule.util.FileUtils.unzip(input, unzippedFolder);
     	}
     	else
     	{
-    		unzippedFolder = input;
+            unzippedFolder = input;
     	}
     	
-    	if(unzippedFolder.isDirectory())
+        if(unzippedFolder.isDirectory())
         {
             for(File file : unzippedFolder.listFiles())
             {

@@ -51,7 +51,7 @@ public class MongoCollection extends AbstractCollection<DBObject>
 	public int size()
 	{
         warnEagerMessage("size");
-    	int i = 0;
+        int i = 0;
     	for (@SuppressWarnings("unused")
     	Object o : this)
     	{
