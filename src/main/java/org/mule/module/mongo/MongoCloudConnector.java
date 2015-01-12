@@ -1131,8 +1131,10 @@ public class MongoCloudConnector
         try
         {
             mongo = new com.mongodb.MongoClient(getMongoClientURI(username, password, database));
-            
             this.client = new MongoClientImpl(getDatabase(mongo, username, password, database));
+            
+            DB db = mongo.getDB(database);
+            db.getStats();
         }
         catch (final UnknownHostException ex)
         {
@@ -1193,7 +1195,7 @@ public class MongoCloudConnector
      * @throws IOException in case something goes wrong when disconnecting.
      */
     @Disconnect
-    public void disconnect() throws IOException
+    public void disconnect() 
     {
         if (client != null)
         {

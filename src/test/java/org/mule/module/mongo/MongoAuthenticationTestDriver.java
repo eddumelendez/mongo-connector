@@ -37,7 +37,9 @@ public class MongoAuthenticationTestDriver
         connector = new MongoCloudConnector();
         connector.setHost("127.0.0.1");
         connector.setPort(27017);
-        connector.connect("foobar", "1234", "mongo-connector-test");
+        //connector.connect("foobar", "1234", "mongo-connector-test");
+        connector.connect("admin", "", "test");
+        
     }
 
     @Test
