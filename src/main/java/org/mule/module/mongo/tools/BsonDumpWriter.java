@@ -15,7 +15,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 import org.bson.BSON;
-import org.mule.module.mongo.api.MongoCollection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
