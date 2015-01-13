@@ -77,8 +77,20 @@ public class DBObjectsUnitTest
                 put("_id", "4df7b8e8663b85b105725d34");
             }
         });
+        DBObject obj = DBObjects.from(new HashMap<String, Object>()
+        {
+            {
+                        put("name", "Michael");
+                        put("surname", "Harris");
+                        put("age", 41);
+                        put("_id", "4df7b8e8663b85b105725d35");
+            }
+        });
+        
         assertEquals("John", o.get("name"));
         assertEquals(new ObjectId("4df7b8e8663b85b105725d34"), o.get("_id"));
+        assertEquals("Michael", obj.get("name"));
+        assertEquals(new ObjectId("4df7b8e8663b85b105725d35"), o.get("_id"));
     }
 
     @Test
