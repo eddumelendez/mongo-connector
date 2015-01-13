@@ -34,7 +34,7 @@ import com.mongodb.gridfs.GridFSInputFile;
 
 public class MongoClientImpl implements MongoClient
 {
-    private static final Logger logger = LoggerFactory.getLogger(MongoClientImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MongoClientImpl.class);
 
     private final DB db;
 
@@ -52,7 +52,7 @@ public class MongoClientImpl implements MongoClient
         }
         catch (final Exception e)
         {
-            logger.warn("Failed to properly clean cursors of db: " + db, e);
+            LOGGER.warn("Failed to properly clean cursors of db: " + db, e);
         }
 
         try
@@ -61,7 +61,7 @@ public class MongoClientImpl implements MongoClient
         }
         catch (final Exception e)
         {
-            logger.warn("Failed to properly set request done for db: " + db, e);
+            LOGGER.warn("Failed to properly set request done for db: " + db, e);
         }
     }
 
