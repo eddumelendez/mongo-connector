@@ -76,27 +76,22 @@ public class RestoreFile implements Comparable<RestoreFile>
     @Override
     public boolean equals(Object obj)
     {
-        if (this == obj)
-    	{
-            return true;
-    	}
-    	
-        if (obj == null || getClass() != obj.getClass())
-        {
-            return false;
-        }
-        
-        RestoreFile other = (RestoreFile) obj;
-        if ((file == null && other.file != null) || (collection == null && other.collection != null ))
-        {
-            return false;
-        }
-        else if (!file.equals(other.file) || !collection.equals(other.collection))
-        {
-            return false;
-        }
-        
-        return true;
+      if ( this == obj ) return true;
+      if ( !(obj instanceof RestoreFile) ) return false;
+      RestoreFile that = (RestoreFile)obj;
+      return
+        areEqual(this.collection, that.collection) &&
+        areEqual(this.file, that.file);
+    }
+      
+    private boolean areEqual(String oThis, String oThat)
+    {
+        return oThis == oThat;
+    }
+
+    private boolean areEqual(Object oThis, Object oThat)
+    {
+        return oThis == null ? oThat == null : oThis.equals(oThat);
     }
     
     @Override
