@@ -51,12 +51,16 @@ public class MongoCollection extends AbstractCollection<DBObject>
 	public int size()
 	{
         warnEagerMessage("size");
-        int i = 0;
-        for (@SuppressWarnings("unused")
-    	Object o : this)
-    	{
+        int i = 0;        
+        for (Iterator<? extends DBObject> it = o.iterator(); it.hasNext();) {
+            it.next();
             i++;
-    	}
+        }
+//      for (@SuppressWarnings("unused")
+//    	Object o : this)
+//    	{
+//            i++;
+//    	}
         return i;
 	}
 
