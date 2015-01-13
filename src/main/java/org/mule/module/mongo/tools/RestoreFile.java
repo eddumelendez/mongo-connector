@@ -84,11 +84,6 @@ public class RestoreFile implements Comparable<RestoreFile>
         areEqual(this.file, that.file);
     }
       
-    private boolean areEqual(String oThis, String oThat)
-    {
-        return oThis == oThat;
-    }
-
     private boolean areEqual(Object oThis, Object oThat)
     {
         return oThis == null ? oThat == null : oThis.equals(oThat);
