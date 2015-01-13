@@ -76,16 +76,16 @@ public class RestoreFile implements Comparable<RestoreFile>
     @Override
     public boolean equals(Object obj)
     {
-      if ( this == obj )
-      { 
-          return true;
-      }
-      if ( !(obj instanceof RestoreFile) ) 
-      {
-          return false;
-      }
-      RestoreFile that = (RestoreFile)obj;
-      return
+        if ( this == obj )
+        {  
+            return true;
+        }
+        if ( !(obj instanceof RestoreFile) ) 
+        {
+            return false;
+        }
+        RestoreFile that = (RestoreFile)obj;
+        return
         areEqual(this.collection, that.collection) &&
         areEqual(this.file, that.file);
     }
