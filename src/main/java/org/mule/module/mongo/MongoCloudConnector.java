@@ -75,7 +75,6 @@ public class MongoCloudConnector
      * The host of the Mongo server, it can also be a list of comma separated hosts for replicas
      */
     @Configurable
-    @Optional
     @Default("localhost")
     private String host;
 
