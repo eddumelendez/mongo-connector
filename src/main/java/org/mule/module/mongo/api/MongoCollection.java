@@ -20,7 +20,7 @@ import com.mongodb.DBObject;
 
 public class MongoCollection extends AbstractCollection<DBObject>
 {
-    private static final Logger LOGGER = LoggerFactory.getLogger(MongoCollection.class);
+    private static final Logger logger = LoggerFactory.getLogger(MongoCollection.class);
     private Iterable<? extends DBObject> o;
 
     public MongoCollection(Iterable<? extends DBObject> o)
@@ -79,9 +79,9 @@ public class MongoCollection extends AbstractCollection<DBObject>
      */
     private void warnEagerMessage(String message)
     {
-        if (LOGGER.isWarnEnabled())
+        if (logger.isWarnEnabled())
         {
-            LOGGER.warn(
+            logger.warn(
                 "Method {} needs to consume all the element. It is inefficient and thus should be used with care",
                 message);
         }
