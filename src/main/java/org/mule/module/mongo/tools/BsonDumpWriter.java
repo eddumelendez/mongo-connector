@@ -15,10 +15,14 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 import org.bson.BSON;
+import org.mule.module.mongo.api.MongoCollection;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class BsonDumpWriter extends DumpWriter
 {
     private static final String BSON_EXTENSION = "bson";
+    private static final Logger logger = LoggerFactory.getLogger(BsonDumpWriter.class);
 
     public BsonDumpWriter(String outputDirectory, String database)
     {
@@ -41,7 +45,10 @@ public class BsonDumpWriter extends DumpWriter
     {
         FileOutputStream outputStream = null;
         File outputFile = new File(getFilePath(collection));
-        outputFile.getParentFile().mkdirs();
+        if(!outputFile.getParentFile().mkdirs())
+        {
+            logger.info("Couldn't create dir: " + outputFile.getParentFile());
+        }
         try
         {
             outputStream = new FileOutputStream(outputFile, true);
