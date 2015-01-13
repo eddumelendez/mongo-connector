@@ -41,10 +41,7 @@ public class BsonDumpWriter extends DumpWriter
     {
         FileOutputStream outputStream = null;
         File outputFile = new File(getFilePath(collection));
-        if(!outputFile.getParentFile().mkdirs())
-        {
-            throw new IllegalStateException("Couldn't create dir: " + outputFile);
-        }
+        outputFile.getParentFile().mkdirs();
         try
         {
             outputStream = new FileOutputStream(outputFile, true);
