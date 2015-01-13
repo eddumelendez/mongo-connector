@@ -9,8 +9,6 @@
 
 package org.mule.module.mongo.tools;
 
-import java.io.IOException;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 public abstract class AbstractMongoUtility
