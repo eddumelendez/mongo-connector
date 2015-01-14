@@ -8,15 +8,6 @@
 
 package org.mule.module.mongo.automation;
 
-import org.junit.experimental.categories.Categories;
-import org.junit.experimental.categories.Categories.IncludeCategory;
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite.SuiteClasses;
-import org.mule.module.mongo.api.DBObjectsUnitTest;
-
-@RunWith(Categories.class)
-@IncludeCategory(SmokeTests.class)
-@SuiteClasses({ DBObjectsUnitTest.class})
 public interface SmokeTests {
 
 	/* category marker */ 
