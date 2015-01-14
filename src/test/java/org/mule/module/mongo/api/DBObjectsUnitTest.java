@@ -22,20 +22,18 @@ import java.util.Map;
 
 import org.bson.types.ObjectId;
 import org.junit.Test;
-import org.mule.api.store.ObjectDoesNotExistException;
 
 import com.mongodb.DBObject;
 
 @SuppressWarnings("serial")
 public class DBObjectsUnitTest
 {
-
     @Test
     public void fromNull() throws Exception
     {
         assertNull(DBObjects.from(null));
     }
-
+    
     @Test
     public void fromMap() throws Exception
     {
@@ -51,11 +49,10 @@ public class DBObjectsUnitTest
         assertThat(map, instanceOf(HashMap.class));
     }
     
-    @Test
+    @Test(expected=IllegalArgumentException.class)
     public void fromMapWithInteger()
     {
         int map = 43;
-        
         try
         {
             DBObjects.from(map);
