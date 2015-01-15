@@ -60,7 +60,8 @@ public interface MongoClient extends Closeable
                                    DBObject query,
                                    List<String> fields,
                                    Integer numToSkip,
-                                   Integer limit);
+                                   Integer limit,
+                                   DBObject sortBy);
 
     DBObject findOneObject(@NotNull String collection, DBObject query, List<String> fields, boolean failOnNotFound);
 
