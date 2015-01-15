@@ -44,12 +44,12 @@ public class CreateFileFromPayloadTestCases extends MongoTestParent {
 			
 			assertEquals("The created file should be named " + getTestRunMessageValue("filename1"), getTestRunMessageValue("filename1"), res.getFilename());
 			assertEquals("There should be 1 files found after create-file-from-payload", 1, findFiles());
+			deleteFilesCreatedByCreateFileFromPayload();
 			
-		} catch (Exception e) {
+		} catch (Exception e) 
+		{
 	         fail(ConnectorTestUtils.getStackTrace(e));
-	    }
-
-			
+	    }		
 	}
 	
 }
