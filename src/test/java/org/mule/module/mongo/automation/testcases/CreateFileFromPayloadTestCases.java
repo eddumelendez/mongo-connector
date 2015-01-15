@@ -36,20 +36,22 @@ public class CreateFileFromPayloadTestCases extends MongoTestParent {
 
 	@Category({ SmokeTests.class, RegressionTests.class })
 	@Test
-	public void testCreateFileFromPayload() {
-		try {
-			assertEquals("There should be 0 files found before create-file-from-payload", 0, findFiles());
+	public void testCreateFileFromPayload() 
+	{
+		try 
+		{
+		    deleteFilesCreatedByCreateFileFromPayload();
+		    assertEquals("There should be 0 files found before create-file-from-payload", 0, findFiles());
 			
 			GridFSInputFile res = createFileFromPayload(getTestRunMessageValue("filename1"));
 			
 			assertEquals("The created file should be named " + getTestRunMessageValue("filename1"), getTestRunMessageValue("filename1"), res.getFilename());
 			assertEquals("There should be 1 files found after create-file-from-payload", 1, findFiles());
-			deleteFilesCreatedByCreateFileFromPayload();
 			
-		} catch (Exception e) 
+		} 
+		catch (Exception e) 
 		{
 	         fail(ConnectorTestUtils.getStackTrace(e));
 	    }		
 	}
-	
 }
