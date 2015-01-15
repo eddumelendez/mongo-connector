@@ -53,14 +53,7 @@ public class DBObjectsUnitTest
     public void fromMapWithInteger()
     {
         int map = 43;
-        try
-        {
-            DBObjects.from(map);
-        }
-        catch(IllegalArgumentException ia)
-        {
-            //NOOP
-        }
+        DBObjects.from(map);
     }
     
     @Test
