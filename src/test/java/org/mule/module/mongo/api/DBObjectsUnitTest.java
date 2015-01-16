@@ -22,18 +22,22 @@ import java.util.Map;
 
 import org.bson.types.ObjectId;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
+import org.mule.module.mongo.automation.RegressionTests;
 
 import com.mongodb.DBObject;
 
 @SuppressWarnings("serial")
 public class DBObjectsUnitTest
 {
+    @Category({RegressionTests.class})
     @Test
     public void fromNull() throws Exception
     {
         assertNull(DBObjects.from(null));
     }
     
+    @Category({RegressionTests.class})
     @Test
     public void fromMap() throws Exception
     {
@@ -49,6 +53,7 @@ public class DBObjectsUnitTest
         assertThat(map, instanceOf(HashMap.class));
     }
     
+    @Category({RegressionTests.class})
     @Test(expected=IllegalArgumentException.class)
     public void fromMapWithInteger()
     {
@@ -56,6 +61,7 @@ public class DBObjectsUnitTest
         DBObjects.from(map);
     }
     
+    @Category({RegressionTests.class})
     @Test
     public void fromMapWithId() throws Exception
     {
@@ -71,7 +77,8 @@ public class DBObjectsUnitTest
         assertEquals("John", o.get("name"));
         assertEquals(500, o.get("_id"));
     }
-
+    
+    @Category({RegressionTests.class})
     @Test
     public void fromMapWithObjectId() throws Exception
     {
@@ -88,6 +95,7 @@ public class DBObjectsUnitTest
         assertEquals(new ObjectId("4df7b8e8663b85b105725d34"), o.get("_id"));
     }
     
+    @Category({RegressionTests.class})
     @Test
     public void fromMapWithNestedObject() throws Exception
     {
@@ -110,7 +118,8 @@ public class DBObjectsUnitTest
         assertThat(o.get("cat"), instanceOf(DBObject.class));
         assertEquals("Garfield", ((DBObject) o.get("cat")).get("name"));
     }
-
+    
+    @Category({RegressionTests.class})
     @Test
     public void fromMapWithNestedList() throws Exception
     {

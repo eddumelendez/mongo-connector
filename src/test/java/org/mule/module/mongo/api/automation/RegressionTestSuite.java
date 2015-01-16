@@ -82,7 +82,7 @@ import org.mule.module.mongo.automation.testcases.UpdateObjectsUsingQueryMapTest
 		SaveObjectTestCases.class, UpdateObjectsByFunctionTestCases.class,
 		UpdateObjectsByFunctionUsingMapTestCases.class,
 		UpdateObjectsTestCases.class, UpdateObjectsUsingMapTestCases.class,
-		UpdateObjectsUsingQueryMapTestCases.class})
+		UpdateObjectsUsingQueryMapTestCases.class,DBObjectsUnitTest.class})
 public class RegressionTestSuite {
 
 }
