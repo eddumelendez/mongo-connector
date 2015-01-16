@@ -19,7 +19,6 @@ import org.mule.module.mongo.automation.testcases.CountObjectsUsingQueryMapTestC
 import org.mule.module.mongo.automation.testcases.CreateCollectionTestCases;
 import org.mule.module.mongo.automation.testcases.CreateFileFromPayloadTestCases;
 import org.mule.module.mongo.automation.testcases.CreateIndexTestCases;
-import org.mule.module.mongo.automation.testcases.DBObjectsTestCases;
 import org.mule.module.mongo.automation.testcases.DropCollectionTestCases;
 import org.mule.module.mongo.automation.testcases.DropDatabaseTestCases;
 import org.mule.module.mongo.automation.testcases.DropIndexTestCases;
@@ -105,8 +104,7 @@ import org.mule.module.mongo.automation.testcases.UpdateObjectsUsingQueryMapTest
 	UpdateObjectsByFunctionUsingMapTestCases.class,
 	UpdateObjectsTestCases.class,
 	UpdateObjectsUsingMapTestCases.class,
-	UpdateObjectsUsingQueryMapTestCases.class,
-	DBObjectsTestCases.class
+	UpdateObjectsUsingQueryMapTestCases.class
 		})
 
 public class RegressionTestSuite {
