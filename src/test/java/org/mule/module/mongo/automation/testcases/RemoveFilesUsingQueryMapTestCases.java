@@ -11,14 +11,10 @@ package org.mule.module.mongo.automation.testcases;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
-import java.util.HashMap;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.mule.api.MuleEvent;
-import org.mule.api.processor.MessageProcessor;
 import org.mule.module.mongo.automation.MongoTestParent;
 import org.mule.module.mongo.automation.RegressionTests;
 import org.mule.modules.tests.ConnectorTestUtils;

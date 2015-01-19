@@ -40,7 +40,6 @@ import org.springframework.util.DigestUtils;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBObject;
-import com.mongodb.Mongo;
 import com.mongodb.QueryBuilder;
 
 /**

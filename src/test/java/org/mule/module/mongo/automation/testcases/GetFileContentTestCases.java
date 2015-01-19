@@ -18,7 +18,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.mule.api.MuleMessage;
 import org.mule.module.mongo.automation.MongoTestParent;
 import org.mule.module.mongo.automation.RegressionTests;
 import org.mule.modules.tests.ConnectorTestUtils;
