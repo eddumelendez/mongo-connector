@@ -12,6 +12,7 @@ import org.junit.experimental.categories.Categories;
 import org.junit.experimental.categories.Categories.IncludeCategory;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite.SuiteClasses;
+import org.mule.module.mongo.MongoTestConnection;
 import org.mule.module.mongo.api.DBObjectsUnitTest;
 import org.mule.module.mongo.api.FieldsSetUnitTest;
 import org.mule.module.mongo.api.MongoCollectionUnitTest;
@@ -64,28 +65,28 @@ import org.mule.module.mongo.automation.testcases.UpdateObjectsUsingQueryMapTest
 @SuiteClasses({ AddUserTestCases.class, CountObjectsTestCases.class,
 		CountObjectsUsingQueryMapTestCases.class,
 		CreateCollectionTestCases.class, CreateFileFromPayloadTestCases.class,
-		CreateIndexTestCases.class, DropCollectionTestCases.class,
-		DropDatabaseTestCases.class, DropIndexTestCases.class,
-		DumpTestCases.class, ExecuteCommandTestCases.class,
-		ExistsCollectionTestCases.class, FindFilesTestCases.class,
-		FindFilesUsingQueryMapTestCases.class, FindObjectsTestCases.class,
-		FindObjectsUsingQueryMapTestCases.class, FindOneFileTestCases.class,
-		FindOneFileUsingQueryMapTestCases.class, FindOneObjectTestCases.class,
-		FindOneObjectUsingQueryMapTestCases.class,
-		GetFileContentTestCases.class,
-		GetFileContentUsingQueryMapTestCases.class,
+		CreateIndexTestCases.class, DBObjectsUnitTest.class,
+		DropCollectionTestCases.class, DropDatabaseTestCases.class,
+		DropIndexTestCases.class, DumpTestCases.class,ExecuteCommandTestCases.class,
+		ExistsCollectionTestCases.class, FieldsSetUnitTest.class,
+		FindFilesTestCases.class, FindFilesUsingQueryMapTestCases.class,
+		FindObjectsTestCases.class,FindObjectsUsingQueryMapTestCases.class, 
+		FindOneFileTestCases.class, FindOneFileUsingQueryMapTestCases.class,
+		FindOneObjectTestCases.class, FindOneObjectUsingQueryMapTestCases.class,
+		GetFileContentTestCases.class, GetFileContentUsingQueryMapTestCases.class,
 		IncrementalDumpTestCases.class, InsertObjectFromMapTestCases.class,
 		InsertObjectTestCases.class, ListCollectionTestCases.class,
 		ListFilesTestCases.class, ListFilesUsingQueryMapTestCases.class,
 		ListIndicesTestCases.class, MapReduceObjectsTestCases.class,
+		MongoCollectionUnitTest.class, MongoTestConnection.class,
 		RemoveFilesTestCases.class, RemoveFilesUsingQueryMapTestCases.class,
 		RemoveObjectsTestCases.class, RemoveObjectsUsingQueryMapTestCases.class,
 		RestoreTestCases.class, SaveObjectFromMapTestCases.class,
 		SaveObjectTestCases.class, UpdateObjectsByFunctionTestCases.class,
 		UpdateObjectsByFunctionUsingMapTestCases.class,
 		UpdateObjectsTestCases.class, UpdateObjectsUsingMapTestCases.class,
-		UpdateObjectsUsingQueryMapTestCases.class, DBObjectsUnitTest.class,
-		FieldsSetUnitTest.class, MongoCollectionUnitTest.class})
+		UpdateObjectsUsingQueryMapTestCases.class
+		})
 public class RegressionTestSuite {
 
 }

@@ -12,6 +12,7 @@ import org.junit.experimental.categories.Categories;
 import org.junit.experimental.categories.Categories.IncludeCategory;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite.SuiteClasses;
+import org.mule.module.mongo.MongoTestConnection;
 import org.mule.module.mongo.api.DBObjectsUnitTest;
 import org.mule.module.mongo.api.FieldsSetUnitTest;
 import org.mule.module.mongo.api.MongoCollectionUnitTest;
@@ -71,12 +72,14 @@ import org.mule.module.mongo.automation.testcases.UpdateObjectsUsingQueryMapTest
 	CreateCollectionTestCases.class,
 	CreateFileFromPayloadTestCases.class,
 	CreateIndexTestCases.class,
+	DBObjectsUnitTest.class,
 	DropCollectionTestCases.class,
 	DropDatabaseTestCases.class,
 	DropIndexTestCases.class,
 	DumpTestCases.class,
 	ExecuteCommandTestCases.class,
 	ExistsCollectionTestCases.class,
+	FieldsSetUnitTest.class,
 	FindFilesTestCases.class,
 	FindFilesUsingQueryMapTestCases.class,
 	FindObjectsTestCases.class,
@@ -95,6 +98,8 @@ import org.mule.module.mongo.automation.testcases.UpdateObjectsUsingQueryMapTest
 	ListFilesUsingQueryMapTestCases.class,
 	ListIndicesTestCases.class,
 	MapReduceObjectsTestCases.class,
+	MongoCollectionUnitTest.class,
+	MongoTestConnection.class,
 	PoolingTestCases.class,
 	RemoveFilesTestCases.class,
 	RemoveFilesUsingQueryMapTestCases.class,
@@ -108,8 +113,8 @@ import org.mule.module.mongo.automation.testcases.UpdateObjectsUsingQueryMapTest
 	UpdateObjectsTestCases.class,
 	UpdateObjectsUsingMapTestCases.class,
 	UpdateObjectsUsingQueryMapTestCases.class,
-	DBObjectsUnitTest.class,
-	FieldsSetUnitTest.class,
+	
+	
 	MongoCollectionUnitTest.class
 		})
 
