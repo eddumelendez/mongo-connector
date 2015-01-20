@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.mongodb.*;
+
 import org.apache.commons.lang.Validate;
 import org.bson.types.BasicBSONList;
 import org.mule.api.ConnectionException;
@@ -53,6 +54,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.mongodb.util.JSON;
+
 import org.mule.api.annotations.ReconnectOn;
 
 /**
@@ -1142,6 +1144,15 @@ public class MongoCloudConnector
         {
             logger.info(ex.getMessage(), ex); 
             throw new ConnectionException(ConnectionExceptionCode.UNKNOWN_HOST, ex.getLocalizedMessage(), ex.getMessage(), ex.getCause());
+        }
+        catch (final MongoException.Network mn)
+        {
+        	logger.info(mn.getMessage(), mn);
+        	throw new ConnectionException(ConnectionExceptionCode.CANNOT_REACH, mn.getLocalizedMessage(), mn.getMessage(), mn.getCause());
+        }
+        catch (final IllegalArgumentException ia){
+        	logger.info(ia.getMessage(), ia);
+        	throw new ConnectionException(ConnectionExceptionCode.CANNOT_REACH, ia.getLocalizedMessage(), ia.getMessage(), ia.getCause());
         }
     }
 
