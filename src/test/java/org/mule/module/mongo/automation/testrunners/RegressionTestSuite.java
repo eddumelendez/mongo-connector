@@ -12,7 +12,6 @@ import org.junit.experimental.categories.Categories;
 import org.junit.experimental.categories.Categories.IncludeCategory;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite.SuiteClasses;
-import org.mule.module.mongo.MongoTestConnection;
 import org.mule.module.mongo.api.DBObjectsUnitTest;
 import org.mule.module.mongo.api.FieldsSetUnitTest;
 import org.mule.module.mongo.api.MongoCollectionUnitTest;
@@ -99,7 +98,6 @@ import org.mule.module.mongo.automation.testcases.UpdateObjectsUsingQueryMapTest
 	ListIndicesTestCases.class,
 	MapReduceObjectsTestCases.class,
 	MongoCollectionUnitTest.class,
-	MongoTestConnection.class,
 	PoolingTestCases.class,
 	RemoveFilesTestCases.class,
 	RemoveFilesUsingQueryMapTestCases.class,
@@ -112,11 +110,8 @@ import org.mule.module.mongo.automation.testcases.UpdateObjectsUsingQueryMapTest
 	UpdateObjectsByFunctionUsingMapTestCases.class,
 	UpdateObjectsTestCases.class,
 	UpdateObjectsUsingMapTestCases.class,
-	UpdateObjectsUsingQueryMapTestCases.class,
-	
-	
-	MongoCollectionUnitTest.class
-		})
+	UpdateObjectsUsingQueryMapTestCases.class
+	})
 
 public class RegressionTestSuite {
 	
