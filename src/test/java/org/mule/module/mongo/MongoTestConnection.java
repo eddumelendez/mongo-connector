@@ -10,9 +10,15 @@ package org.mule.module.mongo;
 
 import static org.junit.Assert.assertTrue;
 
+import java.io.File;
+
+import org.apache.commons.io.FileUtils;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.mule.api.ConnectionException;
+import org.mule.module.mongo.automation.RegressionTests;
 
 public class MongoTestConnection
 {
@@ -25,6 +31,12 @@ public class MongoTestConnection
         connector.setHost("127.0.0.1");
     }
     
+    @After
+	public void tearDown() throws Exception {
+			connector.disconnect();
+    }
+    
+    @Category({ RegressionTests.class })
     @Test
     public void connectionIncorrectPort() throws ConnectionException
     {
@@ -32,6 +44,7 @@ public class MongoTestConnection
         assertTrue(!isConnected("admin","","test"));
     }
     
+    @Category({ RegressionTests.class })
     @Test
     public void connectionIncorrectCredentials()
     {
@@ -39,6 +52,7 @@ public class MongoTestConnection
         assertTrue(!isConnected("admin","zdrgdr","test"));
     }
     
+    @Category({ RegressionTests.class })
     @Test
     public void validConnection()
     {
