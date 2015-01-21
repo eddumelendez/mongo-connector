@@ -1148,11 +1148,11 @@ public class MongoCloudConnector
         catch (final MongoException.Network mn)
         {
             logger.info(mn.getMessage(), mn);
-        	throw new ConnectionException(ConnectionExceptionCode.CANNOT_REACH, mn.getLocalizedMessage(), mn.getMessage(), mn.getCause());
+            throw new ConnectionException(ConnectionExceptionCode.CANNOT_REACH, mn.getLocalizedMessage(), mn.getMessage(), mn.getCause());
         }
         catch (final IllegalArgumentException ia){
             logger.info(ia.getMessage(), ia);
-        	throw new ConnectionException(ConnectionExceptionCode.CANNOT_REACH, ia.getLocalizedMessage(), ia.getMessage(), ia.getCause());
+            throw new ConnectionException(ConnectionExceptionCode.CANNOT_REACH, ia.getLocalizedMessage(), ia.getMessage(), ia.getCause());
         }
     }
 
