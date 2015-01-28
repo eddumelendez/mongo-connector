@@ -28,6 +28,7 @@ import java.util.Map;
 import com.mongodb.*;
 
 import org.apache.commons.lang.Validate;
+import org.bson.BSONObject;
 import org.bson.types.BasicBSONList;
 import org.mule.api.ConnectionException;
 import org.mule.api.ConnectionExceptionCode;
@@ -1053,7 +1054,39 @@ public class MongoCloudConnector
     @Transformer(sourceTypes = {String.class})
     public static DBObject jsonToDbobject(final String input)
     {
-        return (DBObject) JSON.parse(input);
+        DBObject o = null;
+        BSONObject bsonObj = null;
+        
+        Object obj = JSON.parse(input);
+    	
+        if (obj instanceof BasicDBList) 
+        {	
+            BasicDBList basicList = (BasicDBList) obj;
+    		
+            if (basicList.size() > 1)
+            {
+                for(int i=0; i< basicList.size();i++)
+                {
+                    bsonObj = (BSONObject) basicList.get(0);
+                    @SuppressWarnings("rawtypes")
+                    Map entries = bsonObj.toMap();
+                    if(i>0)
+                    {
+                        o.putAll(entries);
+                    }
+                    else
+                    {
+                        o = new BasicDBObject(entries);
+                    }
+                }
+            }
+        } 
+        else 
+        {
+            o = (DBObject) obj;
+        }
+    	
+        return o;
     }
 
     /**
