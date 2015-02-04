@@ -46,13 +46,9 @@ public class MongoRestoreDirectory implements Callable<Void>
         {
             if(!isOplog(restoreFile.getCollection()))
             {
-                if(drop)
+                if(drop && !BackupUtils.isSystemCollection(restoreFile.getCollection()))
                 {
-                    // System collections cannot be dropped
-                    if(!BackupUtils.isSystemCollection(restoreFile.getCollection()))
-                    {
-                        mongoClient.dropCollection(restoreFile.getCollection());
-                    }
+                    mongoClient.dropCollection(restoreFile.getCollection());
                 }
 
                 DBCollection dbCollection = mongoClient.getCollection(restoreFile.getCollection());
@@ -106,23 +102,27 @@ public class MongoRestoreDirectory implements Callable<Void>
 
     private void processRestoreFiles(File input, List<RestoreFile> restoreFiles) throws IOException
     {
+        File unzippedFolder;
         if(ZipUtils.isZipFile(input))
         {
-            File unzippedFolder = new File(BackupUtils.removeExtension(input.getPath()));
+            unzippedFolder = new File(BackupUtils.removeExtension(input.getPath()));
             org.mule.util.FileUtils.unzip(input, unzippedFolder);
-            input = unzippedFolder;
-        }
-
-        if(input.isDirectory())
+    	}
+    	else
+    	{
+            unzippedFolder = input;
+    	}
+    	
+        if(unzippedFolder.isDirectory())
         {
-            for(File file : input.listFiles())
+            for(File file : unzippedFolder.listFiles())
             {
                 processRestoreFiles(file, restoreFiles);
             }
         }
-        else if(BackupUtils.isBsonFile(input))
+        else if(BackupUtils.isBsonFile(unzippedFolder))
         {
-            restoreFiles.add(new RestoreFile(input));
+            restoreFiles.add(new RestoreFile(unzippedFolder));
         }
     }
 

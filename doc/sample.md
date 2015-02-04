@@ -126,6 +126,10 @@ A *Global Element*allows to enter configuration information, such as your API cr
 7. Enter *movies* in the Collection field.  
 8.  Click **OK** to close the MongoDB Properties menu.
 
+Note:
+
+By the time you create a new mongodb client in order to connect with the database, mongo instance does not verify if the database exists, if it does you are able to operate with the db but if it does not, mongo creates an empty one with the name that you have provided 
+
 The MongoDB cloud connector configuration is complete. The red "x" next to its icon in the flow should no longer be present.
 
 ![](images/image014.jpg)

@@ -9,13 +9,11 @@
 
 package org.mule.module.mongo.tools;
 
-import java.io.IOException;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 public abstract class AbstractMongoUtility
 {
-    public void propagateException(Future<Void> future) throws IOException
+    public void propagateException(Future<Void> future)
     {
         try
         {
@@ -26,9 +24,9 @@ public abstract class AbstractMongoUtility
             Thread.currentThread().interrupt();
             future.cancel(true);
         }
-        catch(ExecutionException ee)
+        catch(Exception ex)
         {
-            throw new IOException(ee.getCause());
+            throw new RuntimeException(ex.getMessage(),ex);
         }
     }
 

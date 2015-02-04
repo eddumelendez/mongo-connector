@@ -11,6 +11,7 @@ package org.mule.module.mongo.api;
 import java.util.AbstractCollection;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,7 +20,7 @@ import com.mongodb.DBObject;
 
 public class MongoCollection extends AbstractCollection<DBObject>
 {
-    private static Logger logger = LoggerFactory.getLogger(MongoCollection.class);
+    private static final Logger logger = LoggerFactory.getLogger(MongoCollection.class);
     private Iterable<? extends DBObject> o;
 
     public MongoCollection(Iterable<? extends DBObject> o)
@@ -38,7 +39,7 @@ public class MongoCollection extends AbstractCollection<DBObject>
     public Object[] toArray()
     {
         warnEagerMessage("toArray");
-        LinkedList<Object> l = new LinkedList<Object>();
+        List<Object> l = new LinkedList<Object>();
         for (Object o : this)
         {
             l.add(o);
@@ -47,17 +48,17 @@ public class MongoCollection extends AbstractCollection<DBObject>
     }
 
     @Override
-    public int size()
-    {
+	public int size()
+	{
         warnEagerMessage("size");
-        int i = 0;
-        for (@SuppressWarnings("unused")
-        Object o : this)
+        int i = 0;        
+        for (Iterator<? extends DBObject> it = o.iterator(); it.hasNext();) 
         {
+            it.next();
             i++;
         }
         return i;
-    }
+	}
 
     /**
      * Same impl that those found in Object, in order to avoid eager elements

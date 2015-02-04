@@ -8,33 +8,25 @@
 
 package org.mule.module.mongo.api;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Collection;
-import java.util.List;
-
-import javax.validation.constraints.NotNull;
-
+import com.mongodb.*;
+import com.mongodb.MapReduceCommand.OutputType;
+import com.mongodb.gridfs.GridFS;
+import com.mongodb.gridfs.GridFSDBFile;
+import com.mongodb.gridfs.GridFSInputFile;
 import org.apache.commons.lang.Validate;
 import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DB;
-import com.mongodb.DBCollection;
-import com.mongodb.DBCursor;
-import com.mongodb.DBObject;
-import com.mongodb.MapReduceCommand.OutputType;
-import com.mongodb.MongoException;
-import com.mongodb.WriteResult;
-import com.mongodb.gridfs.GridFS;
-import com.mongodb.gridfs.GridFSDBFile;
-import com.mongodb.gridfs.GridFSInputFile;
+import javax.validation.constraints.NotNull;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Collection;
+import java.util.List;
 
 public class MongoClientImpl implements MongoClient
 {
-    private static final Logger LOGGER = LoggerFactory.getLogger(MongoClientImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(MongoClientImpl.class);
 
     private final DB db;
 
@@ -52,7 +44,7 @@ public class MongoClientImpl implements MongoClient
         }
         catch (final Exception e)
         {
-            LOGGER.warn("Failed to properly clean cursors of db: " + db, e);
+            logger.warn("Failed to properly clean cursors of db: " + db, e);
         }
 
         try
@@ -61,7 +53,7 @@ public class MongoClientImpl implements MongoClient
         }
         catch (final Exception e)
         {
-            LOGGER.warn("Failed to properly set request done for db: " + db, e);
+            logger.warn("Failed to properly set request done for db: " + db, e);
         }
     }
 
@@ -127,12 +119,14 @@ public class MongoClientImpl implements MongoClient
         Validate.notNull(collection);
         return db.collectionExists(collection);
     }
-
+    
+    @Override
     public Iterable<DBObject> findObjects(@NotNull final String collection,
                                           final DBObject query,
                                           final List<String> fields,
                                           final Integer numToSkip,
-                                          final Integer limit)
+                                          final Integer limit,
+                                          DBObject sortBy)
     {
         Validate.notNull(collection);
 
@@ -145,7 +139,10 @@ public class MongoClientImpl implements MongoClient
         {
             dbCursor = dbCursor.limit(limit);
         }
-
+        if(sortBy != null){
+            dbCursor.sort(sortBy);
+        }
+        
         return bug5588Workaround(dbCursor);
     }
 
@@ -157,9 +154,9 @@ public class MongoClientImpl implements MongoClient
         final DBObject element = db.getCollection(collection).findOne(query,
             FieldsSet.from(fields));
         
-		if (element == null && failOnNotFound)
+        if (element == null && failOnNotFound)
 		{
-			throw new MongoException("No object found for query " + query);
+            throw new MongoException("No object found for query " + query);
 		}
         return element;
     }
@@ -174,7 +171,10 @@ public class MongoClientImpl implements MongoClient
         db.getCollection(collection).insert(object,
             writeConcern.toMongoWriteConcern(db));
         final ObjectId id = (ObjectId) object.get("_id");
-        if (id == null) return null;
+        if (id == null)
+        { 
+            return null;
+        }
 
         return id.toStringMongod();
     }

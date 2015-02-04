@@ -18,7 +18,10 @@ import java.util.zip.ZipOutputStream;
 public class ZipUtils
 {
     private static final String ZIP_EXTENSION = "zip";
-
+    
+    private ZipUtils() {
+    }
+    
     public static void zipDirectory(String dbDumpPath) throws IOException
     {
         FileOutputStream fileOutputStream = new FileOutputStream(dbDumpPath + ".zip");
@@ -43,19 +46,23 @@ public class ZipUtils
                 addDirectory(zipOutputStream, file);
                 continue;
             }
-
-            byte[] buffer = new byte[1024];
             FileInputStream fileInputStream = new FileInputStream(file);
-            zipOutputStream.putNextEntry(new ZipEntry(file.getName()));
-
-            int length;
-            while((length = fileInputStream.read(buffer)) > 0)
+            try
             {
-                zipOutputStream.write(buffer, 0, length);
-            }
-            zipOutputStream.closeEntry();
-            fileInputStream.close();
+                byte[] buffer = new byte[1024];
+                zipOutputStream.putNextEntry(new ZipEntry(file.getName()));
 
+                int length;
+                while((length = fileInputStream.read(buffer)) > 0)
+                {
+                    zipOutputStream.write(buffer, 0, length);
+                }
+                zipOutputStream.closeEntry();
+            }
+            finally
+            {
+                fileInputStream.close();
+            }
         }
     }
 

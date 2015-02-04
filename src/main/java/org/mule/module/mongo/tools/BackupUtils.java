@@ -17,7 +17,10 @@ public class BackupUtils
 {
     private static final String SYSTEM_COLLECTION_PREFIX = "system.";
     private static final String BSON_EXTENSION = "bson";
-
+    
+    private BackupUtils() {
+    }
+    
     public static boolean isBsonFile(File file)
     {
         return hasExtension(file, BSON_EXTENSION);

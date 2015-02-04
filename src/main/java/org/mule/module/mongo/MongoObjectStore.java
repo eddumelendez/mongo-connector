@@ -40,7 +40,6 @@ import org.springframework.util.DigestUtils;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBObject;
-import com.mongodb.Mongo;
 import com.mongodb.QueryBuilder;
 
 /**
@@ -114,7 +113,7 @@ public class MongoObjectStore implements PartitionableExpirableObjectStore<Seria
     @PostConstruct
     public void initialize() throws UnknownHostException
     {
-        final DB db = new Mongo(host, port).getDB(database);
+        final DB db = new com.mongodb.MongoClient(host, port).getDB(database);
         if (StringUtils.isNotEmpty(password))
         {
             Validate.notEmpty(username, "Username must not be empty if password is set");
@@ -144,9 +143,9 @@ public class MongoObjectStore implements PartitionableExpirableObjectStore<Seria
         return allKeys(OBJECTSTORE_DEFAULT_PARTITION_NAME);
     }
 
-    public void expire(final int entryTTL, final int maxEntries) throws ObjectStoreException
+    public void expire(final int entryTtl, final int maxEntries) throws ObjectStoreException
     {
-        expire(entryTTL, maxEntries, OBJECTSTORE_DEFAULT_PARTITION_NAME);
+        expire(entryTtl, maxEntries, OBJECTSTORE_DEFAULT_PARTITION_NAME);
     }
 
     public boolean contains(final Serializable key) throws ObjectStoreException
@@ -184,16 +183,16 @@ public class MongoObjectStore implements PartitionableExpirableObjectStore<Seria
         final ObjectId objectId = getObjectIdFromKey(key);
         final DBObject query = getQueryForObjectId(objectId);
         final String collection = getCollectionName(partitionName);
-        return mongoClient.findObjects(collection, query, NO_FIELD_LIST, null, null).iterator().hasNext();
+        return mongoClient.findObjects(collection, query, NO_FIELD_LIST, null, null, null).iterator().hasNext();
     }
 
     public List<Serializable> allKeys(final String partitionName) throws ObjectStoreException
     {
         final String collection = getCollectionName(partitionName);
         final Iterable<DBObject> keyObjects = mongoClient.findObjects(collection, new BasicDBObject(),
-            Arrays.asList(KEY_FIELD), null, null);
+            Arrays.asList(KEY_FIELD), null, null, null);
 
-        final ArrayList<Serializable> results = new ArrayList<Serializable>();
+        final List<Serializable> results = new ArrayList<Serializable>();
         for (final DBObject keyObject : keyObjects)
         {
             results.add((Serializable) SerializationUtils.deserialize((byte[]) keyObject.get(KEY_FIELD)));
@@ -203,7 +202,7 @@ public class MongoObjectStore implements PartitionableExpirableObjectStore<Seria
 
     public List<String> allPartitions() throws ObjectStoreException
     {
-        final ArrayList<String> results = new ArrayList<String>();
+        final List<String> results = new ArrayList<String>();
 
         for (final String collection : mongoClient.listCollections())
         {
@@ -274,11 +273,11 @@ public class MongoObjectStore implements PartitionableExpirableObjectStore<Seria
         // NOOP
     }
 
-    public void expire(final int entryTTL, final int ignored_maxEntries, final String partitionName)
+    public void expire(final int entryTtl, final int ignoredMaxEntries, final String partitionName)
         throws ObjectStoreException
     {
         final String collection = getCollectionName(partitionName);
-        final long expireAt = System.currentTimeMillis() - entryTTL;
+        final long expireAt = System.currentTimeMillis() - entryTtl;
         final DBObject query = QueryBuilder.start(TIMESTAMP_FIELD).lessThan(expireAt).get();
         mongoClient.removeObjects(collection, query, getWriteConcern());
     }
@@ -371,13 +370,14 @@ public class MongoObjectStore implements PartitionableExpirableObjectStore<Seria
     private ObjectId getObjectIdFromKey(final byte[] keyAsBytes)
     {
         // hash the key and combine the resulting 16 bytes down to 12
+        final ObjectId objectId;
         final byte[] md5Digest = DigestUtils.md5Digest(keyAsBytes);
         final byte[] id = ArrayUtils.subarray(md5Digest, 0, 12);
         for (int i = 0; i < 4; i++)
         {
             id[i * 3] = (byte) (id[i * 3] ^ md5Digest[12 + i]);
         }
-        final ObjectId objectId = new ObjectId(id);
+        objectId = new ObjectId(id);
         return objectId;
     }
 
@@ -390,7 +390,7 @@ public class MongoObjectStore implements PartitionableExpirableObjectStore<Seria
         throws ObjectDoesNotExistException
     {
         final Iterator<DBObject> iterator = mongoClient.findObjects(collection, query,
-            Arrays.asList(VALUE_FIELD), null, null).iterator();
+            Arrays.asList(VALUE_FIELD), null, null, null).iterator();
 
         if (!iterator.hasNext())
         {

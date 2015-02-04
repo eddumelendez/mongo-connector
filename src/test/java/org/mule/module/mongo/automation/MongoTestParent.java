@@ -18,7 +18,6 @@ import java.util.Map;
 import org.junit.Rule;
 import org.junit.rules.TemporaryFolder;
 import org.junit.rules.Timeout;
-import org.mule.api.MuleEvent;
 import org.mule.module.mongo.api.MongoCollection;
 import org.mule.modules.tests.ConnectorTestCase;
 import org.mule.modules.tests.ConnectorTestUtils;

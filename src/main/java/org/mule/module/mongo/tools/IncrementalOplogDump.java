@@ -111,6 +111,10 @@ public class IncrementalOplogDump implements Callable<Void>
             return new BSONTimestamp(Integer.parseInt(parts[0]), Integer.parseInt(parts[1]));
 
         }
+        catch(NullPointerException ne)
+        {
+            throw new RuntimeException(ne.getMessage(),ne);
+        }
         finally
         {
             if(input != null)
