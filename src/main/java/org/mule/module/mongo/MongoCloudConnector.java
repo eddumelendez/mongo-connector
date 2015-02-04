@@ -578,6 +578,7 @@ public class MongoCloudConnector
      * @param fields alternative way of passing fields as a literal List
      * @param numToSkip number of objects skip (offset)
      * @param limit limit of objects to return
+     * @param sortBy indicates the {@link DBObject} used to sort the results
      * @return an iterable of {@link DBObject}
      */
     @Processor
@@ -603,6 +604,7 @@ public class MongoCloudConnector
      * @param fields alternative way of passing fields as a literal List
      * @param numToSkip number of objects skip (offset)
      * @param limit limit of objects to return
+     * @param sortBy indicates the {@link DBObject} used to sort the results
      * @return an iterable of {@link DBObject}
      */
     @Processor
