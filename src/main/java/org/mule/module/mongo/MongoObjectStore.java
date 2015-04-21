@@ -24,7 +24,6 @@ import org.apache.commons.lang.Validate;
 import org.bson.types.ObjectId;
 import org.mule.api.MuleContext;
 import org.mule.api.annotations.Configurable;
-import org.mule.api.annotations.Module;
 import org.mule.api.annotations.param.Default;
 import org.mule.api.annotations.param.Optional;
 import org.mule.api.context.MuleContextAware;
@@ -48,8 +47,6 @@ import com.mongodb.QueryBuilder;
  * 
  * @author MuleSoft Inc.
  */
-
-@Module(name = "mongo-object-store", schemaVersion = "2.0")
 public class MongoObjectStore implements PartitionableExpirableObjectStore<Serializable>, MuleContextAware
 {
     private static final String OBJECTSTORE_COLLECTION_PREFIX = "mule.objectstore.";
