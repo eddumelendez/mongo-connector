@@ -23,20 +23,17 @@ import com.mongodb.BasicDBObject;
 
 public class PoolingTestCases extends MongoTestParent {
 
-    @SuppressWarnings("unchecked")
     @Before
     public void setUp() throws Exception {
             // Create collection
             initializeTestRunMessage("countObjects");
             runFlowAndGetPayload("create-collection");
-
     }
 
     @After
     public void tearDown() throws Exception {
             // Delete collection
             runFlowAndGetPayload("drop-collection");
-
     }
 
     @Category({ RegressionTests.class })
@@ -56,7 +53,7 @@ public class PoolingTestCases extends MongoTestParent {
             	runFlowAndGetPayload("count-objects");
     		} catch (Exception e) {
    	         fail(ConnectorTestUtils.getStackTrace(e));
-   	    }
+    		}
 
         }
 

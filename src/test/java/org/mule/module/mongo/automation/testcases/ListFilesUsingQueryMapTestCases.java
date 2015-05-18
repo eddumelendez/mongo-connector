@@ -45,6 +45,7 @@ public class ListFilesUsingQueryMapTestCases extends MongoTestParent {
 
 	@Category({ RegressionTests.class })
 	@Test
+	@SuppressWarnings("unchecked")
 	public void testListFilesUsingQueryMap_emptyQuery() {
 		MuleMessage response = null;
 		try {
@@ -69,6 +70,7 @@ public class ListFilesUsingQueryMapTestCases extends MongoTestParent {
 
 	@Category({ RegressionTests.class })
 	@Test
+	@SuppressWarnings("unchecked")
 	public void testListFilesUsingQueryMap_nonemptyQuery() {
 		MuleMessage response = null;
 		try {

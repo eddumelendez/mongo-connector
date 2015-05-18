@@ -58,10 +58,10 @@ public class MongoTestDriver
     public void setup() throws Exception
     {
         connector = new MongoCloudConnector();
-        connector.setHost("127.0.0.1");
-        connector.setPort(27017);
+        connector.getStrategy().setHost("127.0.0.1");
+        connector.getStrategy().setPort(27017);
         //connector.connect("admin", "pepe", "test");
-        connector.connect("admin", "", "test");
+        connector.getStrategy().connect("admin", "", "test");
         connector.createCollection(MAIN_COLLECTION, false, 100, 1000);
     }
 
@@ -343,8 +343,9 @@ public class MongoTestDriver
             assertEquals("text/plain", file.get("contentType"));
             assertEquals("bar", ((DBObject) file.get("metadata")).get("foo"));
 
-            InputStream in = connector.getFileContent(filenameQuery("testFile.txt"));
-            assertEquals("hello world", new Scanner(in).nextLine());
+            try (InputStream in = connector.getFileContent(filenameQuery("testFile.txt"))) {
+            	assertEquals("hello world", new Scanner(in).nextLine());
+            }
         }
         finally
         {

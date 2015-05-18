@@ -45,6 +45,7 @@ public class ListFilesTestCases extends MongoTestParent {
 
 	@Category({ RegressionTests.class })
 	@Test
+	@SuppressWarnings("unchecked")
 	public void testListFiles_emptyQuery() {
 		MuleMessage response = null;
 		try {
@@ -68,6 +69,7 @@ public class ListFilesTestCases extends MongoTestParent {
 
 	@Category({ RegressionTests.class })
 	@Test
+	@SuppressWarnings("unchecked")
 	public void testListFiles_nonemptyQuery() {
 		DBObject queryRef = (DBObject) getTestRunMessageValue("queryRef");
 		queryRef.put((String) getTestRunMessageValue("key"), getTestRunMessageValue("value"));

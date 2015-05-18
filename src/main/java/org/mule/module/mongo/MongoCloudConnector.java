@@ -19,30 +19,20 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.UnknownHostException;
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 import com.mongodb.*;
 
-import org.apache.commons.lang.Validate;
 import org.bson.BSONObject;
 import org.bson.types.BasicBSONList;
-import org.mule.api.ConnectionException;
-import org.mule.api.ConnectionExceptionCode;
 import org.mule.api.annotations.*;
-import org.mule.api.annotations.display.Password;
 import org.mule.api.annotations.display.Placement;
-import org.mule.api.annotations.param.ConnectionKey;
 import org.mule.api.annotations.param.Default;
 import org.mule.api.annotations.param.Optional;
 import org.mule.api.annotations.param.Payload;
 import org.mule.module.mongo.api.IndexOrder;
-import org.mule.module.mongo.api.MongoClient;
-import org.mule.module.mongo.api.MongoClientAdaptor;
-import org.mule.module.mongo.api.MongoClientImpl;
 import org.mule.module.mongo.api.MongoCollection;
 import org.mule.module.mongo.api.WriteConcern;
 import org.mule.module.mongo.tools.BackupConstants;
@@ -50,9 +40,6 @@ import org.mule.module.mongo.tools.IncrementalMongoDump;
 import org.mule.module.mongo.tools.MongoDump;
 import org.mule.module.mongo.tools.MongoRestore;
 import org.mule.transformer.types.MimeTypes;
-import org.mule.util.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.mongodb.util.JSON;
 
@@ -64,81 +51,25 @@ import org.mule.api.annotations.ReconnectOn;
  * 
  * @author MuleSoft, inc.
  */
-@Connector(name = "mongo", schemaVersion = "2.0", friendlyName = "Mongo DB", minMuleVersion = "3.5", metaData = MetaDataSwitch.OFF)
+@Connector(name = "mongo", schemaVersion = "2.0", friendlyName = "Mongo DB", minMuleVersion = "3.6")
 public class MongoCloudConnector
 {
-    private static final Logger logger = LoggerFactory.getLogger(MongoCloudConnector.class);
-
     private static final String CAPPED_DEFAULT_VALUE = "false";
     private static final String WRITE_CONCERN_DEFAULT_VALUE = "DATABASE_DEFAULT";
     private static final String BACKUP_THREADS = "5";
     private static final String DEFAULT_OUTPUT_DIRECTORY = "dump";
 
-    /**
-     * The host of the Mongo server, it can also be a list of comma separated hosts for replicas
-     */
-    @Configurable
-    @Default("localhost")
-    private String host;
+	@ConnectionStrategy
+	private ConnectionManagementStrategy strategy;
 
-    /**
-     * The port of the Mongo server
-     */
-    @Configurable
-    @Optional
-    @Default("27017")
-    private int port;
-
-    /**
-     * The number of connections allowed per host (the pool size, per host)
-     */
-    @Configurable
-    @Optional
-    public Integer connectionsPerHost;
-
-    /**
-     * Multiplier for connectionsPerHost for # of threads that can block
-     */
-    @Configurable
-    @Optional
-    public Integer threadsAllowedToBlockForConnectionMultiplier;
-
-    /**
-     * The max wait time for a blocking thread for a connection from the pool in ms.
-     */
-    @Configurable
-    @Optional
-    public Integer maxWaitTime;
-
-    /**
-     * The connection timeout in milliseconds; this is for establishing the socket connections
-     * (open). 0 is default and infinite.
-     */
-    @Configurable
-    @Optional
-    @Default("30000")
-    private Integer connectTimeout;
-
-    /**
-     * The socket timeout. 0 is default and infinite.
-     */
-    @Configurable
-    @Optional
-    private Integer socketTimeout;
-
-    /**
-     * This controls whether the system retries automatically on connection errors.
-     */
-    @Configurable
-    @Optional
-    private Boolean autoConnectRetry;
-
-    private String database;
-
-    private Mongo mongo;
-
-    private MongoClient client;
-
+	public ConnectionManagementStrategy getStrategy() {
+		return strategy;
+	}
+	
+	public void setStrategy(ConnectionManagementStrategy strategy) {
+		this.strategy = strategy;
+	}
+	
     /**
      * Adds a new user for this db
      * <p/>
@@ -152,7 +83,7 @@ public class MongoCloudConnector
 	@ReconnectOn(exceptions = IllegalStateException.class)
     public WriteResult addUser(final String newUsername, final String newPassword)
     {
-        return client.addUser(newUsername, newPassword);
+        return strategy.getClient().addUser(newUsername, newPassword);
     }
 
     /**
@@ -164,7 +95,7 @@ public class MongoCloudConnector
 	@ReconnectOn(exceptions = IllegalStateException.class)
     public void dropDatabase()
     {
-        client.dropDatabase();
+    	strategy.getClient().dropDatabase();
     }
 
     /**
@@ -178,7 +109,7 @@ public class MongoCloudConnector
 	@ReconnectOn(exceptions = IllegalStateException.class)
     public Collection<String> listCollections()
     {
-        return client.listCollections();
+        return strategy.getClient().listCollections();
     }
 
     /**
@@ -193,7 +124,7 @@ public class MongoCloudConnector
 	@ReconnectOn(exceptions = IllegalStateException.class)
     public boolean existsCollection(final String collection)
     {
-        return client.existsCollection(collection);
+        return strategy.getClient().existsCollection(collection);
     }
 
     /**
@@ -208,7 +139,7 @@ public class MongoCloudConnector
 	@ReconnectOn(exceptions = IllegalStateException.class)
     public void dropCollection(final String collection)
     {
-        client.dropCollection(collection);
+        strategy.getClient().dropCollection(collection);
     }
 
     /**
@@ -228,7 +159,7 @@ public class MongoCloudConnector
                                  @Optional final Integer maxObjects,
                                  @Optional final Integer size)
     {
-        client.createCollection(collection, capped, maxObjects, size);
+        strategy.getClient().createCollection(collection, capped, maxObjects, size);
     }
 
     /**
@@ -244,10 +175,10 @@ public class MongoCloudConnector
     @Processor
 	@ReconnectOn(exceptions = IllegalStateException.class)
     public String insertObject(final String collection,
-                               @Optional @Default("#[payload]") final DBObject dbObject,
-                               @Optional @Default(WRITE_CONCERN_DEFAULT_VALUE) final WriteConcern writeConcern)
+                               @Default("#[payload]") final DBObject dbObject,
+                               @Default(WRITE_CONCERN_DEFAULT_VALUE) final WriteConcern writeConcern)
     {
-        return client.insertObject(collection, dbObject, writeConcern);
+        return strategy.getClient().insertObject(collection, dbObject, writeConcern);
     }
 
     /**
@@ -268,9 +199,9 @@ public class MongoCloudConnector
 	@ReconnectOn(exceptions = IllegalStateException.class)
     public String insertObjectFromMap(final String collection,
                                       @Placement(group = "Element Attributes") final Map<String, Object> elementAttributes,
-                                      @Optional @Default(WRITE_CONCERN_DEFAULT_VALUE) final WriteConcern writeConcern)
+                                      @Default(WRITE_CONCERN_DEFAULT_VALUE) final WriteConcern writeConcern)
     {
-        return client.insertObject(collection, (DBObject) adapt(elementAttributes), writeConcern);
+        return strategy.getClient().insertObject(collection, (DBObject) adapt(elementAttributes), writeConcern);
     }
 
     /**
@@ -293,12 +224,12 @@ public class MongoCloudConnector
 	@ReconnectOn(exceptions = IllegalStateException.class)
     public void updateObjects(final String collection,
                               final DBObject query,
-                              @Optional @Default("#[payload]") final DBObject element,
-                              @Optional @Default(CAPPED_DEFAULT_VALUE) final boolean upsert,
-                              @Optional @Default("true") final boolean multi,
-                              @Optional @Default(WRITE_CONCERN_DEFAULT_VALUE) final WriteConcern writeConcern)
+                              @Default("#[payload]") final DBObject element,
+                              @Default(CAPPED_DEFAULT_VALUE) final boolean upsert,
+                              @Default("true") final boolean multi,
+                              @Default(WRITE_CONCERN_DEFAULT_VALUE) final WriteConcern writeConcern)
     {
-        client.updateObjects(collection, query, element, upsert, multi, writeConcern);
+        strategy.getClient().updateObjects(collection, query, element, upsert, multi, writeConcern);
     }
 
     /**
@@ -322,11 +253,11 @@ public class MongoCloudConnector
     public void updateObjectsUsingQueryMap(final String collection,
                                            final Map<String, Object> queryAttributes,
                                            final DBObject element,
-                                           @Optional @Default(CAPPED_DEFAULT_VALUE) final boolean upsert,
-                                           @Optional @Default("true") final boolean multi,
-                                           @Optional @Default(WRITE_CONCERN_DEFAULT_VALUE) final WriteConcern writeConcern)
+                                           @Default(CAPPED_DEFAULT_VALUE) final boolean upsert,
+                                           @Default("true") final boolean multi,
+                                           @Default(WRITE_CONCERN_DEFAULT_VALUE) final WriteConcern writeConcern)
     {
-        client.updateObjects(collection, (DBObject) adapt(queryAttributes), element, upsert, multi,
+        strategy.getClient().updateObjects(collection, (DBObject) adapt(queryAttributes), element, upsert, multi,
             writeConcern);
     }
 
@@ -350,11 +281,11 @@ public class MongoCloudConnector
     public void updateObjectsUsingMap(final String collection,
                                       @Placement(group = "Query Attributes") final Map<String, Object> queryAttributes,
                                       @Placement(group = "Element Attributes") final Map<String, Object> elementAttributes,
-                                      @Optional @Default(CAPPED_DEFAULT_VALUE) final boolean upsert,
-                                      @Optional @Default("true") final boolean multi,
-                                      @Optional @Default(WRITE_CONCERN_DEFAULT_VALUE) final WriteConcern writeConcern)
+                                      @Default(CAPPED_DEFAULT_VALUE) final boolean upsert,
+                                      @Default("true") final boolean multi,
+                                      @Default(WRITE_CONCERN_DEFAULT_VALUE) final WriteConcern writeConcern)
     {
-        client.updateObjects(collection, (DBObject) adapt(queryAttributes),
+        strategy.getClient().updateObjects(collection, (DBObject) adapt(queryAttributes),
             (DBObject) adapt(elementAttributes), upsert, multi, writeConcern);
     }
 
@@ -379,13 +310,13 @@ public class MongoCloudConnector
                                         final String function,
                                         final DBObject query,
                                         final DBObject element,
-                                        @Optional @Default(CAPPED_DEFAULT_VALUE) final boolean upsert,
-                                        @Optional @Default(value = "true") final boolean multi,
-                                        @Optional @Default(WRITE_CONCERN_DEFAULT_VALUE) final WriteConcern writeConcern)
+                                        @Default(CAPPED_DEFAULT_VALUE) final boolean upsert,
+                                        @Default(value = "true") final boolean multi,
+                                        @Default(WRITE_CONCERN_DEFAULT_VALUE) final WriteConcern writeConcern)
     {
         final DBObject functionDbObject = fromFunction(function, element);
 
-        client.updateObjects(collection, query, functionDbObject, upsert, multi, writeConcern);
+        strategy.getClient().updateObjects(collection, query, functionDbObject, upsert, multi, writeConcern);
     }
 
     /**
@@ -410,13 +341,13 @@ public class MongoCloudConnector
                                                 final String function,
                                                 final Map<String, Object> queryAttributes,
                                                 final Map<String, Object> elementAttributes,
-                                                @Optional @Default(CAPPED_DEFAULT_VALUE) final boolean upsert,
-                                                @Optional @Default(value = "true") final boolean multi,
-                                                @Optional @Default(WRITE_CONCERN_DEFAULT_VALUE) final WriteConcern writeConcern)
+                                                @Default(CAPPED_DEFAULT_VALUE) final boolean upsert,
+                                                @Default(value = "true") final boolean multi,
+                                                @Default(WRITE_CONCERN_DEFAULT_VALUE) final WriteConcern writeConcern)
     {
         final DBObject functionDbObject = fromFunction(function, (DBObject) adapt(elementAttributes));
 
-        client.updateObjects(collection, (DBObject) adapt(queryAttributes), functionDbObject, upsert, multi,
+        strategy.getClient().updateObjects(collection, (DBObject) adapt(queryAttributes), functionDbObject, upsert, multi,
             writeConcern);
     }
 
@@ -432,10 +363,10 @@ public class MongoCloudConnector
     @Processor
 	@ReconnectOn(exceptions = IllegalStateException.class)
     public void saveObject(final String collection,
-                           @Optional @Default("#[payload]") final DBObject element,
-                           @Optional @Default(WRITE_CONCERN_DEFAULT_VALUE) final WriteConcern writeConcern)
+                           @Default("#[payload]") final DBObject element,
+                           @Default(WRITE_CONCERN_DEFAULT_VALUE) final WriteConcern writeConcern)
     {
-        client.saveObject(collection, from(element), writeConcern);
+        strategy.getClient().saveObject(collection, from(element), writeConcern);
     }
 
     /**
@@ -451,9 +382,9 @@ public class MongoCloudConnector
 	@ReconnectOn(exceptions = IllegalStateException.class)
     public void saveObjectFromMap(final String collection,
                                   @Placement(group = "Element Attributes") final Map<String, Object> elementAttributes,
-                                  @Optional @Default(WRITE_CONCERN_DEFAULT_VALUE) final WriteConcern writeConcern)
+                                  @Default(WRITE_CONCERN_DEFAULT_VALUE) final WriteConcern writeConcern)
     {
-        client.saveObject(collection, (DBObject) adapt(elementAttributes), writeConcern);
+        strategy.getClient().saveObject(collection, (DBObject) adapt(elementAttributes), writeConcern);
     }
 
     /**
@@ -471,10 +402,10 @@ public class MongoCloudConnector
     @Processor
 	@ReconnectOn(exceptions = IllegalStateException.class)
     public void removeObjects(final String collection,
-                              @Optional @Default("#[payload]") final DBObject query,
-                              @Optional @Default(WRITE_CONCERN_DEFAULT_VALUE) final WriteConcern writeConcern)
+                              @Default("#[payload]") final DBObject query,
+                              @Default(WRITE_CONCERN_DEFAULT_VALUE) final WriteConcern writeConcern)
     {
-        client.removeObjects(collection, query, writeConcern);
+        strategy.getClient().removeObjects(collection, query, writeConcern);
     }
 
     /**
@@ -492,9 +423,9 @@ public class MongoCloudConnector
 	@ReconnectOn(exceptions = IllegalStateException.class)
     public void removeObjectsUsingQueryMap(final String collection,
                                     @Placement(group = "Query Attributes") @Optional final Map<String, Object> queryAttributes,
-                                    @Optional @Default(WRITE_CONCERN_DEFAULT_VALUE) final WriteConcern writeConcern)
+                                    @Default(WRITE_CONCERN_DEFAULT_VALUE) final WriteConcern writeConcern)
     {
-        client.removeObjects(collection, (DBObject) adapt(queryAttributes), writeConcern);
+        strategy.getClient().removeObjects(collection, (DBObject) adapt(queryAttributes), writeConcern);
     }
 
     /**
@@ -526,7 +457,7 @@ public class MongoCloudConnector
                                                final String reduceFunction,
                                                @Optional final String outputCollection)
     {
-        return client.mapReduceObjects(collection, mapFunction, reduceFunction, outputCollection);
+        return strategy.getClient().mapReduceObjects(collection, mapFunction, reduceFunction, outputCollection);
     }
 
     /**
@@ -542,9 +473,9 @@ public class MongoCloudConnector
      */
     @Processor
 	@ReconnectOn(exceptions = IllegalStateException.class)
-    public long countObjects(final String collection, @Optional @Default("#[payload]") final DBObject query)
+    public long countObjects(final String collection, @Default("#[payload]") final DBObject query)
     {
-        return client.countObjects(collection, query);
+        return strategy.getClient().countObjects(collection, query);
     }
 
     /**
@@ -563,7 +494,7 @@ public class MongoCloudConnector
     public long countObjectsUsingQueryMap(final String collection,
                                           @Placement(group = "Query Attributes") @Optional final Map<String, Object> queryAttributes)
     {
-        return client.countObjects(collection, (DBObject) adapt(queryAttributes));
+        return strategy.getClient().countObjects(collection, (DBObject) adapt(queryAttributes));
     }
 
     /**
@@ -584,13 +515,13 @@ public class MongoCloudConnector
     @Processor
 	@ReconnectOn(exceptions = IllegalStateException.class)
     public Iterable<DBObject> findObjects(final String collection,
-                                          @Optional @Default("") final DBObject query,
+                                          @Default("") final DBObject query,
                                           @Placement(group = "Fields") @Optional final List<String> fields,
                                           @Optional final Integer numToSkip,
                                           @Optional final Integer limit,
                                           @Optional DBObject sortBy)
     {
-        return client.findObjects(collection, query, fields, numToSkip, limit, sortBy);
+        return strategy.getClient().findObjects(collection, query, fields, numToSkip, limit, sortBy);
     }
 
     /**
@@ -616,7 +547,7 @@ public class MongoCloudConnector
                                                        @Optional final Integer limit,
                                                        @Optional DBObject sortBy)
     {
-        return client.findObjects(collection, (DBObject) adapt(queryAttributes), fields, numToSkip, limit, sortBy);
+        return strategy.getClient().findObjects(collection, (DBObject) adapt(queryAttributes), fields, numToSkip, limit, sortBy);
     }
 
     /**
@@ -634,11 +565,11 @@ public class MongoCloudConnector
     @Processor
 	@ReconnectOn(exceptions = IllegalStateException.class)
     public DBObject findOneObject(final String collection,
-                                  @Optional @Default("#[payload]") final DBObject query,
+                                  @Default("#[payload]") final DBObject query,
                                   @Placement(group = "Fields") @Optional final List<String> fields,
-                                  @Optional @Default("true") Boolean failOnNotFound)
+                                  @Default("true") Boolean failOnNotFound)
     {
-        return client.findOneObject(collection, query, fields, failOnNotFound);
+        return strategy.getClient().findOneObject(collection, query, fields, failOnNotFound);
 
     }
 
@@ -659,9 +590,9 @@ public class MongoCloudConnector
     public DBObject findOneObjectUsingQueryMap(final String collection,
                                                @Placement(group = "Query Attributes") final Map<String, Object> queryAttributes,
                                                @Placement(group = "Fields") @Optional final List<String> fields,
-                                               @Optional @Default("true") Boolean failOnNotFound)
+                                               @Default("true") Boolean failOnNotFound)
     {
-        return client.findOneObject(collection, (DBObject) adapt(queryAttributes), fields, failOnNotFound);
+        return strategy.getClient().findOneObject(collection, (DBObject) adapt(queryAttributes), fields, failOnNotFound);
 
     }
 
@@ -678,9 +609,9 @@ public class MongoCloudConnector
 	@ReconnectOn(exceptions = IllegalStateException.class)
     public void createIndex(final String collection,
                             final String field,
-                            @Optional @Default("ASC") final IndexOrder order)
+                            @Default("ASC") final IndexOrder order)
     {
-        client.createIndex(collection, field, order);
+        strategy.getClient().createIndex(collection, field, order);
     }
 
     /**
@@ -695,7 +626,7 @@ public class MongoCloudConnector
 	@ReconnectOn(exceptions = IllegalStateException.class)
     public void dropIndex(final String collection, final String index)
     {
-        client.dropIndex(collection, index);
+        strategy.getClient().dropIndex(collection, index);
     }
 
     /**
@@ -710,7 +641,7 @@ public class MongoCloudConnector
 	@ReconnectOn(exceptions = IllegalStateException.class)
     public Collection<DBObject> listIndices(final String collection)
     {
-        return client.listIndices(collection);
+        return strategy.getClient().listIndices(collection);
     }
 
     /**
@@ -737,7 +668,7 @@ public class MongoCloudConnector
         final InputStream stream = toStream(payload);
         try
         {
-            return client.createFile(stream, filename, contentType, metadata);
+            return strategy.getClient().createFile(stream, filename, contentType, metadata);
         }
         finally
         {
@@ -772,9 +703,9 @@ public class MongoCloudConnector
      */
     @Processor
 	@ReconnectOn(exceptions = IllegalStateException.class)
-    public Iterable<DBObject> findFiles(@Optional @Default("#[payload]") final DBObject query)
+    public Iterable<DBObject> findFiles(@Default("#[payload]") final DBObject query)
     {
-        return client.findFiles(from(query));
+        return strategy.getClient().findFiles(from(query));
     }
 
     /**
@@ -789,7 +720,7 @@ public class MongoCloudConnector
 	@ReconnectOn(exceptions = IllegalStateException.class)
     public Iterable<DBObject> findFilesUsingQueryMap(@Placement(group = "Query Attributes") @Optional final Map<String, Object> queryAttributes)
     {
-        return client.findFiles((DBObject) adapt(queryAttributes));
+        return strategy.getClient().findFiles((DBObject) adapt(queryAttributes));
     }
 
     /**
@@ -805,7 +736,7 @@ public class MongoCloudConnector
 	@ReconnectOn(exceptions = IllegalStateException.class)
     public DBObject findOneFile(final DBObject query)
     {
-        return client.findOneFile(from(query));
+        return strategy.getClient().findOneFile(from(query));
     }
 
     /**
@@ -821,7 +752,7 @@ public class MongoCloudConnector
 	@ReconnectOn(exceptions = IllegalStateException.class)
     public DBObject findOneFileUsingQueryMap(@Placement(group = "Query Attributes") final Map<String, Object> queryAttributes)
     {
-        return client.findOneFile((DBObject) adapt(queryAttributes));
+        return strategy.getClient().findOneFile((DBObject) adapt(queryAttributes));
     }
 
     /**
@@ -835,9 +766,9 @@ public class MongoCloudConnector
      */
     @Processor
 	@ReconnectOn(exceptions = IllegalStateException.class)
-    public InputStream getFileContent(@Optional @Default("#[payload]") final DBObject query)
+    public InputStream getFileContent(@Default("#[payload]") final DBObject query)
     {
-        return client.getFileContent(from(query));
+        return strategy.getClient().getFileContent(from(query));
     }
 
     /**
@@ -853,7 +784,7 @@ public class MongoCloudConnector
 	@ReconnectOn(exceptions = IllegalStateException.class)
     public InputStream getFileContentUsingQueryMap(@Placement(group = "Query Attributes") final Map<String, Object> queryAttributes)
     {
-        return client.getFileContent((DBObject) adapt(queryAttributes));
+        return strategy.getClient().getFileContent((DBObject) adapt(queryAttributes));
     }
 
     /**
@@ -867,9 +798,9 @@ public class MongoCloudConnector
      */
     @Processor
 	@ReconnectOn(exceptions = IllegalStateException.class)
-    public Iterable<DBObject> listFiles(@Optional @Default("#[payload]") final DBObject query)
+    public Iterable<DBObject> listFiles(@Default("#[payload]") final DBObject query)
     {
-        return client.listFiles(from(query));
+        return strategy.getClient().listFiles(from(query));
     }
 
     /**
@@ -885,7 +816,7 @@ public class MongoCloudConnector
 	@ReconnectOn(exceptions = IllegalStateException.class)
     public Iterable<DBObject> listFilesUsingQueryMap(@Placement(group = "Query Attributes") @Optional final Map<String, Object> queryAttributes)
     {
-        return client.listFiles((DBObject) adapt(queryAttributes));
+        return strategy.getClient().listFiles((DBObject) adapt(queryAttributes));
     }
 
     /**
@@ -898,9 +829,9 @@ public class MongoCloudConnector
      */
     @Processor
 	@ReconnectOn(exceptions = IllegalStateException.class)
-    public void removeFiles(@Optional @Default("#[payload]") final DBObject query)
+    public void removeFiles(@Default("#[payload]") final DBObject query)
     {
-        client.removeFiles(from(query));
+        strategy.getClient().removeFiles(from(query));
     }
 
     /**
@@ -915,7 +846,7 @@ public class MongoCloudConnector
 	@ReconnectOn(exceptions = IllegalStateException.class)
     public void removeFilesUsingQueryMap(@Placement(group = "Query Attributes") @Optional final Map<String, Object> queryAttributes)
     {
-        client.removeFiles((DBObject) adapt(queryAttributes));
+        strategy.getClient().removeFiles((DBObject) adapt(queryAttributes));
     }
 
     /**
@@ -934,7 +865,7 @@ public class MongoCloudConnector
     {
         final DBObject dbObject = fromCommand(commandName, commandValue);
 
-        return client.executeComamnd(dbObject);
+        return strategy.getClient().executeComamnd(dbObject);
     }
 
     /**
@@ -954,21 +885,21 @@ public class MongoCloudConnector
      */
     @Processor
 	@ReconnectOn(exceptions = IllegalStateException.class)
-    public void dump(@Optional @Default(DEFAULT_OUTPUT_DIRECTORY) final String outputDirectory,
+    public void dump(@Default(DEFAULT_OUTPUT_DIRECTORY) final String outputDirectory,
                      @Optional final String outputName,
-                     @Optional @Default("false") final boolean zip,
-                     @Optional @Default("false") final boolean oplog,
-                     @Optional @Default(BACKUP_THREADS) final int threads) throws IOException
+                     @Default("false") final boolean zip,
+                     @Default("false") final boolean oplog,
+                     @Default(BACKUP_THREADS) final int threads) throws IOException
     {
-        final MongoDump mongoDump = new MongoDump(client);
+        final MongoDump mongoDump = new MongoDump(strategy.getClient());
         mongoDump.setZip(zip);
         if (oplog)
         {
             mongoDump.setOplog(oplog);
-            mongoDump.addDB(mongo.getDB(BackupConstants.ADMIN_DB));
-            mongoDump.addDB(mongo.getDB(BackupConstants.LOCAL_DB));
+            mongoDump.addDB(strategy.getMongo().getDB(BackupConstants.ADMIN_DB));
+            mongoDump.addDB(strategy.getMongo().getDB(BackupConstants.LOCAL_DB));
         }
-        mongoDump.dump(outputDirectory, database, outputName != null ? outputName : database, threads);
+        mongoDump.dump(outputDirectory, strategy.getDatabase(), outputName != null ? outputName : strategy.getDatabase(), threads);
     }
 
     /**
@@ -985,14 +916,14 @@ public class MongoCloudConnector
      */
     @Processor
 	@ReconnectOn(exceptions = IllegalStateException.class)
-    public void incrementalDump(@Optional @Default(DEFAULT_OUTPUT_DIRECTORY) final String outputDirectory,
+    public void incrementalDump(@Default(DEFAULT_OUTPUT_DIRECTORY) final String outputDirectory,
                                 @Optional final String incrementalTimestampFile) throws IOException
     {
         final IncrementalMongoDump incrementalMongoDump = new IncrementalMongoDump();
-        incrementalMongoDump.addDB(mongo.getDB(BackupConstants.ADMIN_DB));
-        incrementalMongoDump.addDB(mongo.getDB(BackupConstants.LOCAL_DB));
+        incrementalMongoDump.addDB(strategy.getMongo().getDB(BackupConstants.ADMIN_DB));
+        incrementalMongoDump.addDB(strategy.getMongo().getDB(BackupConstants.LOCAL_DB));
         incrementalMongoDump.setIncrementalTimestampFile(incrementalTimestampFile);
-        incrementalMongoDump.dump(outputDirectory, database);
+        incrementalMongoDump.dump(outputDirectory, strategy.getDatabase());
     }
 
     /**
@@ -1010,11 +941,11 @@ public class MongoCloudConnector
      */
     @Processor
 	@ReconnectOn(exceptions = IllegalStateException.class)
-    public void restore(@Optional @Default(DEFAULT_OUTPUT_DIRECTORY) final String inputPath,
-                        @Optional @Default("false") final boolean drop,
-                        @Optional @Default("false") final boolean oplogReplay) throws IOException
+    public void restore(@Default(DEFAULT_OUTPUT_DIRECTORY) final String inputPath,
+                        @Default("false") final boolean drop,
+                        @Default("false") final boolean oplogReplay) throws IOException
     {
-        final MongoRestore mongoRestore = new MongoRestore(client, database);
+        final MongoRestore mongoRestore = new MongoRestore(strategy.getClient(), strategy.getDatabase());
         mongoRestore.setDrop(drop);
         mongoRestore.setOplogReplay(oplogReplay);
         mongoRestore.restore(inputPath);
@@ -1029,7 +960,7 @@ public class MongoCloudConnector
     @Processor
 	@ReconnectOn(exceptions = IllegalStateException.class)
     public void startConsistentRequest() {
-        client.requestStart();
+        strategy.getClient().requestStart();
     }
 
     /**
@@ -1042,7 +973,7 @@ public class MongoCloudConnector
     @Processor
 	@ReconnectOn(exceptions = IllegalStateException.class)
     public void endConsistentRequest() {
-        client.requestDone();
+        strategy.getClient().requestDone();
     }
 
     /**
@@ -1151,256 +1082,5 @@ public class MongoCloudConnector
         return input.toMap();
     }
 
-    /**
-     * Method invoked when a {@link MongoSession} needs to be created.
-     * 
-     * @param username the username to use for authentication. NOTE: Please use a dummy user if you
-     *            have disabled Mongo authentication
-     * @param password the password to use for authentication. If the password is null or whitespaces only the connector
-     *                 won't use authentication.
-     * @param database Name of the database
-     * @return the newly created {@link MongoSession}
-     * @throws org.mule.api.ConnectionException
-     */
-    @Connect
-    public void connect(@ConnectionKey final String username,
-                        @Optional @Password final String password,
-                        @ConnectionKey final String database) throws ConnectionException
-    {
-        try
-        {
-            mongo = new com.mongodb.MongoClient(getMongoClientURI(username, password, database));
-            this.client = new MongoClientImpl(getDatabase(mongo, username, password, database));
-            
-            DB db = mongo.getDB(database);
-            db.getStats();
-        }
-        catch (final UnknownHostException ex)
-        {
-            logger.info(ex.getMessage(), ex); 
-            throw new ConnectionException(ConnectionExceptionCode.UNKNOWN_HOST, ex.getLocalizedMessage(), ex.getMessage(), ex.getCause());
-        }
-        catch (final MongoException.Network mn)
-        {
-            logger.info(mn.getMessage(), mn);
-            throw new ConnectionException(ConnectionExceptionCode.CANNOT_REACH, mn.getLocalizedMessage(), mn.getMessage(), mn.getCause());
-        }
-        catch (final IllegalArgumentException ia){
-            logger.info(ia.getMessage(), ia);
-            throw new ConnectionException(ConnectionExceptionCode.CANNOT_REACH, ia.getLocalizedMessage(), ia.getMessage(), ia.getCause());
-        }
-    }
-
-    private MongoClientURI getMongoClientURI(final String username, final String password, final String database) {
-        List<String> hostsWithPort = new LinkedList<String>();
-        for (String hostname : host.split(",\\s?")) {
-            hostsWithPort.add(hostname + ":" + port);
-        }
-        return new MongoClientURI(MongoURI.MONGODB_PREFIX +
-//                        username + ":" + password + "@" +
-                        StringUtils.join(hostsWithPort, ",") +
-                        "/" + database
-                , getMongoOptions(database));
-    }
-
-    private MongoClientOptions.Builder getMongoOptions(String database) {
-        final MongoClientOptions.Builder options = MongoClientOptions.builder();
-
-        if (connectionsPerHost != null)
-        {
-            options.connectionsPerHost(connectionsPerHost);
-        }
-        if (threadsAllowedToBlockForConnectionMultiplier != null)
-        {
-            options.threadsAllowedToBlockForConnectionMultiplier(threadsAllowedToBlockForConnectionMultiplier);
-        }
-        if (maxWaitTime != null)
-        {
-            options.maxWaitTime(maxWaitTime);
-        }
-        if (connectTimeout != null)
-        {
-            options.connectTimeout(connectTimeout);
-        }
-        if (socketTimeout != null)
-        {
-            options.socketTimeout(socketTimeout);
-        }
-        if (autoConnectRetry != null)
-        {
-            options.autoConnectRetry(autoConnectRetry);
-        }
-        if (database != null)
-        {
-            this.database = database;
-        }
-        return options;
-    }
-
-    /**
-     * Method invoked when the {@link MongoSession} is to be destroyed.
-     * 
-     * @throws IOException in case something goes wrong when disconnecting.
-     */
-    @Disconnect
-    public void disconnect() 
-    {
-        if (client != null)
-        {
-            try
-            {
-                client.close();
-            }
-            catch (final Exception e)
-            {
-                logger.warn("Failed to properly close client: " + client, e);
-            }
-            finally
-            {
-                client = null;
-            }
-        }
-        
-        if (mongo != null)
-        {
-            try
-            {
-                mongo.close();
-            }
-            catch (final Exception e)
-            {
-                logger.warn("Failed to properly close mongo: " + mongo, e);
-            }
-            finally
-            {
-                mongo = null;
-            }
-        }
-    }
-
-    @ValidateConnection
-    public boolean isConnected()
-    {
-        return this.client != null && this.mongo != null && mongo.getConnector().isOpen();
-    }
-
-    @ConnectionIdentifier
-    public String connectionId()
-    {
-        return mongo == null ? "n/a" : mongo.toString();
-    }
-
-    private DB getDatabase(final Mongo mongo,
-                           final String username,
-                           final String password,
-                           final String database) throws ConnectionException
-    {
-        final DB db = mongo.getDB(database);
-        if (StringUtils.isNotBlank(password))
-        {
-            Validate.notNull(username, "Username must not be null if password is set");
-            if (!db.isAuthenticated() && !db.authenticate(username, password.toCharArray()))
-            {
-                throw new ConnectionException(ConnectionExceptionCode.INCORRECT_CREDENTIALS, null,
-                        "Couldn't connect with the given credentials");
-            }
-        }
-        return db;
-    }
-
-    protected MongoClient adaptClient(final MongoClient client)
-    {
-        return MongoClientAdaptor.adapt(client);
-    }
-
-    public String getHost()
-    {
-        return host;
-    }
-
-    public void setHost(final String host)
-    {
-        this.host = host;
-    }
-
-    public int getPort()
-    {
-        return port;
-    }
-
-    public void setPort(final int port)
-    {
-        this.port = port;
-    }
-
-    public String getDatabase()
-    {
-        return database;
-    }
-
-    public void setDatabase(final String database)
-    {
-        this.database = database;
-    }
-
-    public Integer getConnectionsPerHost()
-    {
-        return connectionsPerHost;
-    }
-
-    public void setConnectionsPerHost(final Integer connectionsPerHost)
-    {
-        this.connectionsPerHost = connectionsPerHost;
-    }
-
-    public Integer getThreadsAllowedToBlockForConnectionMultiplier()
-    {
-        return threadsAllowedToBlockForConnectionMultiplier;
-    }
-
-    public void setThreadsAllowedToBlockForConnectionMultiplier(final Integer threadsAllowedToBlockForConnectionMultiplier)
-    {
-        this.threadsAllowedToBlockForConnectionMultiplier = threadsAllowedToBlockForConnectionMultiplier;
-    }
-
-    public Integer getMaxWaitTime()
-    {
-        return maxWaitTime;
-    }
-
-    public void setMaxWaitTime(final Integer maxWaitTime)
-    {
-        this.maxWaitTime = maxWaitTime;
-    }
-
-    public Integer getConnectTimeout()
-    {
-        return connectTimeout;
-    }
-
-    public void setConnectTimeout(final Integer connectTimeout)
-    {
-        this.connectTimeout = connectTimeout;
-    }
-
-    public Integer getSocketTimeout()
-    {
-        return socketTimeout;
-    }
-
-    public void setSocketTimeout(final Integer socketTimeout)
-    {
-        this.socketTimeout = socketTimeout;
-    }
-
-    public Boolean getAutoConnectRetry()
-    {
-        return autoConnectRetry;
-    }
-
-    public void setAutoConnectRetry(final Boolean autoConnectRetry)
-    {
-        this.autoConnectRetry = autoConnectRetry;
-    }
 
 }

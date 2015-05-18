@@ -38,7 +38,7 @@
     <flow-ref name="AddIcaoToSession"/>
     <http:outbound-endpoint host="ws.geonames.org"
       port="80" path="weatherIcaoJSON?ICAO=#[header:session:cityIcao]" />
-    <mongo:insert-object collection="weatherObservations" element="#[json:weatherObservation]"/>
+    <mongo:insert-object collection="weatherObservations" element="#[json:weatherObservation]" config-ref="mongo" />
     <expression-transformer>
       <return-argument expression="Successfully added a weather observation" evaluator="string"/>
     </expression-transformer>
@@ -54,8 +54,8 @@
       reduceFunction='function(key, values) {          
             return values.reduce(function(a,e) { return a + e }) / values.length;    
           }'
-          outputCollection="weatherStats" />
-      <mongo:find-one-object collection="weatherStats">
+          outputCollection="weatherStats" config-ref="mongo" />
+      <mongo:find-one-object collection="weatherStats" config-ref="mongo" >
         <mongo:queryAttributes>
           <mongo:queryAttribute key="_id" value="#[header:session:cityIcao]"/>
         </mongo:queryAttributes>

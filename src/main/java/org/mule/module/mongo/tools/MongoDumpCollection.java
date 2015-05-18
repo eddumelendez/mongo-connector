@@ -32,19 +32,20 @@ public class MongoDumpCollection implements Callable<Void>
 
     public Void call() throws Exception
     {
-        final DBCursor cursor = query != null ? collection.find(query) : collection.find();
-        cursor.sort(new BasicDBObject("_id", 1));
-
-        for (final Integer option : options)
-        {
-            cursor.addOption(option);
-        }
-
-        while (cursor.hasNext())
-        {
-            final BasicDBObject dbObject = (BasicDBObject) cursor.next();
-            dumpWriter.writeObject(name != null ? name : collection.getName(), dbObject);
-        }
+    	try (final DBCursor cursor = query != null ? collection.find(query) : collection.find()) {
+    		cursor.sort(new BasicDBObject("_id", 1));
+    		
+    		for (final Integer option : options)
+    		{
+    			cursor.addOption(option);
+    		}
+    		
+    		while (cursor.hasNext())
+    		{
+    			final BasicDBObject dbObject = (BasicDBObject) cursor.next();
+    			dumpWriter.writeObject(name != null ? name : collection.getName(), dbObject);
+    		}
+    	}
         return null;
     }
 
