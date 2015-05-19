@@ -13,7 +13,6 @@ import static org.junit.Assert.fail;
 
 import java.util.Map;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -25,7 +24,7 @@ import org.mule.modules.tests.ConnectorTestUtils;
 import com.mongodb.WriteResult;
 
 public class AddUserTestCases extends MongoMarianoTestParent {
-	
+
 	Map<String, Object> testData;
 
 	@Override
@@ -37,14 +36,20 @@ public class AddUserTestCases extends MongoMarianoTestParent {
 	@Category({RegressionTests.class})
 	@Test
 	public void testAddUser() {
-		try {
-			WriteResult result = getConnector().addUser(testData.get("newUser").toString(), testData.get("newPassword").toString());
+		try
+		{
+			WriteResult result = getConnector().addUser(
+					testData.get("newUser").toString(),
+					testData.get("newPassword").toString());
+
 			assertTrue(result.getLastError().ok());
 			assertTrue(result.getError() == null);
-		} catch (Exception e) {
+		}
+		catch (Exception e)
+		{
 	         fail(ConnectorTestUtils.getStackTrace(e));
 	    }
-		
+
 	}
-	
+
 }

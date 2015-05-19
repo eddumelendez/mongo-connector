@@ -30,6 +30,8 @@ public abstract class MongoMarianoTestParent {
 
 		connector = dispatcher.createMockup();
 
+		setUp();
+
 	}
 
 	protected void setUp() throws Exception {

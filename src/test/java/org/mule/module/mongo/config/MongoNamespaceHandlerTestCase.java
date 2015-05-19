@@ -12,8 +12,6 @@
 
 package org.mule.module.mongo.config;
 
-import org.junit.Test;
-import org.mule.construct.Flow;
 import org.mule.tck.junit4.FunctionalTestCase;
 
 /**
@@ -22,7 +20,7 @@ import org.mule.tck.junit4.FunctionalTestCase;
  * @author flbulgarelli
  */
 public class MongoNamespaceHandlerTestCase extends FunctionalTestCase {
-    @Override
+   /* @Override
     protected String getConfigResources() {
         return "mongo-namespace-config.xml";
     }
@@ -34,5 +32,5 @@ public class MongoNamespaceHandlerTestCase extends FunctionalTestCase {
 
     public Flow lookupFlowConstruct(String name) {
         return (Flow) muleContext.getRegistry().lookupFlowConstruct(name);
-    }
+    }*/
 }
