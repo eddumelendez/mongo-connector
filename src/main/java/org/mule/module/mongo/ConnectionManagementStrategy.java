@@ -38,6 +38,9 @@ import com.mongodb.DB;
 import com.mongodb.Mongo;
 import com.mongodb.MongoClientOptions;
 import com.mongodb.MongoCredential;
+import com.mongodb.MongoSecurityException;
+import com.mongodb.MongoTimeoutException;
+import com.mongodb.MongoWaitQueueFullException;
 import com.mongodb.ServerAddress;
 
 @ConnectionManagement(friendlyName="ConnectionManagement", configElementName="config")
@@ -110,10 +113,9 @@ public class ConnectionManagementStrategy {
     /**
      * Method invoked when a Mongo session needs to be created.
      * 
-     * @param username the username to use for authentication. NOTE: Please use a dummy user if you
-     *            have disabled Mongo authentication
-     * @param password the password to use for authentication. If the password is null or whitespaces only the connector
-     *                 won't use authentication.
+     * @param username the username to use for authentication.
+     * @param password the password to use for authentication. If the password is null or whitespaces only, the connector
+     *                 won't use authentication and username must be empty too.
      * @param database Name of the database
      * @throws org.mule.api.ConnectionException
      */
@@ -123,10 +125,8 @@ public class ConnectionManagementStrategy {
                         @Optional @Password final String password,
                         @ConnectionKey final String database) throws ConnectionException
     {
-    	LOGGER.info("Connecting to MongoDB");
         try
         {
-        	
         	final List<ServerAddress> addresses = Lists.transform(Lists.newArrayList(host.split(",\\s?")), new Function<String, ServerAddress>() {
 				@Override
 				public ServerAddress apply(String input) {
@@ -134,35 +134,44 @@ public class ConnectionManagementStrategy {
 				}
         	});
 
-            if (StringUtils.isNotBlank(password))
+            MongoClientOptions mongoOptions = getMongoOptions(database);
+			if (StringUtils.isNotBlank(password))
             {
                 Validate.notNull(username, "Username must not be null if password is set");
+                LOGGER.info("Connecting to MongoDB, authenticating as user '{}'", username);
 
                 MongoCredential credential = MongoCredential.createCredential(username, database, password.toCharArray());
-
-                mongo = new com.mongodb.MongoClient(addresses, Lists.newArrayList(credential), getMongoOptions(database).build());
-//                if (!db.isAuthenticated() && !db.authenticate(username, password.toCharArray()))
-//                {
-//                    throw new ConnectionException(ConnectionExceptionCode.INCORRECT_CREDENTIALS, null,
-//                            "Couldn't connect with the given credentials");
-//                }
+				mongo = new com.mongodb.MongoClient(addresses, Lists.newArrayList(credential), mongoOptions);
+            } else {
+				LOGGER.info("Connecting to MongoDB, not using authentication");
+				mongo = new com.mongodb.MongoClient(addresses, mongoOptions);
             }
 
-        	
-//            mongo = new com.mongodb.MongoClient(getMongoClientURI(username, password, database));
             this.client = new MongoClientImpl(getDatabase(mongo, username, password, database));
-            
+            System.err.println("Databases: " + Lists.newArrayList(mongo.listDatabaseNames()));
             DB db = mongo.getDB(database);
+            System.err.println("DB: " + db.getName());
             db.getStats();
-        }
-        catch (final IllegalArgumentException e)
-        {
-            LOGGER.info(e.getMessage(), e);
-            throw new ConnectionException(ConnectionExceptionCode.CANNOT_REACH, e.getLocalizedMessage(), e.getMessage(), e.getCause());
-        }
+		}
+		catch (final IllegalArgumentException e)
+		{
+		    throw new ConnectionException(ConnectionExceptionCode.CANNOT_REACH, e.getLocalizedMessage(), e.getMessage(), e.getCause());
+		}
+		catch (MongoSecurityException e)
+		{
+			throw new ConnectionException(ConnectionExceptionCode.INCORRECT_CREDENTIALS, String.valueOf(e.getCode()), "Authentication failed", e);
+		}
+		catch (MongoTimeoutException e)
+		{
+			throw new ConnectionException(ConnectionExceptionCode.CANNOT_REACH, String.valueOf(e.getCode()), "Timeout waiting for server or a connection to become available", e);
+		}
+		catch (MongoWaitQueueFullException e)
+		{
+			throw new ConnectionException(ConnectionExceptionCode.UNKNOWN, String.valueOf(e.getCode()), "Wait Queue is full", e);
+		}
     }
 
-    private MongoClientOptions.Builder getMongoOptions(String database) {
+    private MongoClientOptions getMongoOptions(String database) {
         final MongoClientOptions.Builder options = MongoClientOptions.builder();
 
         if (connectionsPerHost != null)
@@ -189,7 +198,7 @@ public class ConnectionManagementStrategy {
         {
             this.database = database;
         }
-        return options;
+        return options.build();
     }
 
     /**
@@ -219,16 +228,14 @@ public class ConnectionManagementStrategy {
                            final String password,
                            final String database) throws ConnectionException
     {
+		System.err.println(String.format("Entering getDatabase: %s, %s, %s", username, password, database));
+		LOGGER.info("In getDatabase: {}, {}, {},{}", mongo, username, password, database);
         final DB db = mongo.getDB(database);
-//        if (StringUtils.isNotBlank(password))
-//        {
-//            Validate.notNull(username, "Username must not be null if password is set");
-//            if (!db.isAuthenticated() && !db.authenticate(username, password.toCharArray()))
-//            {
-//                throw new ConnectionException(ConnectionExceptionCode.INCORRECT_CREDENTIALS, null,
-//                        "Couldn't connect with the given credentials");
-//            }
-//        }
+        if (StringUtils.isNotBlank(password))
+        {
+            Validate.notNull(username, "Username must not be null if password is set");
+        }
+        System.err.println("Exiting getDatabase");
         return db;
     }
 
