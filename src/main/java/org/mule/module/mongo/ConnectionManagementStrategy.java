@@ -7,12 +7,12 @@
  */
 package org.mule.module.mongo;
 
-import java.io.IOException;
-import java.util.LinkedList;
 import java.util.List;
 
+import jersey.repackaged.com.google.common.base.Function;
 import jersey.repackaged.com.google.common.collect.Lists;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.Validate;
 import org.mule.api.ConnectionException;
 import org.mule.api.ConnectionExceptionCode;
@@ -37,9 +37,7 @@ import org.slf4j.LoggerFactory;
 import com.mongodb.DB;
 import com.mongodb.Mongo;
 import com.mongodb.MongoClientOptions;
-import com.mongodb.MongoClientURI;
 import com.mongodb.MongoCredential;
-import com.mongodb.MongoURI;
 import com.mongodb.ServerAddress;
 
 @ConnectionManagement(friendlyName="ConnectionManagement", configElementName="config")
@@ -110,14 +108,13 @@ public class ConnectionManagementStrategy {
 	}
     
     /**
-     * Method invoked when a {@link MongoSession} needs to be created.
+     * Method invoked when a Mongo session needs to be created.
      * 
      * @param username the username to use for authentication. NOTE: Please use a dummy user if you
      *            have disabled Mongo authentication
      * @param password the password to use for authentication. If the password is null or whitespaces only the connector
      *                 won't use authentication.
      * @param database Name of the database
-     * @return the newly created {@link MongoSession}
      * @throws org.mule.api.ConnectionException
      */
     @Connect
@@ -126,17 +123,24 @@ public class ConnectionManagementStrategy {
                         @Optional @Password final String password,
                         @ConnectionKey final String database) throws ConnectionException
     {
-    	System.err.println("Connecting");
+    	LOGGER.info("Connecting to MongoDB");
         try
         {
-        	ServerAddress address = new ServerAddress(getHost(), getPort());
+        	
+        	final List<ServerAddress> addresses = Lists.transform(Lists.newArrayList(host.split(",\\s?")), new Function<String, ServerAddress>() {
+				@Override
+				public ServerAddress apply(String input) {
+					return new ServerAddress(input, getPort());
+				}
+        	});
+
             if (StringUtils.isNotBlank(password))
             {
                 Validate.notNull(username, "Username must not be null if password is set");
 
                 MongoCredential credential = MongoCredential.createCredential(username, database, password.toCharArray());
 
-                mongo = new com.mongodb.MongoClient(Lists.newArrayList(address), Lists.newArrayList(credential));
+                mongo = new com.mongodb.MongoClient(addresses, Lists.newArrayList(credential), getMongoOptions(database).build());
 //                if (!db.isAuthenticated() && !db.authenticate(username, password.toCharArray()))
 //                {
 //                    throw new ConnectionException(ConnectionExceptionCode.INCORRECT_CREDENTIALS, null,
@@ -189,63 +193,19 @@ public class ConnectionManagementStrategy {
     }
 
     /**
-     * Method invoked when the {@link MongoSession} is to be destroyed.
-     * 
-     * @throws IOException in case something goes wrong when disconnecting.
+     * Method invoked when the Mongo session is to be destroyed.
      */
     @Disconnect
     public void disconnect() 
     {
-        if (client != null)
-        {
-            try
-            {
-                client.close();
-            }
-            catch (final Exception e)
-            {
-                LOGGER.warn("Failed to properly close client: " + client, e);
-            }
-            finally
-            {
-                client = null;
-            }
-        }
-        
-        if (mongo != null)
-        {
-            try
-            {
-                mongo.close();
-            }
-            catch (final Exception e)
-            {
-                LOGGER.warn("Failed to properly close mongo: " + mongo, e);
-            }
-            finally
-            {
-                mongo = null;
-            }
-        }
+    	IOUtils.closeQuietly(client);
+    	IOUtils.closeQuietly(mongo);
     }
 
     @ValidateConnection
     public boolean isConnected()
     {
         return this.client != null && this.mongo != null ; //&& mongo.getConnector().isOpen();
-    }
-
-
-    private MongoClientURI getMongoClientURI(final String username, final String password, final String database) {
-        List<String> hostsWithPort = new LinkedList<String>();
-        for (String hostname : host.split(",\\s?")) {
-            hostsWithPort.add(hostname + ":" + port);
-        }
-        return new MongoClientURI(MongoURI.MONGODB_PREFIX +
-//                        username + ":" + password + "@" +
-                        StringUtils.join(hostsWithPort, ",") +
-                        "/" + database
-                , getMongoOptions(database));
     }
 
     @ConnectionIdentifier

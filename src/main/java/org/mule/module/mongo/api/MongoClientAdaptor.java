@@ -13,7 +13,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
-import org.mule.module.mongo.MongoCloudConnector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,7 +21,7 @@ import org.slf4j.LoggerFactory;
  */
 public final class MongoClientAdaptor
 {
-    private static final Logger logger = LoggerFactory.getLogger(MongoCloudConnector.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MongoClientAdaptor.class);
 
     private MongoClientAdaptor()
     {
@@ -33,27 +32,19 @@ public final class MongoClientAdaptor
         return (MongoClient) Proxy.newProxyInstance(MongoClient.class.getClassLoader(),
             new Class[]{MongoClient.class}, new InvocationHandler()
             {
-                public Object invoke(Object proxy, Method method, Object[] args) throws Throwable
+                @Override
+				public Object invoke(Object proxy, Method method, Object[] args) throws Throwable
                 {
                     try
                     {
-                        if (logger.isDebugEnabled())
-                        {
-                            logger.debug("Entering {} with args {}", method.getName(), args);
-                        }
+                        LOGGER.debug("Entering {} with args {}", method.getName(), args);
                         Object ret = method.invoke(receptor, args);
-                        if (logger.isDebugEnabled())
-                        {
-                            logger.debug("Returning from {} with value {}", method.getName(), ret);
-                        }
+                        LOGGER.debug("Returning from {} with value {}", method.getName(), ret);
                         return ret;
                     }
                     catch (InvocationTargetException e)
                     {
-                        if (logger.isWarnEnabled())
-                        {
-                            logger.warn("An exception was thrown while invoking {}: {}", method.getName(),e);
-                        }
+                        LOGGER.warn("An exception was thrown while invoking {}: {}", method.getName(),e);
                         throw new RuntimeException(e.getMessage(),e);
                     }
                 }

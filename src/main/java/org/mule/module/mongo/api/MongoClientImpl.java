@@ -40,7 +40,7 @@ public class MongoClientImpl implements MongoClient
 
     public MongoClientImpl(final DB db)
     {
-    	System.err.println("In MongoClientImpl constructor");
+    	LOGGER.info("Initializing MongoClientImpl");
         Validate.notNull(db);
         this.db = db;
     }
@@ -48,7 +48,7 @@ public class MongoClientImpl implements MongoClient
     @Override
 	public void close() throws IOException
     {
-    	System.err.println("In MongoClientImpl close()");
+    	LOGGER.info("Closing MongoClientImpl");
     }
 
     @Override
@@ -174,25 +174,22 @@ public class MongoClientImpl implements MongoClient
         db.getCollection(collection).insert(object,
             writeConcern.toMongoWriteConcern(db));
 
-        final ObjectId id;
+        final String id;
         final Object rawId = object.get("_id");
 
-    	if(rawId != null)
+    	if (rawId == null)
     	{
-        	if(rawId instanceof ObjectId)
-        	{
-        		id = (ObjectId) rawId;
-        	}
-        	else
-        	{
-        		return rawId.toString();
-        	}
-        	return id.toStringMongod();
+    		id = null;
+    	}
+    	else if (rawId instanceof ObjectId)
+    	{
+    		id = ((ObjectId) rawId).toHexString();
     	}
     	else
     	{
-    		return null;
+    		id = rawId.toString();
     	}
+    	return id;
     }
 
     @Override

@@ -123,62 +123,74 @@ public class MongoObjectStore implements PartitionableExpirableObjectStore<Seria
         mongoClient = new MongoClientImpl(db);
     }
 
-    public boolean isPersistent()
+    @Override
+	public boolean isPersistent()
     {
         return true;
     }
 
-    public void open() throws ObjectStoreException
+    @Override
+	public void open() throws ObjectStoreException
     {
         open(OBJECTSTORE_DEFAULT_PARTITION_NAME);
     }
 
-    public void close() throws ObjectStoreException
+    @Override
+	public void close() throws ObjectStoreException
     {
         close(OBJECTSTORE_DEFAULT_PARTITION_NAME);
     }
 
-    public List<Serializable> allKeys() throws ObjectStoreException
+    @Override
+	public List<Serializable> allKeys() throws ObjectStoreException
     {
         return allKeys(OBJECTSTORE_DEFAULT_PARTITION_NAME);
     }
 
+    @Override
     public void expire(final int entryTtl, final int maxEntries) throws ObjectStoreException
     {
         expire(entryTtl, maxEntries, OBJECTSTORE_DEFAULT_PARTITION_NAME);
     }
 
-    public boolean contains(final Serializable key) throws ObjectStoreException
+    @Override
+	public boolean contains(final Serializable key) throws ObjectStoreException
     {
         return contains(key, OBJECTSTORE_DEFAULT_PARTITION_NAME);
     }
 
-    public void store(final Serializable key, final Serializable value) throws ObjectStoreException
+    @Override
+	public void store(final Serializable key, final Serializable value) throws ObjectStoreException
     {
         store(key, value, OBJECTSTORE_DEFAULT_PARTITION_NAME);
     }
 
-    public Serializable retrieve(final Serializable key) throws ObjectStoreException
+    @Override
+	public Serializable retrieve(final Serializable key) throws ObjectStoreException
     {
         return retrieve(key, OBJECTSTORE_DEFAULT_PARTITION_NAME);
     }
 
-    public Serializable remove(final Serializable key) throws ObjectStoreException
+    @Override
+	public Serializable remove(final Serializable key) throws ObjectStoreException
     {
         return remove(key, OBJECTSTORE_DEFAULT_PARTITION_NAME);
     }
 
-    public void open(final String partitionName) throws ObjectStoreException
+    @Override
+	public void open(final String partitionName) throws ObjectStoreException
     {
         // NOOP
     }
 
-    public void close(final String partitionName) throws ObjectStoreException
+    @Override
+	public void close(final String partitionName) throws ObjectStoreException
     {
         // NOOP
     }
 
-    public boolean contains(final Serializable key, final String partitionName) throws ObjectStoreException
+    @Override
+	public boolean contains(final Serializable key, final String partitionName) throws ObjectStoreException
     {
         final ObjectId objectId = getObjectIdFromKey(key);
         final DBObject query = getQueryForObjectId(objectId);
@@ -186,7 +198,8 @@ public class MongoObjectStore implements PartitionableExpirableObjectStore<Seria
         return mongoClient.findObjects(collection, query, NO_FIELD_LIST, null, null, null).iterator().hasNext();
     }
 
-    public List<Serializable> allKeys(final String partitionName) throws ObjectStoreException
+    @Override
+	public List<Serializable> allKeys(final String partitionName) throws ObjectStoreException
     {
         final String collection = getCollectionName(partitionName);
         final Iterable<DBObject> keyObjects = mongoClient.findObjects(collection, new BasicDBObject(),
@@ -200,7 +213,8 @@ public class MongoObjectStore implements PartitionableExpirableObjectStore<Seria
         return results;
     }
 
-    public List<String> allPartitions() throws ObjectStoreException
+    @Override
+	public List<String> allPartitions() throws ObjectStoreException
     {
         final List<String> results = new ArrayList<String>();
 
@@ -215,7 +229,8 @@ public class MongoObjectStore implements PartitionableExpirableObjectStore<Seria
         return results;
     }
 
-    public void store(final Serializable key, final Serializable value, final String partitionName)
+    @Override
+	public void store(final Serializable key, final Serializable value, final String partitionName)
         throws ObjectStoreException
     {
         final String collection = getCollectionName(partitionName);
@@ -236,7 +251,8 @@ public class MongoObjectStore implements PartitionableExpirableObjectStore<Seria
         mongoClient.updateObjects(collection, query, dbObject, true, false, getWriteConcern());
     }
 
-    public Serializable retrieve(final Serializable key, final String partitionName)
+    @Override
+	public Serializable retrieve(final Serializable key, final String partitionName)
         throws ObjectStoreException
     {
         final String collection = getCollectionName(partitionName);
@@ -245,7 +261,8 @@ public class MongoObjectStore implements PartitionableExpirableObjectStore<Seria
         return retrieveSerializedObject(collection, query);
     }
 
-    public Serializable remove(final Serializable key, final String partitionName)
+    @Override
+	public Serializable remove(final Serializable key, final String partitionName)
         throws ObjectStoreException
     {
         final String collection = getCollectionName(partitionName);
@@ -257,7 +274,8 @@ public class MongoObjectStore implements PartitionableExpirableObjectStore<Seria
         return result;
     }
 
-    public void disposePartition(final String partitionName) throws ObjectStoreException
+    @Override
+	public void disposePartition(final String partitionName) throws ObjectStoreException
     {
         final String collection = getCollectionName(partitionName);
         mongoClient.dropCollection(collection);
@@ -273,6 +291,7 @@ public class MongoObjectStore implements PartitionableExpirableObjectStore<Seria
         // NOOP
     }
 
+    @Override
     public void expire(final int entryTtl, final int ignoredMaxEntries, final String partitionName)
         throws ObjectStoreException
     {
