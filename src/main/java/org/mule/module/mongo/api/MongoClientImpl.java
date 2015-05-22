@@ -175,20 +175,24 @@ public class MongoClientImpl implements MongoClient
             writeConcern.toMongoWriteConcern(db));
 
         final ObjectId id;
-        try
-        {
-        	//Check if it's _id: 1234 or _id: "1234"
-	        id = (ObjectId) object.get("_id");
-	        if (id == null)
-	        {
-	            return null;
-	        }
-        }
-        catch(Exception ex)
-        {
-        	return object.get("_id").toString();
-        }
-        return id.toStringMongod();
+        final Object rawId = object.get("_id");
+
+    	if(rawId != null)
+    	{
+        	if(rawId instanceof ObjectId)
+        	{
+        		id = (ObjectId) rawId;
+        	}
+        	else
+        	{
+        		return rawId.toString();
+        	}
+        	return id.toStringMongod();
+    	}
+    	else
+    	{
+    		return null;
+    	}
     }
 
     @Override
