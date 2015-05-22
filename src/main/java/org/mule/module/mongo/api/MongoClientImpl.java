@@ -8,21 +8,29 @@
 
 package org.mule.module.mongo.api;
 
-import com.mongodb.*;
-import com.mongodb.MapReduceCommand.OutputType;
-import com.mongodb.gridfs.GridFS;
-import com.mongodb.gridfs.GridFSDBFile;
-import com.mongodb.gridfs.GridFSInputFile;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Collection;
+import java.util.List;
+
+import javax.validation.constraints.NotNull;
+
 import org.apache.commons.lang.Validate;
 import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.validation.constraints.NotNull;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Collection;
-import java.util.List;
+import com.mongodb.BasicDBObject;
+import com.mongodb.DB;
+import com.mongodb.DBCollection;
+import com.mongodb.DBCursor;
+import com.mongodb.DBObject;
+import com.mongodb.MapReduceCommand.OutputType;
+import com.mongodb.MongoException;
+import com.mongodb.WriteResult;
+import com.mongodb.gridfs.GridFS;
+import com.mongodb.gridfs.GridFSDBFile;
+import com.mongodb.gridfs.GridFSInputFile;
 
 public class MongoClientImpl implements MongoClient
 {
@@ -36,7 +44,8 @@ public class MongoClientImpl implements MongoClient
         this.db = db;
     }
 
-    public void close() throws IOException
+    @Override
+	public void close() throws IOException
     {
         try
         {
@@ -57,7 +66,8 @@ public class MongoClientImpl implements MongoClient
         }
     }
 
-    public long countObjects(@NotNull final String collection, final DBObject query)
+    @Override
+	public long countObjects(@NotNull final String collection, final DBObject query)
     {
         Validate.notNull(collection);
         if (query == null)
@@ -67,7 +77,8 @@ public class MongoClientImpl implements MongoClient
         return db.getCollection(collection).count(query);
     }
 
-    public void createCollection(@NotNull final String collection,
+    @Override
+	public void createCollection(@NotNull final String collection,
                                  final boolean capped,
                                  final Integer maxObjects,
                                  final Integer size)
@@ -85,13 +96,15 @@ public class MongoClientImpl implements MongoClient
         db.createCollection(collection, options);
     }
 
-    public DBCollection getCollection(@NotNull final String collection)
+    @Override
+	public DBCollection getCollection(@NotNull final String collection)
     {
         Validate.notNull(collection);
         return db.getCollection(collection);
     }
 
-    public WriteResult addUser(final String username, final String password)
+    @Override
+	public WriteResult addUser(final String username, final String password)
     {
         Validate.notNull(username);
         Validate.notNull(password);
@@ -103,23 +116,26 @@ public class MongoClientImpl implements MongoClient
         return writeResult;
     }
 
-    public void dropDatabase()
+    @Override
+	public void dropDatabase()
     {
         db.dropDatabase();
     }
 
-    public void dropCollection(@NotNull final String collection)
+    @Override
+	public void dropCollection(@NotNull final String collection)
     {
         Validate.notNull(collection);
         db.getCollection(collection).drop();
     }
 
-    public boolean existsCollection(@NotNull final String collection)
+    @Override
+	public boolean existsCollection(@NotNull final String collection)
     {
         Validate.notNull(collection);
         return db.collectionExists(collection);
     }
-    
+
     @Override
     public Iterable<DBObject> findObjects(@NotNull final String collection,
                                           final DBObject query,
@@ -142,18 +158,19 @@ public class MongoClientImpl implements MongoClient
         if(sortBy != null){
             dbCursor.sort(sortBy);
         }
-        
+
         return bug5588Workaround(dbCursor);
     }
 
-    public DBObject findOneObject(@NotNull final String collection,
+    @Override
+	public DBObject findOneObject(@NotNull final String collection,
                                   final DBObject query,
                                   final List<String> fields, boolean failOnNotFound)
     {
         Validate.notNull(collection);
         final DBObject element = db.getCollection(collection).findOne(query,
             FieldsSet.from(fields));
-        
+
         if (element == null && failOnNotFound)
 		{
             throw new MongoException("No object found for query " + query);
@@ -161,7 +178,8 @@ public class MongoClientImpl implements MongoClient
         return element;
     }
 
-    public String insertObject(@NotNull final String collection,
+    @Override
+	public String insertObject(@NotNull final String collection,
                                @NotNull final DBObject object,
                                @NotNull final WriteConcern writeConcern)
     {
@@ -170,21 +188,32 @@ public class MongoClientImpl implements MongoClient
         Validate.notNull(writeConcern);
         db.getCollection(collection).insert(object,
             writeConcern.toMongoWriteConcern(db));
-        final ObjectId id = (ObjectId) object.get("_id");
-        if (id == null)
-        { 
-            return null;
-        }
 
+        final ObjectId id;
+        try
+        {
+        	//Check if it's _id: 1234 or _id: "1234"
+	        id = (ObjectId) object.get("_id");
+	        if (id == null)
+	        {
+	            return null;
+	        }
+        }
+        catch(Exception ex)
+        {
+        	return object.get("_id").toString();
+        }
         return id.toStringMongod();
     }
 
-    public Collection<String> listCollections()
+    @Override
+	public Collection<String> listCollections()
     {
         return db.getCollectionNames();
     }
 
-    public Iterable<DBObject> mapReduceObjects(@NotNull final String collection,
+    @Override
+	public Iterable<DBObject> mapReduceObjects(@NotNull final String collection,
                                                @NotNull final String mapFunction,
                                                @NotNull final String reduceFunction,
                                                final String outputCollection)
@@ -202,7 +231,8 @@ public class MongoClientImpl implements MongoClient
         return outputCollection != null ? OutputType.REPLACE : OutputType.INLINE;
     }
 
-    public void removeObjects(@NotNull final String collection,
+    @Override
+	public void removeObjects(@NotNull final String collection,
                               final DBObject query,
                               @NotNull final WriteConcern writeConcern)
     {
@@ -212,7 +242,8 @@ public class MongoClientImpl implements MongoClient
             writeConcern.toMongoWriteConcern(db));
     }
 
-    public void saveObject(@NotNull final String collection,
+    @Override
+	public void saveObject(@NotNull final String collection,
                            @NotNull final DBObject object,
                            @NotNull final WriteConcern writeConcern)
     {
@@ -222,7 +253,8 @@ public class MongoClientImpl implements MongoClient
         db.getCollection(collection).save(object, writeConcern.toMongoWriteConcern(db));
     }
 
-    public void updateObjects(@NotNull final String collection,
+    @Override
+	public void updateObjects(@NotNull final String collection,
                               final DBObject query,
                               final DBObject object,
                               final boolean upsert,
@@ -236,22 +268,26 @@ public class MongoClientImpl implements MongoClient
 
     }
 
-    public void createIndex(final String collection, final String field, final IndexOrder order)
+    @Override
+	public void createIndex(final String collection, final String field, final IndexOrder order)
     {
         db.getCollection(collection).createIndex(new BasicDBObject(field, order.getValue()));
     }
 
-    public void dropIndex(final String collection, final String name)
+    @Override
+	public void dropIndex(final String collection, final String name)
     {
         db.getCollection(collection).dropIndex(name);
     }
 
-    public Collection<DBObject> listIndices(final String collection)
+    @Override
+	public Collection<DBObject> listIndices(final String collection)
     {
         return db.getCollection(collection).getIndexInfo();
     }
 
-    public DBObject createFile(final InputStream content,
+    @Override
+	public DBObject createFile(final InputStream content,
                                final String filename,
                                final String contentType,
                                final DBObject metadata)
@@ -269,12 +305,14 @@ public class MongoClientImpl implements MongoClient
         return file;
     }
 
-    public Iterable<DBObject> findFiles(final DBObject query)
+    @Override
+	public Iterable<DBObject> findFiles(final DBObject query)
     {
         return bug5588Workaround(getGridFs().find(query));
     }
 
-    public DBObject findOneFile(final DBObject query)
+    @Override
+	public DBObject findOneFile(final DBObject query)
     {
         Validate.notNull(query);
         final GridFSDBFile file = getGridFs().findOne(query);
@@ -285,32 +323,38 @@ public class MongoClientImpl implements MongoClient
         return file;
     }
 
-    public InputStream getFileContent(final DBObject query)
+    @Override
+	public InputStream getFileContent(final DBObject query)
     {
         Validate.notNull(query);
         return ((GridFSDBFile) findOneFile(query)).getInputStream();
     }
 
-    public Iterable<DBObject> listFiles(final DBObject query)
+    @Override
+	public Iterable<DBObject> listFiles(final DBObject query)
     {
         return bug5588Workaround(getGridFs().getFileList(query));
     }
 
-    public void removeFiles(final DBObject query)
+    @Override
+	public void removeFiles(final DBObject query)
     {
         getGridFs().remove(query);
     }
 
-    public DBObject executeComamnd(final DBObject command)
+    @Override
+	public DBObject executeComamnd(final DBObject command)
     {
         return db.command(command);
     }
 
-    public void requestStart() {
+    @Override
+	public void requestStart() {
         db.requestStart();
     }
 
-    public void requestDone() {
+    @Override
+	public void requestDone() {
         db.requestDone();
     }
 
