@@ -8,53 +8,47 @@
 
 package org.mule.module.mongo.api;
 
-import com.mongodb.*;
-import com.mongodb.MapReduceCommand.OutputType;
-import com.mongodb.gridfs.GridFS;
-import com.mongodb.gridfs.GridFSDBFile;
-import com.mongodb.gridfs.GridFSInputFile;
-import org.apache.commons.lang.Validate;
-import org.bson.types.ObjectId;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.List;
 
+import javax.validation.constraints.NotNull;
+
+import org.apache.commons.lang.Validate;
+import org.bson.types.ObjectId;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.mongodb.BasicDBObject;
+import com.mongodb.DB;
+import com.mongodb.DBCollection;
+import com.mongodb.DBCursor;
+import com.mongodb.DBObject;
+import com.mongodb.MapReduceCommand.OutputType;
+import com.mongodb.MongoException;
+import com.mongodb.WriteResult;
+import com.mongodb.gridfs.GridFS;
+import com.mongodb.gridfs.GridFSDBFile;
+import com.mongodb.gridfs.GridFSInputFile;
+
 public class MongoClientImpl implements MongoClient
 {
-    private static final Logger logger = LoggerFactory.getLogger(MongoClientImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MongoClientImpl.class);
 
     private final DB db;
 
     public MongoClientImpl(final DB db)
     {
+    	System.err.println("In MongoClientImpl constructor");
         Validate.notNull(db);
         this.db = db;
     }
 
+    @Override
     public void close() throws IOException
     {
-        try
-        {
-            db.cleanCursors(true);
-        }
-        catch (final Exception e)
-        {
-            logger.warn("Failed to properly clean cursors of db: " + db, e);
-        }
-
-        try
-        {
-            db.requestDone();
-        }
-        catch (final Exception e)
-        {
-            logger.warn("Failed to properly set request done for db: " + db, e);
-        }
+    	System.err.println("In MongoClientImpl close()");
     }
 
     public long countObjects(@NotNull final String collection, final DBObject query)
@@ -67,6 +61,7 @@ public class MongoClientImpl implements MongoClient
         return db.getCollection(collection).count(query);
     }
 
+    @Override
     public void createCollection(@NotNull final String collection,
                                  final boolean capped,
                                  final Integer maxObjects,
@@ -96,10 +91,10 @@ public class MongoClientImpl implements MongoClient
         Validate.notNull(username);
         Validate.notNull(password);
         final WriteResult writeResult = db.addUser(username, password.toCharArray());
-        if (!writeResult.getLastError().ok())
-        {
-            throw new MongoException(writeResult.getLastError().getErrorMessage());
-        }
+//        if (!writeResult.getLastError().ok())
+//        {
+//            throw new MongoException(writeResult.getLastError().getErrorMessage());
+//        }
         return writeResult;
     }
 
@@ -304,14 +299,6 @@ public class MongoClientImpl implements MongoClient
     public DBObject executeComamnd(final DBObject command)
     {
         return db.command(command);
-    }
-
-    public void requestStart() {
-        db.requestStart();
-    }
-
-    public void requestDone() {
-        db.requestDone();
     }
 
     protected GridFS getGridFs()

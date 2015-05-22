@@ -92,8 +92,8 @@ public class MongoTestCase
     public void saveObject() throws Exception
     {
         BasicDBObject dbObject = new BasicDBObject();
-        client.saveObject(A_COLLECTION, dbObject, WriteConcern.NONE);
-        verify(collectionMock).save(dbObject, com.mongodb.WriteConcern.NONE);
+        client.saveObject(A_COLLECTION, dbObject, WriteConcern.NORMAL);
+        verify(collectionMock).save(dbObject, com.mongodb.WriteConcern.NORMAL);
     }
 
     /**
@@ -104,8 +104,8 @@ public class MongoTestCase
     public void insertObject() throws Exception
     {
         BasicDBObject dbObject = new BasicDBObject();
-        client.insertObject(A_COLLECTION, dbObject, WriteConcern.NONE);
-        verify(collectionMock).insert(dbObject, com.mongodb.WriteConcern.NONE);
+        client.insertObject(A_COLLECTION, dbObject, WriteConcern.NORMAL);
+        verify(collectionMock).insert(dbObject, com.mongodb.WriteConcern.NORMAL);
     }
 
     @Test
@@ -220,15 +220,4 @@ public class MongoTestCase
         client.getFileContent(q);
     }
 
-    @Test
-    public void startConsistentRequest() {
-        client.requestStart();
-        verify(dbMock).requestStart();
-    }
-
-    @Test
-    public void endConsistentRequest() {
-        client.requestDone();
-        verify(dbMock).requestDone();
-    }
 }

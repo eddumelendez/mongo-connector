@@ -23,11 +23,14 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import com.mongodb.*;
-
 import org.bson.BSONObject;
 import org.bson.types.BasicBSONList;
-import org.mule.api.annotations.*;
+import org.mule.api.annotations.ConnectionStrategy;
+import org.mule.api.annotations.Connector;
+import org.mule.api.annotations.Mime;
+import org.mule.api.annotations.Processor;
+import org.mule.api.annotations.ReconnectOn;
+import org.mule.api.annotations.Transformer;
 import org.mule.api.annotations.display.Placement;
 import org.mule.api.annotations.param.Default;
 import org.mule.api.annotations.param.Optional;
@@ -41,9 +44,12 @@ import org.mule.module.mongo.tools.MongoDump;
 import org.mule.module.mongo.tools.MongoRestore;
 import org.mule.transformer.types.MimeTypes;
 
+import com.mongodb.BasicDBList;
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBObject;
+import com.mongodb.MongoException;
+import com.mongodb.WriteResult;
 import com.mongodb.util.JSON;
-
-import org.mule.api.annotations.ReconnectOn;
 
 /**
  * MongoDB is an open source, high-performance, schema-free, document-oriented database that manages
@@ -949,31 +955,6 @@ public class MongoCloudConnector
         mongoRestore.setDrop(drop);
         mongoRestore.setOplogReplay(oplogReplay);
         mongoRestore.restore(inputPath);
-    }
-
-    /**
-     * Begins a consistent request, which allows you to be sure that each subsequent request to MongoDB happens in sequence.
-     * {@sample.xml ../../../doc/mongo-connector.xml.sample mongo:start-consistent-request}
-     *
-     * @see <a href="http://docs.mongodb.org/ecosystem/drivers/java-concurrency/">MongoDB: Java Driver Concurrency</a>
-     */
-    @Processor
-	@ReconnectOn(exceptions = IllegalStateException.class)
-    public void startConsistentRequest() {
-        strategy.getClient().requestStart();
-    }
-
-    /**
-     * Ends a consistent request.
-     * {@sample.xml ../../../doc/mongo-connector.xml.sample mongo:end-consistent-request}
-     *
-     * @see org.mule.module.mongo.MongoCloudConnector#startConsistentRequest()
-     * @see <a href="http://docs.mongodb.org/ecosystem/drivers/java-concurrency/">MongoDB: Java Driver Concurrency</a>
-     */
-    @Processor
-	@ReconnectOn(exceptions = IllegalStateException.class)
-    public void endConsistentRequest() {
-        strategy.getClient().requestDone();
     }
 
     /**

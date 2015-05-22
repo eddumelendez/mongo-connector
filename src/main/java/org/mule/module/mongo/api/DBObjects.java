@@ -120,7 +120,7 @@ public final class DBObjects
 
         if (id != null && id instanceof String)
         {
-            Matcher m = objectIdMatcher(id);
+            Matcher m = objectIdMatcher((String) id);
         	
             if (m.matches())
         	{
@@ -129,8 +129,8 @@ public final class DBObjects
         }
     }
 
-    private static Matcher objectIdMatcher(Object id)
+    private static Matcher objectIdMatcher(String id)
     {
-        return OBJECT_ID_PATTERN.matcher((String) id);
+        return OBJECT_ID_PATTERN.matcher(id);
     }
 }

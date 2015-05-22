@@ -15,8 +15,8 @@ import com.mongodb.DB;
  */
 public enum WriteConcern
 {
-    /** No exceptions are raised, even for network issues */
-    NONE(com.mongodb.WriteConcern.NONE),
+//    /** No exceptions are raised, even for network issues */
+//    NONE(com.mongodb.WriteConcern.NONE),
     /** Exceptions are raised for network issues, but not server errors */
     NORMAL(com.mongodb.WriteConcern.NORMAL),
     /**
