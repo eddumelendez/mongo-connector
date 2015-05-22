@@ -23,11 +23,14 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import com.mongodb.*;
-
 import org.bson.BSONObject;
 import org.bson.types.BasicBSONList;
-import org.mule.api.annotations.*;
+import org.mule.api.annotations.ConnectionStrategy;
+import org.mule.api.annotations.Connector;
+import org.mule.api.annotations.Mime;
+import org.mule.api.annotations.Processor;
+import org.mule.api.annotations.ReconnectOn;
+import org.mule.api.annotations.Transformer;
 import org.mule.api.annotations.display.Placement;
 import org.mule.api.annotations.param.Default;
 import org.mule.api.annotations.param.Optional;
@@ -41,14 +44,18 @@ import org.mule.module.mongo.tools.MongoDump;
 import org.mule.module.mongo.tools.MongoRestore;
 import org.mule.transformer.types.MimeTypes;
 
+import com.mongodb.BasicDBList;
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBObject;
+import com.mongodb.MongoException;
+import com.mongodb.WriteResult;
 import com.mongodb.util.JSON;
-
-import org.mule.api.annotations.ReconnectOn;
+import com.mongodb.util.JSONSerializers;
 
 /**
  * MongoDB is an open source, high-performance, schema-free, document-oriented database that manages
  * collections of BSON documents.
- * 
+ *
  * @author MuleSoft, inc.
  */
 @Connector(name = "mongo", schemaVersion = "2.0", friendlyName = "Mongo DB", minMuleVersion = "3.6")
@@ -65,16 +72,16 @@ public class MongoCloudConnector
 	public ConnectionManagementStrategy getStrategy() {
 		return strategy;
 	}
-	
+
 	public void setStrategy(ConnectionManagementStrategy strategy) {
 		this.strategy = strategy;
 	}
-	
+
     /**
      * Adds a new user for this db
      * <p/>
      * {@sample.xml ../../../doc/mongo-connector.xml.sample mongo:add-user}
-     * 
+     *
      * @param newUsername Name of the user
      * @param newPassword Password that will be used for authentication
      * @return Result of the operation
@@ -102,7 +109,7 @@ public class MongoCloudConnector
      * Lists names of collections available at this database
      * <p/>
      * {@sample.xml ../../../doc/mongo-connector.xml.sample mongo:list-collections}
-     * 
+     *
      * @return the list of names of collections available at this database
      */
     @Processor
@@ -116,7 +123,7 @@ public class MongoCloudConnector
      * Answers if a collection exists given its name
      * <p/>
      * {@sample.xml ../../../doc/mongo-connector.xml.sample mongo:exists-collection}
-     * 
+     *
      * @param collection the name of the collection
      * @return if the collection exists
      */
@@ -132,7 +139,7 @@ public class MongoCloudConnector
      * nothing.
      * <p/>
      * {@sample.xml ../../../doc/mongo-connector.xml.sample mongo:drop-collection}
-     * 
+     *
      * @param collection the name of the collection to drop
      */
     @Processor
@@ -146,7 +153,7 @@ public class MongoCloudConnector
      * Creates a new collection. If the collection already exists, a MongoException will be thrown.
      * <p/>
      * {@sample.xml ../../../doc/mongo-connector.xml.sample mongo:create-collection}
-     * 
+     *
      * @param collection the name of the collection to create
      * @param capped if the collection will be capped
      * @param maxObjects the maximum number of documents the new collection is able to contain
@@ -166,7 +173,7 @@ public class MongoCloudConnector
      * Inserts an object in a collection, setting its id if necessary.
      * <p/>
      * {@sample.xml ../../../doc/mongo-connector.xml.sample mongo:insert-object}
-     * 
+     *
      * @param collection the name of the collection where to insert the given object
      * @param dbObject a {@link DBObject} instance.
      * @param writeConcern the optional write concern of insertion
@@ -188,7 +195,7 @@ public class MongoCloudConnector
      * values.
      * <p/>
      * {@sample.xml ../../../doc/mongo-connector.xml.sample mongo:insert-object-from-map}
-     * 
+     *
      * @param collection the name of the collection where to insert the given object
      * @param elementAttributes alternative way of specifying the element as a literal Map inside a
      *            Mule Flow
@@ -210,7 +217,7 @@ public class MongoCloudConnector
      * updated.
      * <p/>
      * {@sample.xml ../../../doc/mongo-connector.xml.sample mongo:update-objects}
-     * 
+     *
      * @param collection the name of the collection to update
      * @param query the {@link DBObject} query object used to detect the element to update. If the object Id is an instance of ObjectId you need to specify the value pair as map with the following structure:
      * { "_id" : "ObjectId(OBJECT_ID_VALUE)"}
@@ -238,7 +245,7 @@ public class MongoCloudConnector
      * updated.
      * <p/>
      * {@sample.xml ../../../doc/mongo-connector.xml.sample mongo:update-objects-using-query-map}
-     * 
+     *
      * @param collection the name of the collection to update
      * @param queryAttributes the query object used to detect the element to update. If the object Id is an instance of ObjectId you need to specify the value pair as map with the following structure:
      * { "_id" : "ObjectId(OBJECT_ID_VALUE)"}
@@ -267,7 +274,7 @@ public class MongoCloudConnector
      * updated.
      * <p/>
      * {@sample.xml ../../../doc/mongo-connector.xml.sample mongo:update-objects-using-map}
-     * 
+     *
      * @param collection the name of the collection to update
      * @param queryAttributes the query object used to detect the element to update.
      * @param elementAttributes the mandatory object that will replace that one which matches the
@@ -294,7 +301,7 @@ public class MongoCloudConnector
      * <p/>
      * <p/>
      * {@sample.xml ../../../doc/mongo-connector.xml.sample mongo:update-objects-by-function}
-     * 
+     *
      * @param collection the name of the collection to update
      * @param function the function used to execute the update
      * @param query the {@link DBObject} query object used to detect the element to update.
@@ -325,7 +332,7 @@ public class MongoCloudConnector
      * <p/>
      * {@sample.xml ../../../doc/mongo-connector.xml.sample
      * mongo:update-objects-by-function-using-map}
-     * 
+     *
      * @param collection the name of the collection to update
      * @param function the function used to execute the update
      * @param queryAttributes the query object used to detect the element to update.
@@ -355,7 +362,7 @@ public class MongoCloudConnector
      * Inserts or updates an object based on its object _id.
      * <p/>
      * {@sample.xml ../../../doc/mongo-connector.xml.sample mongo:save-object}
-     * 
+     *
      * @param collection the collection where to insert the object
      * @param element the mandatory {@link DBObject} object to insert.
      * @param writeConcern the write concern used to persist the object
@@ -373,7 +380,7 @@ public class MongoCloudConnector
      * Inserts or updates an object based on its object _id.
      * <p/>
      * {@sample.xml ../../../doc/mongo-connector.xml.sample mongo:save-object-from-map}
-     * 
+     *
      * @param collection the collection where to insert the object
      * @param elementAttributes the mandatory object to insert.
      * @param writeConcern the write concern used to persist the object
@@ -393,7 +400,7 @@ public class MongoCloudConnector
      * dropping the collection and creating it and its indices again
      * <p/>
      * {@sample.xml ../../../doc/mongo-connector.xml.sample mongo:remove-objects}
-     * 
+     *
      * @param collection the collection whose elements will be removed
      * @param query the optional {@link DBObject} query object. Objects that match it will be
      *            removed.
@@ -414,7 +421,7 @@ public class MongoCloudConnector
      * dropping the collection and creating it and its indices again
      * <p/>
      * {@sample.xml ../../../doc/mongo-connector.xml.sample mongo:remove-objects-using-query-map}
-     * 
+     *
      * @param collection the collection whose elements will be removed
      * @param queryAttributes the query object. Objects that match it will be removed.
      * @param writeConcern the write concern used to remove the object
@@ -440,7 +447,7 @@ public class MongoCloudConnector
      * MongoDB documentation for writing them.
      * <p/>
      * {@sample.xml ../../../doc/mongo-connector.xml.sample mongo:map-reduce-objects}
-     * 
+     *
      * @param collection the name of the collection to map and reduce
      * @param mapFunction a JavaScript encoded mapping function
      * @param reduceFunction a JavaScript encoded reducing function
@@ -465,7 +472,7 @@ public class MongoCloudConnector
      * number of elements in the collection
      * <p/>
      * {@sample.xml ../../../doc/mongo-connector.xml.sample mongo:count-objects}
-     * 
+     *
      * @param collection the target collection
      * @param query the optional {@link DBObject} query for counting objects. Only objects matching
      *            it will be counted. If unspecified, all objects are counted.
@@ -483,7 +490,7 @@ public class MongoCloudConnector
      * number of elements in the collection
      * <p/>
      * {@sample.xml ../../../doc/mongo-connector.xml.sample mongo:count-objects-using-query-map}
-     * 
+     *
      * @param collection the target collection
      * @param queryAttributes the optional query for counting objects. Only objects matching it will
      *            be counted. If unspecified, all objects are counted.
@@ -502,7 +509,7 @@ public class MongoCloudConnector
      * collection are retrieved. If no fields object is specified, all fields are retrieved.
      * <p/>
      * {@sample.xml ../../../doc/mongo-connector.xml.sample mongo:find-objects}
-     * 
+     *
      * @param collection the target collection
      * @param query the optional {@link DBObject} query object. If unspecified, all documents are
      *            returned.
@@ -529,7 +536,7 @@ public class MongoCloudConnector
      * collection are retrieved. If no fields object is specified, all fields are retrieved.
      * <p/>
      * {@sample.xml ../../../doc/mongo-connector.xml.sample mongo:find-objects-using-query-map}
-     * 
+     *
      * @param collection the target collection
      * @param queryAttributes the optional query object. If unspecified, all documents are returned.
      * @param fields alternative way of passing fields as a literal List
@@ -555,7 +562,7 @@ public class MongoCloudConnector
      * matches the given query
      * <p/>
      * {@sample.xml ../../../doc/mongo-connector.xml.sample mongo:find-one-object}
-     * 
+     *
      * @param collection the target collection
      * @param query the mandatory {@link DBObject} query object that the returned object matches.
      * @param fields alternative way of passing fields as a literal List
@@ -578,7 +585,7 @@ public class MongoCloudConnector
      * matches the given query
      * <p/>
      * {@sample.xml ../../../doc/mongo-connector.xml.sample mongo:find-one-object-using-query-map}
-     * 
+     *
      * @param collection the target collection
      * @param queryAttributes the mandatory query object that the returned object matches.
      * @param fields alternative way of passing fields as a literal List
@@ -600,7 +607,7 @@ public class MongoCloudConnector
      * Creates a new index
      * <p/>
      * {@sample.xml ../../../doc/mongo-connector.xml.sample mongo:create-index}
-     * 
+     *
      * @param collection the name of the collection where the index will be created
      * @param field the name of the field which will be indexed
      * @param order the indexing order
@@ -618,7 +625,7 @@ public class MongoCloudConnector
      * Drops an existing index
      * <p/>
      * {@sample.xml ../../../doc/mongo-connector.xml.sample mongo:drop-index}
-     * 
+     *
      * @param collection the name of the collection where the index is
      * @param index the name of the index to drop
      */
@@ -633,7 +640,7 @@ public class MongoCloudConnector
      * List existent indices in a collection
      * <p/>
      * {@sample.xml ../../../doc/mongo-connector.xml.sample mongo:list-indices}
-     * 
+     *
      * @param collection the name of the collection
      * @return a collection of {@link DBObject} with indices information
      */
@@ -649,7 +656,7 @@ public class MongoCloudConnector
      * and extraData, and answers it.
      * <p/>
      * {@sample.xml ../../../doc/mongo-connector.xml.sample mongo:create-file-from-payload}
-     * 
+     *
      * @param payload the mandatory content of the new gridfs file. It may be a java.io.File, a
      *            byte[] or an InputStream.
      * @param filename the mandatory name of new file.
@@ -697,7 +704,7 @@ public class MongoCloudConnector
      * Lists all the files that match the given query
      * <p/>
      * {@sample.xml ../../../doc/mongo-connector.xml.sample mongo:find-files}
-     * 
+     *
      * @param query a {@link DBObject} query the optional query
      * @return a {@link DBObject} files iterable
      */
@@ -712,7 +719,7 @@ public class MongoCloudConnector
      * Lists all the files that match the given query
      * <p/>
      * {@sample.xml ../../../doc/mongo-connector.xml.sample mongo:find-files-using-query-map}
-     * 
+     *
      * @param queryAttributes the optional query attributes
      * @return a {@link DBObject} files iterable
      */
@@ -728,7 +735,7 @@ public class MongoCloudConnector
      * MongoException is thrown.
      * <p/>
      * {@sample.xml ../../../doc/mongo-connector.xml.sample mongo:find-one-file}
-     * 
+     *
      * @param query the {@link DBObject} mandatory query
      * @return a {@link DBObject}
      */
@@ -744,7 +751,7 @@ public class MongoCloudConnector
      * MongoException is thrown.
      * <p/>
      * {@sample.xml ../../../doc/mongo-connector.xml.sample mongo:find-one-file-using-query-map}
-     * 
+     *
      * @param queryAttributes the mandatory query
      * @return a {@link DBObject}
      */
@@ -760,7 +767,7 @@ public class MongoCloudConnector
      * object matches it, a MongoException is thrown.
      * <p/>
      * {@sample.xml ../../../doc/mongo-connector.xml.sample mongo:get-file-content}
-     * 
+     *
      * @param query the {@link DBObject} mandatory query
      * @return an InputStream to the file contents
      */
@@ -776,7 +783,7 @@ public class MongoCloudConnector
      * queryAttributes. If no object matches it, a MongoException is thrown.
      * <p/>
      * {@sample.xml ../../../doc/mongo-connector.xml.sample mongo:get-file-content-using-query-map}
-     * 
+     *
      * @param queryAttributes the mandatory query attributes
      * @return an InputStream to the file contents
      */
@@ -792,7 +799,7 @@ public class MongoCloudConnector
      * specified, all files are listed.
      * <p/>
      * {@sample.xml ../../../doc/mongo-connector.xml.sample mongo:list-files}
-     * 
+     *
      * @param query the {@link DBObject} optional query
      * @return an iterable of {@link DBObject}
      */
@@ -808,7 +815,7 @@ public class MongoCloudConnector
      * specified, all files are listed.
      * <p/>
      * {@sample.xml ../../../doc/mongo-connector.xml.sample mongo:list-files-using-query-map}
-     * 
+     *
      * @param queryAttributes the optional query
      * @return an iterable of {@link DBObject}
      */
@@ -824,7 +831,7 @@ public class MongoCloudConnector
      * removed
      * <p/>
      * {@sample.xml ../../../doc/mongo-connector.xml.sample mongo:remove-files}
-     * 
+     *
      * @param query the {@link DBObject} optional query
      */
     @Processor
@@ -839,7 +846,7 @@ public class MongoCloudConnector
      * removed
      * <p/>
      * {@sample.xml ../../../doc/mongo-connector.xml.sample mongo:remove-files-using-query-map}
-     * 
+     *
      * @param queryAttributes the optional query
      */
     @Processor
@@ -854,7 +861,7 @@ public class MongoCloudConnector
      * <p/>
      * <p/>
      * {@sample.xml ../../../doc/mongo-connector.xml.sample mongo:remove-files}
-     * 
+     *
      * @param commandName The command to execute on the database
      * @param commandValue The value for the command
      * @return The result of the command
@@ -874,7 +881,7 @@ public class MongoCloudConnector
      * <p/>
      * <p/>
      * {@sample.xml ../../../doc/mongo-connector.xml.sample mongo:dump}
-     * 
+     *
      * @param outputDirectory output directory path, if no output directory is provided the default
      *            /dump directory is assumed
      * @param outputName output file name, if it's not specified the database name is used
@@ -907,7 +914,7 @@ public class MongoCloudConnector
      * <p/>
      * <p/>
      * {@sample.xml ../../../doc/mongo-connector.xml.sample mongo:incremental-dump}
-     * 
+     *
      * @param outputDirectory output directory path, if no output directory is provided the default
      *            /dump directory is assumed
      * @param incrementalTimestampFile file that keeps track of the last timestamp processed, if no
@@ -932,7 +939,7 @@ public class MongoCloudConnector
      * <p/>
      * <p/>
      * {@sample.xml ../../../doc/mongo-connector.xml.sample mongo:restore}
-     * 
+     *
      * @param inputPath input path to the dump files, it can be a directory, a zip file or just a
      *            bson file
      * @param drop whether to drop existing collections before restore
@@ -980,7 +987,7 @@ public class MongoCloudConnector
      * Convert JSON to DBObject.
      * <p/>
      * {@sample.xml ../../../doc/mongo-connector.xml.sample mongo:jsonToDbobject}
-     * 
+     *
      * @param input the input for this transformer
      * @return the converted {@link DBObject}
      */
@@ -989,13 +996,13 @@ public class MongoCloudConnector
     {
         DBObject o = null;
         BSONObject bsonObj = null;
-        
+
         Object obj = JSON.parse(input);
-    	
-        if (obj instanceof BasicDBList) 
-        {	
+
+        if (obj instanceof BasicDBList)
+        {
             BasicDBList basicList = (BasicDBList) obj;
-    		
+
             if (basicList.size() > 1)
             {
                 for(int i=0; i< basicList.size();i++)
@@ -1013,12 +1020,12 @@ public class MongoCloudConnector
                     }
                 }
             }
-        } 
-        else 
+        }
+        else
         {
             o = (DBObject) obj;
         }
-    	
+
         return o;
     }
 
@@ -1026,7 +1033,7 @@ public class MongoCloudConnector
      * Convert DBObject to Json.
      * <p/>
      * {@sample.xml ../../../doc/mongo-connector.xml.sample mongo:dbobjectToJson}
-     * 
+     *
      * @param input the input for this transformer
      * @return the converted string representation
      */
@@ -1034,14 +1041,14 @@ public class MongoCloudConnector
     @Transformer(sourceTypes = {DBObject.class})
     public static String dbobjectToJson(final DBObject input)
     {
-        return JSON.serialize(input);
+        return JSONSerializers.getStrict().serialize(input);
     }
 
     /**
      * Convert a BasicBSONList into Json.
      * <p/>
      * {@sample.xml ../../../doc/mongo-connector.xml.sample mongo:bsonListToJson}
-     * 
+     *
      * @param input the input for this transformer
      * @return the converted string representation
      */
@@ -1049,14 +1056,14 @@ public class MongoCloudConnector
     @Transformer(sourceTypes = {BasicBSONList.class})
     public static String bsonListToJson(final BasicBSONList input)
     {
-        return JSON.serialize(input);
+        return JSONSerializers.getStrict().serialize(input);
     }
 
     /**
      * Convert a BasicBSONList into Json.
      * <p/>
      * {@sample.xml ../../../doc/mongo-connector.xml.sample mongo:mongoCollectionToJson}
-     * 
+     *
      * @param input the input for this transformer
      * @return the converted string representation
      */
@@ -1064,14 +1071,14 @@ public class MongoCloudConnector
     @Transformer(sourceTypes = {MongoCollection.class})
     public static String mongoCollectionToJson(final MongoCollection input)
     {
-        return JSON.serialize(input);
+        return JSONSerializers.getStrict().serialize(input);
     }
 
     /**
      * Convert a DBObject into Map.
      * <p/>
      * {@sample.xml ../../../doc/mongo-connector.xml.sample mongo:dbObjectToMap}
-     * 
+     *
      * @param input the input for this transformer
      * @return the converted Map representation
      */
