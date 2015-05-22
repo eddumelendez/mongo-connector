@@ -8,9 +8,10 @@
 package org.mule.module.mongo;
 
 import java.io.IOException;
-import java.net.UnknownHostException;
 import java.util.LinkedList;
 import java.util.List;
+
+import jersey.repackaged.com.google.common.collect.Lists;
 
 import org.apache.commons.lang.Validate;
 import org.mule.api.ConnectionException;
@@ -37,8 +38,9 @@ import com.mongodb.DB;
 import com.mongodb.Mongo;
 import com.mongodb.MongoClientOptions;
 import com.mongodb.MongoClientURI;
-import com.mongodb.MongoException;
+import com.mongodb.MongoCredential;
 import com.mongodb.MongoURI;
+import com.mongodb.ServerAddress;
 
 @ConnectionManagement(friendlyName="ConnectionManagement", configElementName="config")
 public class ConnectionManagementStrategy {
@@ -97,16 +99,9 @@ public class ConnectionManagementStrategy {
     @Optional
     private Integer socketTimeout;
 
-    /**
-     * This controls whether the system retries automatically on connection errors.
-     */
-    @Configurable
-    @Optional
-    private Boolean autoConnectRetry;
-
     private String database;
 
-    private Mongo mongo;
+    private com.mongodb.MongoClient mongo;
 
     private MongoClient client;
 
@@ -131,23 +126,30 @@ public class ConnectionManagementStrategy {
                         @Optional @Password final String password,
                         @ConnectionKey final String database) throws ConnectionException
     {
+    	System.err.println("Connecting");
         try
         {
-            mongo = new com.mongodb.MongoClient(getMongoClientURI(username, password, database));
+        	ServerAddress address = new ServerAddress(getHost(), getPort());
+            if (StringUtils.isNotBlank(password))
+            {
+                Validate.notNull(username, "Username must not be null if password is set");
+
+                MongoCredential credential = MongoCredential.createCredential(username, database, password.toCharArray());
+
+                mongo = new com.mongodb.MongoClient(Lists.newArrayList(address), Lists.newArrayList(credential));
+//                if (!db.isAuthenticated() && !db.authenticate(username, password.toCharArray()))
+//                {
+//                    throw new ConnectionException(ConnectionExceptionCode.INCORRECT_CREDENTIALS, null,
+//                            "Couldn't connect with the given credentials");
+//                }
+            }
+
+        	
+//            mongo = new com.mongodb.MongoClient(getMongoClientURI(username, password, database));
             this.client = new MongoClientImpl(getDatabase(mongo, username, password, database));
             
             DB db = mongo.getDB(database);
             db.getStats();
-        }
-        catch (final UnknownHostException ex)
-        {
-            LOGGER.info(ex.getMessage(), ex); 
-            throw new ConnectionException(ConnectionExceptionCode.UNKNOWN_HOST, ex.getLocalizedMessage(), ex.getMessage(), ex.getCause());
-        }
-        catch (final MongoException.Network e)
-        {
-            LOGGER.info(e.getMessage(), e);
-            throw new ConnectionException(ConnectionExceptionCode.CANNOT_REACH, e.getLocalizedMessage(), e.getMessage(), e.getCause());
         }
         catch (final IllegalArgumentException e)
         {
@@ -178,10 +180,6 @@ public class ConnectionManagementStrategy {
         if (socketTimeout != null)
         {
             options.socketTimeout(socketTimeout);
-        }
-        if (autoConnectRetry != null)
-        {
-            options.autoConnectRetry(autoConnectRetry);
         }
         if (database != null)
         {
@@ -234,7 +232,7 @@ public class ConnectionManagementStrategy {
     @ValidateConnection
     public boolean isConnected()
     {
-        return this.client != null && this.mongo != null && mongo.getConnector().isOpen();
+        return this.client != null && this.mongo != null ; //&& mongo.getConnector().isOpen();
     }
 
 
@@ -262,15 +260,15 @@ public class ConnectionManagementStrategy {
                            final String database) throws ConnectionException
     {
         final DB db = mongo.getDB(database);
-        if (StringUtils.isNotBlank(password))
-        {
-            Validate.notNull(username, "Username must not be null if password is set");
-            if (!db.isAuthenticated() && !db.authenticate(username, password.toCharArray()))
-            {
-                throw new ConnectionException(ConnectionExceptionCode.INCORRECT_CREDENTIALS, null,
-                        "Couldn't connect with the given credentials");
-            }
-        }
+//        if (StringUtils.isNotBlank(password))
+//        {
+//            Validate.notNull(username, "Username must not be null if password is set");
+//            if (!db.isAuthenticated() && !db.authenticate(username, password.toCharArray()))
+//            {
+//                throw new ConnectionException(ConnectionExceptionCode.INCORRECT_CREDENTIALS, null,
+//                        "Couldn't connect with the given credentials");
+//            }
+//        }
         return db;
     }
 
@@ -278,7 +276,6 @@ public class ConnectionManagementStrategy {
     {
         return MongoClientAdaptor.adapt(client);
     }
-
     
     public Mongo getMongo() {
 		return mongo;
@@ -362,16 +359,6 @@ public class ConnectionManagementStrategy {
     public void setSocketTimeout(final Integer socketTimeout)
     {
         this.socketTimeout = socketTimeout;
-    }
-
-    public Boolean getAutoConnectRetry()
-    {
-        return autoConnectRetry;
-    }
-
-    public void setAutoConnectRetry(final Boolean autoConnectRetry)
-    {
-        this.autoConnectRetry = autoConnectRetry;
     }
 
 }

@@ -117,7 +117,7 @@ public class MongoObjectStore implements PartitionableExpirableObjectStore<Seria
         if (StringUtils.isNotEmpty(password))
         {
             Validate.notEmpty(username, "Username must not be empty if password is set");
-            db.authenticate(username, password.toCharArray());
+//            db.authenticate(username, password.toCharArray());
         }
 
         mongoClient = new MongoClientImpl(db);

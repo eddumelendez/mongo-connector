@@ -959,31 +959,6 @@ public class MongoCloudConnector
     }
 
     /**
-     * Begins a consistent request, which allows you to be sure that each subsequent request to MongoDB happens in sequence.
-     * {@sample.xml ../../../doc/mongo-connector.xml.sample mongo:start-consistent-request}
-     *
-     * @see <a href="http://docs.mongodb.org/ecosystem/drivers/java-concurrency/">MongoDB: Java Driver Concurrency</a>
-     */
-    @Processor
-	@ReconnectOn(exceptions = IllegalStateException.class)
-    public void startConsistentRequest() {
-        strategy.getClient().requestStart();
-    }
-
-    /**
-     * Ends a consistent request.
-     * {@sample.xml ../../../doc/mongo-connector.xml.sample mongo:end-consistent-request}
-     *
-     * @see org.mule.module.mongo.MongoCloudConnector#startConsistentRequest()
-     * @see <a href="http://docs.mongodb.org/ecosystem/drivers/java-concurrency/">MongoDB: Java Driver Concurrency</a>
-     */
-    @Processor
-	@ReconnectOn(exceptions = IllegalStateException.class)
-    public void endConsistentRequest() {
-        strategy.getClient().requestDone();
-    }
-
-    /**
      * Convert JSON to DBObject.
      * <p/>
      * {@sample.xml ../../../doc/mongo-connector.xml.sample mongo:jsonToDbobject}

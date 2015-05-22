@@ -19,9 +19,6 @@ import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import com.mongodb.WriteResult;
 
-/**
- * @author flbulgarelli
- */
 public interface MongoClient extends Closeable
 {
     Collection<String> listCollections();
@@ -89,7 +86,4 @@ public interface MongoClient extends Closeable
 
     void dropDatabase();
 
-    void requestStart();
-
-    void requestDone();
 }
