@@ -37,9 +37,7 @@ public class AddUserTestCases extends MongoMarianoTestParent {
 	public void testAddUser() {
 		try
 		{
-			WriteResult result = getConnector().addUser(
-					testData.get("newUser").toString(),
-					testData.get("newPassword").toString());
+			WriteResult result = getConnector().addUser("newUsername", "newPassword");
 
 //			assertTrue(result.getLastError().ok());
 //			assertTrue(result.getError() == null);
