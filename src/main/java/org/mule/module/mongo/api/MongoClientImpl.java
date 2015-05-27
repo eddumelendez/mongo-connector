@@ -16,6 +16,8 @@ import java.util.List;
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.lang.Validate;
+import org.bson.Document;
+import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,6 +30,7 @@ import com.mongodb.DBObject;
 import com.mongodb.MapReduceCommand.OutputType;
 import com.mongodb.MongoException;
 import com.mongodb.WriteResult;
+import com.mongodb.client.MongoDatabase;
 import com.mongodb.gridfs.GridFS;
 import com.mongodb.gridfs.GridFSDBFile;
 import com.mongodb.gridfs.GridFSInputFile;
@@ -37,29 +40,36 @@ public class MongoClientImpl implements MongoClient
     private static final Logger LOGGER = LoggerFactory.getLogger(MongoClientImpl.class);
 
     private final DB db;
+    private final MongoDatabase database;
+    private final com.mongodb.MongoClient mongo;
 
-    public MongoClientImpl(final DB db)
+    public MongoClientImpl(com.mongodb.MongoClient mongo, final String db)
     {
     	LOGGER.info("Initializing MongoClientImpl");
-        Validate.notNull(db);
-        this.db = db;
+    	Validate.notNull(mongo, "Mongo instance cannot be null");
+        Validate.notNull(db, "Database cannot be null");
+        this.mongo = mongo;
+        this.db = mongo.getDB(db);
+        this.database = mongo.getDatabase(db);
     }
 
     @Override
 	public void close() throws IOException
     {
     	LOGGER.info("Closing MongoClientImpl");
+    	mongo.close();
     }
 
     @Override
-	public long countObjects(@NotNull final String collection, final DBObject query)
+	public long countObjects(@NotNull final String collection, final Bson query)
     {
         Validate.notNull(collection);
         if (query == null)
         {
-            return db.getCollection(collection).count();
+            return database.getCollection(collection).count();
         }
-        return db.getCollection(collection).count(query);
+        
+		return database.getCollection(collection).count(query);
     }
 
     @Override
@@ -165,17 +175,16 @@ public class MongoClientImpl implements MongoClient
 
     @Override
 	public String insertObject(@NotNull final String collection,
-                               @NotNull final DBObject object,
+                               @NotNull final Document document,
                                @NotNull final WriteConcern writeConcern)
     {
         Validate.notNull(collection);
-        Validate.notNull(object);
+        Validate.notNull(document);
         Validate.notNull(writeConcern);
-        db.getCollection(collection).insert(object,
-            writeConcern.toMongoWriteConcern(db));
+        database.getCollection(collection).insertOne(document);
 
         final String id;
-        final Object rawId = object.get("_id");
+        final Object rawId = document.get("_id");
 
     	if (rawId == null)
     	{

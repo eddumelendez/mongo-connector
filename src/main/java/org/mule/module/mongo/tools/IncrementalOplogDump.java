@@ -9,13 +9,6 @@
 
 package org.mule.module.mongo.tools;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.Bytes;
-import com.mongodb.DB;
-import com.mongodb.DBCollection;
-import com.mongodb.DBCursor;
-import com.mongodb.DBObject;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -35,6 +28,13 @@ import java.util.concurrent.Callable;
 import org.apache.commons.lang.Validate;
 import org.bson.types.BSONTimestamp;
 
+import com.mongodb.BasicDBObject;
+import com.mongodb.Bytes;
+import com.mongodb.DB;
+import com.mongodb.DBCollection;
+import com.mongodb.DBCursor;
+import com.mongodb.DBObject;
+
 public class IncrementalOplogDump implements Callable<Void>
 {
     private static final String INCREMENTAL_LAST_TIMESTAMP = "incremental_last_timestamp.txt";
@@ -44,7 +44,8 @@ public class IncrementalOplogDump implements Callable<Void>
     private String outputDirectory;
     private String database;
 
-    public Void call() throws Exception
+    @Override
+	public Void call() throws Exception
     {
         dump(outputDirectory, database);
         return null;

@@ -18,6 +18,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import org.bson.Document;
 import org.junit.Before;
 import org.junit.Test;
 import org.mule.module.mongo.api.IndexOrder;
@@ -26,10 +27,10 @@ import org.mule.module.mongo.api.MongoClientImpl;
 import org.mule.module.mongo.api.WriteConcern;
 
 import com.mongodb.BasicDBObject;
-import com.mongodb.DB;
-import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import com.mongodb.MongoException;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
 import com.mongodb.gridfs.GridFS;
 import com.mongodb.gridfs.GridFSDBFile;
 
@@ -41,17 +42,19 @@ import com.mongodb.gridfs.GridFSDBFile;
 public class MongoTestCase
 {
     private static final String A_COLLECTION = "myCollection";
+    private com.mongodb.MongoClient mongo;
     private MongoClient client;
-    private DBCollection collectionMock;
-    private DB dbMock;
+    private MongoCollection<Document> collectionMock;
+    private MongoDatabase dbMock;
     private GridFS gridFsMock;
 
     @Before
     public void setup()
     {
-        dbMock = mock(DB.class);
+    	mongo = mock(com.mongodb.MongoClient.class);
+        dbMock = mock(MongoDatabase.class);
         gridFsMock = mock(GridFS.class);
-        client = new MongoClientImpl(dbMock)
+        client = new MongoClientImpl(mongo, A_COLLECTION)
         {
             @Override
             protected GridFS getGridFs()
@@ -59,7 +62,8 @@ public class MongoTestCase
                 return gridFsMock;
             }
         };
-        collectionMock = mock(DBCollection.class);
+        collectionMock = mock(MongoCollection.class);
+        when(mongo.getDatabase(A_COLLECTION)).thenReturn(dbMock);
         when(dbMock.getCollection(A_COLLECTION)).thenReturn(collectionMock);
     }
 
@@ -103,9 +107,9 @@ public class MongoTestCase
     @Test
     public void insertObject() throws Exception
     {
-        BasicDBObject dbObject = new BasicDBObject();
-        client.insertObject(A_COLLECTION, dbObject, WriteConcern.NORMAL);
-        verify(collectionMock).insert(dbObject, com.mongodb.WriteConcern.NORMAL);
+    	Document document = new Document();
+        client.insertObject(A_COLLECTION, document, WriteConcern.NORMAL);
+        verify(collectionMock).insertOne(document);
     }
 
     @Test

@@ -147,7 +147,7 @@ public class ConnectionManagementStrategy {
 				mongo = new com.mongodb.MongoClient(addresses, mongoOptions);
             }
 
-            this.client = new MongoClientImpl(getDatabase(mongo, username, password, database));
+            this.client = new MongoClientImpl(mongo, database);
             System.err.println("Databases: " + Lists.newArrayList(mongo.listDatabaseNames()));
             DB db = mongo.getDB(database);
             System.err.println("DB: " + db.getName());

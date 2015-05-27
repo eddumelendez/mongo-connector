@@ -24,6 +24,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.bson.BSONObject;
+import org.bson.Document;
+import org.bson.conversions.Bson;
 import org.bson.types.BasicBSONList;
 import org.mule.api.annotations.ConnectionStrategy;
 import org.mule.api.annotations.Connector;
@@ -175,17 +177,17 @@ public class MongoCloudConnector
      * {@sample.xml ../../../doc/mongo-connector.xml.sample mongo:insert-object}
      *
      * @param collection the name of the collection where to insert the given object
-     * @param dbObject a {@link DBObject} instance.
+     * @param document a {@link DBObject} instance.
      * @param writeConcern the optional write concern of insertion
      * @return the id that was just insterted
      */
     @Processor
 	@ReconnectOn(exceptions = IllegalStateException.class)
     public String insertObject(final String collection,
-                               @Default("#[payload]") final DBObject dbObject,
+                               @Default("#[payload]") final Document document,
                                @Default(WRITE_CONCERN_DEFAULT_VALUE) final WriteConcern writeConcern)
     {
-        return strategy.getClient().insertObject(collection, dbObject, writeConcern);
+        return strategy.getClient().insertObject(collection, document, writeConcern);
     }
 
     /**
@@ -208,7 +210,7 @@ public class MongoCloudConnector
                                       @Placement(group = "Element Attributes") final Map<String, Object> elementAttributes,
                                       @Default(WRITE_CONCERN_DEFAULT_VALUE) final WriteConcern writeConcern)
     {
-        return strategy.getClient().insertObject(collection, (DBObject) adapt(elementAttributes), writeConcern);
+        return strategy.getClient().insertObject(collection, adapt(elementAttributes), writeConcern);
     }
 
     /**
@@ -480,7 +482,7 @@ public class MongoCloudConnector
      */
     @Processor
 	@ReconnectOn(exceptions = IllegalStateException.class)
-    public long countObjects(final String collection, @Default("#[payload]") final DBObject query)
+    public long countObjects(final String collection, @Default("#[payload]") final Bson query)
     {
         return strategy.getClient().countObjects(collection, query);
     }
@@ -501,7 +503,7 @@ public class MongoCloudConnector
     public long countObjectsUsingQueryMap(final String collection,
                                           @Placement(group = "Query Attributes") @Optional final Map<String, Object> queryAttributes)
     {
-        return strategy.getClient().countObjects(collection, (DBObject) adapt(queryAttributes));
+        return strategy.getClient().countObjects(collection, adapt(queryAttributes));
     }
 
     /**

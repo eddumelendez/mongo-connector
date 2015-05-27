@@ -20,7 +20,6 @@ import javax.annotation.PostConstruct;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.Validate;
 import org.bson.types.ObjectId;
 import org.mule.api.MuleContext;
 import org.mule.api.annotations.Configurable;
@@ -38,7 +37,7 @@ import org.mule.util.SerializationUtils;
 import org.springframework.util.DigestUtils;
 
 import com.mongodb.BasicDBObject;
-import com.mongodb.DB;
+//import com.mongodb.DB;
 import com.mongodb.DBObject;
 import com.mongodb.QueryBuilder;
 
@@ -113,14 +112,16 @@ public class MongoObjectStore implements PartitionableExpirableObjectStore<Seria
     @PostConstruct
     public void initialize() throws UnknownHostException
     {
-        final DB db = new com.mongodb.MongoClient(host, port).getDB(database);
-        if (StringUtils.isNotEmpty(password))
-        {
-            Validate.notEmpty(username, "Username must not be empty if password is set");
+//    	try (final com.mongodb.MongoClient client = new com.mongodb.MongoClient(host, port)) {
+//    		final DB db = client.getDB(database);
+//    		if (StringUtils.isNotEmpty(password))
+//    		{
+//    			Validate.notEmpty(username, "Username must not be empty if password is set");
 //            db.authenticate(username, password.toCharArray());
-        }
-
-        mongoClient = new MongoClientImpl(db);
+//    		}
+//    	}
+		com.mongodb.MongoClient mongo = new com.mongodb.MongoClient(host, port);
+		mongoClient = new MongoClientImpl(mongo, database);
     }
 
     @Override

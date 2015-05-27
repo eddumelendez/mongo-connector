@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.bson.Document;
 import org.bson.types.ObjectId;
 
 import com.mongodb.BasicDBObject;
@@ -97,6 +98,11 @@ public final class DBObjects
         return obj;
     }
 
+    public static Document adapt(Map<String, Object> o)
+    {
+    	return new Document(o);
+    }
+    
     @SuppressWarnings("unchecked")
     private static void adaptElements(Object o)
     {

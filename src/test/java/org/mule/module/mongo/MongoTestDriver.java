@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Scanner;
 
+import org.bson.Document;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -134,7 +135,7 @@ public class MongoTestDriver
     @Test
     public void dropCollectionWithElements() throws Exception
     {
-        BasicDBObject o = new BasicDBObject();
+    	Document o = new Document();
         connector.insertObject(MAIN_COLLECTION, o, WriteConcern.NORMAL);
         connector.dropCollection(MAIN_COLLECTION);
         assertFalse(connector.existsCollection(MAIN_COLLECTION));
@@ -187,16 +188,16 @@ public class MongoTestDriver
     @Test
     public void countObjects() throws Exception
     {
-        insertInTestDb(new BasicDBObject("x", 59));
-        insertInTestDb(new BasicDBObject("x", 60));
-        insertInTestDb(new BasicDBObject("x", 60));
-        insertInTestDb(new BasicDBObject("x", 70));
+        insertInTestDb(new Document("x", 59));
+        insertInTestDb(new Document("x", 60));
+        insertInTestDb(new Document("x", 60));
+        insertInTestDb(new Document("x", 70));
         assertEquals(4, connector.countObjects(MAIN_COLLECTION, null));
         assertEquals(2, connector.countObjects(MAIN_COLLECTION, new BasicDBObject("x", 60)));
         assertEquals(0, connector.countObjects(MAIN_COLLECTION, new BasicDBObject("x", 36)));
     }
 
-    private void insertInTestDb(DBObject o)
+    private void insertInTestDb(Document o)
     {
         connector.insertObject(MAIN_COLLECTION, o, WriteConcern.DATABASE_DEFAULT);
     }
@@ -218,7 +219,7 @@ public class MongoTestDriver
     @SuppressWarnings("serial")
     public void mapReduce(String outputCollection) throws Exception
     {
-        insertInTestDb(new BasicDBObject()
+        insertInTestDb(new Document()
         {
             {
                 put("city", "City1");
@@ -226,7 +227,7 @@ public class MongoTestDriver
                 put("votes", 100);
             }
         });
-        insertInTestDb(new BasicDBObject()
+        insertInTestDb(new Document()
         {
             {
                 put("city", "City2");
@@ -234,7 +235,7 @@ public class MongoTestDriver
                 put("votes", 20);
             }
         });
-        insertInTestDb(new BasicDBObject()
+        insertInTestDb(new Document()
         {
             {
                 put("city", "City3");
@@ -242,7 +243,7 @@ public class MongoTestDriver
                 put("votes", 150);
             }
         });
-        insertInTestDb(new BasicDBObject()
+        insertInTestDb(new Document()
         {
             {
                 put("city", "City2");
@@ -276,11 +277,11 @@ public class MongoTestDriver
     @Test
     public void findWithSkipAndLimit()
     {
-        insertInTestDb(new BasicDBObject("x", 1));
-        insertInTestDb(new BasicDBObject("x", 2));
-        insertInTestDb(new BasicDBObject("x", 3));
-        insertInTestDb(new BasicDBObject("x", 4));
-        insertInTestDb(new BasicDBObject("x", 5));
+        insertInTestDb(new Document("x", 1));
+        insertInTestDb(new Document("x", 2));
+        insertInTestDb(new Document("x", 3));
+        insertInTestDb(new Document("x", 4));
+        insertInTestDb(new Document("x", 5));
 
         Iterator<DBObject> iter = connector.findObjects(MAIN_COLLECTION, null, null, 2, 2, null).iterator();
 
@@ -292,10 +293,10 @@ public class MongoTestDriver
     @Test
     public void updateMulti() throws Exception
     {
-        insertInTestDb(new BasicDBObject("x", 50));
-        insertInTestDb(new BasicDBObject("x", 60));
-        insertInTestDb(new BasicDBObject("x", 60));
-        insertInTestDb(new BasicDBObject("x", 70));
+        insertInTestDb(new Document("x", 50));
+        insertInTestDb(new Document("x", 60));
+        insertInTestDb(new Document("x", 60));
+        insertInTestDb(new Document("x", 70));
         connector.updateObjects(MAIN_COLLECTION,
             new BasicDBObject("x", new BasicDBObject("$gt", 55)), new BasicDBObject("$inc",
                 new BasicDBObject("x", 2)), false, true, WriteConcern.DATABASE_DEFAULT);
@@ -310,9 +311,9 @@ public class MongoTestDriver
     @Test
     public void updateSingle() throws Exception
     {
-        insertInTestDb(new BasicDBObject("x", 50));
-        insertInTestDb(new BasicDBObject("x", 60));
-        insertInTestDb(new BasicDBObject("x", 60));
+        insertInTestDb(new Document("x", 50));
+        insertInTestDb(new Document("x", 60));
+        insertInTestDb(new Document("x", 60));
         connector.updateObjects(MAIN_COLLECTION,
             new BasicDBObject("x", new BasicDBObject("$gt", 55)), new BasicDBObject("$inc",
                 new BasicDBObject("x", 2)), false, false, WriteConcern.DATABASE_DEFAULT);
@@ -387,9 +388,9 @@ public class MongoTestDriver
         return query;
     }
 
-    private BasicDBObject acmeEmployee()
+    private Document acmeEmployee()
     {
-        BasicDBObject employee = new BasicDBObject();
+    	Document employee = new Document();
         employee.put("name", "John");
         employee.put("surname", "Doe");
         employee.put("company", "ACME");

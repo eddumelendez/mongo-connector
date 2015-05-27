@@ -15,6 +15,9 @@ import java.util.List;
 
 import javax.validation.constraints.NotNull;
 
+import org.bson.Document;
+import org.bson.conversions.Bson;
+
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import com.mongodb.WriteResult;
@@ -32,7 +35,7 @@ public interface MongoClient extends Closeable
     void createCollection(@NotNull String name, boolean capped, Integer maxObjects, Integer size);
 
     String insertObject(@NotNull String collection,
-                        @NotNull DBObject object,
+                        @NotNull Document document,
                         @NotNull WriteConcern writeConcern);
 
     void updateObjects(@NotNull String collection,
@@ -51,7 +54,7 @@ public interface MongoClient extends Closeable
                                         @NotNull String reduceFunction,
                                         String outputCollection);
 
-    long countObjects(@NotNull String collection, DBObject query);
+    long countObjects(@NotNull String collection, Bson query);
 
     Iterable<DBObject> findObjects(@NotNull String collection,
                                    DBObject query,
