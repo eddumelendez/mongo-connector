@@ -10,3 +10,5 @@
 .DS_Store
 .classpath
 .project
+
+src/test/resources/automation-credentials.properties
