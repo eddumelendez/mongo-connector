@@ -9,45 +9,41 @@
 package org.mule.module.mongo.automation.testcases;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.mule.module.mongo.automation.MongoTestParent;
+import org.mule.module.mongo.automation.MongoMarianoTestParent;
 import org.mule.module.mongo.automation.RegressionTests;
-import org.mule.modules.tests.ConnectorTestUtils;
 
 import com.mongodb.BasicDBObject;
 
-public class CountObjectsTestCases extends MongoTestParent {
+public class CountObjectsTestCases extends MongoMarianoTestParent {
+
+	private Integer numObjects = 5;
 
 	@Before
 	public void setUp() throws Exception {
-			// Create collection
-			initializeTestRunMessage("countObjects");
-			runFlowAndGetPayload("create-collection");
+		// Create collection
+		getConnector().dropCollection("Arenas");
 	}
 
 	@After
 	public void tearDown() throws Exception {
-			// Delete collection
-			runFlowAndGetPayload("drop-collection");
+		// Delete collection
+		getConnector().dropCollection("Arenas");
 
 	}
 
 	@Category({ RegressionTests.class })
 	@Test
 	public void testCountObjects() {
-		Integer numObjects = getTestRunMessageValue("numObjects");
-		insertObjects(getEmptyDBObjects(numObjects));
-		try {
-			upsertOnTestRunMessage("queryRef", new BasicDBObject());
-			assertEquals(new Long(numObjects), (Long) runFlowAndGetPayload("count-objects"));
-		} catch (Exception e) {
-	         fail(ConnectorTestUtils.getStackTrace(e));
-	    }
+
+		insertObjects(getEmptyDBObjects(numObjects),"Arenas");
+
+		assertEquals((long) numObjects, getConnector().countObjects("Arenas", new BasicDBObject()));
+
 	}
-	
+
 }

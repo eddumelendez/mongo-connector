@@ -9,37 +9,27 @@
 package org.mule.module.mongo.automation.testcases;
 
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import org.junit.After;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.mule.module.mongo.automation.MongoTestParent;
+import org.mule.module.mongo.automation.MongoMarianoTestParent;
 import org.mule.module.mongo.automation.RegressionTests;
 import org.mule.module.mongo.automation.SmokeTests;
-import org.mule.modules.tests.ConnectorTestUtils;
 
-public class CreateCollectionTestCases extends MongoTestParent {
+public class CreateCollectionTestCases extends MongoMarianoTestParent {
 
 	@After
 	public void tearDown() throws Exception {
-			runFlowAndGetPayload("drop-collection");
-	
-
+		getConnector().dropCollection("Arenas");
 	}
-	
+
 	@Category({SmokeTests.class, RegressionTests.class})
 	@Test
-	public void testCreateCollection() {	
-		try {
-			initializeTestRunMessage("createCollection");
-			runFlowAndGetPayload("create-collection");			
-			
-			assertTrue((Boolean) runFlowAndGetPayload("exists-collection"));
-		} catch (Exception e) {
-	         fail(ConnectorTestUtils.getStackTrace(e));
-	    }
+	public void testCreateCollection() {
+		getConnector().createCollection("Arenas", false, 1, 1);
+		assertTrue(getConnector().existsCollection("Arenas"));
 
 	}
-		
+
 }
