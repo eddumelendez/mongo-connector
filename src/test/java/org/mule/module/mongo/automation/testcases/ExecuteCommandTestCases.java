@@ -8,6 +8,7 @@
 
 package org.mule.module.mongo.automation.testcases;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.After;
@@ -15,12 +16,15 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.mule.module.mongo.automation.AbstractMongoTest;
 import org.mule.module.mongo.automation.RegressionTests;
-import org.mule.module.mongo.automation.SmokeTests;
 
-public class CreateCollectionTestCases extends AbstractMongoTest {
+import com.mongodb.CommandResult;
+
+public class ExecuteCommandTestCases extends AbstractMongoTest {
 
     @Override
-    protected void setUp() {
+    public void setUp() {
+        // Create a collection
+        getConnector().createCollection("Arenas", false, 5, 5);
     }
 
     @After
@@ -28,10 +32,14 @@ public class CreateCollectionTestCases extends AbstractMongoTest {
         getConnector().dropCollection("Arenas");
     }
 
-    @Category({ SmokeTests.class, RegressionTests.class })
+    @Category({ RegressionTests.class })
     @Test
-    public void testCreateCollection() {
-        getConnector().createCollection("Arenas", false, 1, 1);
-        assertTrue(getConnector().existsCollection("Arenas"));
+    public void testExecuteCommand() {
+        // Drop the collection using command
+        CommandResult cmdResult = (CommandResult) getConnector().executeCommand("drop", "Arenas");
+        assertTrue(cmdResult.ok());
+
+        Boolean exists = getConnector().existsCollection("Arenas");
+        assertFalse(exists);
     }
 }

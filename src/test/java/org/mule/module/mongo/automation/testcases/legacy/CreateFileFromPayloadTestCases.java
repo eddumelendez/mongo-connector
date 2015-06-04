@@ -9,21 +9,22 @@
 package org.mule.module.mongo.automation.testcases.legacy;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+
+import java.io.IOException;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.mule.module.mongo.automation.MongoMarianoTestParent;
+import org.mule.module.mongo.automation.AbstractMongoTest;
 import org.mule.module.mongo.automation.RegressionTests;
 import org.mule.module.mongo.automation.SmokeTests;
-import org.mule.modules.tests.ConnectorTestUtils;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
+import com.mongodb.gridfs.GridFSInputFile;
 
-public class CreateFileFromPayloadTestCases extends MongoMarianoTestParent {
+public class CreateFileFromPayloadTestCases extends AbstractMongoTest {
 
 	private DBObject dbObj;
 
@@ -42,23 +43,17 @@ public class CreateFileFromPayloadTestCases extends MongoMarianoTestParent {
 
 	@Category({ SmokeTests.class, RegressionTests.class })
 	@Test
-	public void testCreateFileFromPayload()
+	public void testCreateFileFromPayload() throws IOException
 	{
-		try
-		{
-		    getConnector().dropCollection("Arenas");
-		    assertEquals("There should be 0 files found before create-file-from-payload", 0, findFiles(null));
 
-//////HASTA ACA LLEGAMOS//////
-//			GridFSInputFile res = createFileFromPayload(getTestRunMessageValue("filename1"));
-//
-//			assertEquals("The created file should be named " + getTestRunMessageValue("filename1"), getTestRunMessageValue("filename1"), res.getFilename());
-//			assertEquals("There should be 1 files found after create-file-from-payload", 1, findFiles());
+	    getConnector().dropCollection("Arenas");
+	    assertEquals("There should be 0 files found before create-file-from-payload", 0, findFiles(null));
 
-		}
-		catch (Exception e)
-		{
-	         fail(ConnectorTestUtils.getStackTrace(e));
-	    }
+
+		GridFSInputFile res = createFileFromPayload(dbObj,"file1");
+
+		assertEquals("The created file should be named file1", "file1", res.getFilename());
+		assertEquals("There should be 1 files found after create-file-from-payload", 1, findFiles(dbObj));
+
 	}
 }

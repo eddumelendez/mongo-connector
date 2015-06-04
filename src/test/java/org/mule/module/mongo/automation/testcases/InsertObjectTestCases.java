@@ -13,14 +13,25 @@ import static org.junit.Assert.assertTrue;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.mule.module.mongo.api.WriteConcern;
 import org.mule.module.mongo.automation.AbstractMongoTest;
 import org.mule.module.mongo.automation.RegressionTests;
 import org.mule.module.mongo.automation.SmokeTests;
 
-public class CreateCollectionTestCases extends AbstractMongoTest {
+import com.mongodb.BasicDBObject;
+
+public class InsertObjectTestCases extends AbstractMongoTest {
 
     @Override
-    protected void setUp() {
+    public void setUp() {
+        getConnector().createCollection("Arenas", false, 5, 5);
+    }
+
+    @Category({ SmokeTests.class, RegressionTests.class })
+    @Test
+    public void testInsertObject() {
+        String objectID = getConnector().insertObject("Arenas", new BasicDBObject(), WriteConcern.SAFE);
+        assertTrue(objectID != null && !objectID.equals("") && !objectID.trim().equals(""));
     }
 
     @After
@@ -28,10 +39,4 @@ public class CreateCollectionTestCases extends AbstractMongoTest {
         getConnector().dropCollection("Arenas");
     }
 
-    @Category({ SmokeTests.class, RegressionTests.class })
-    @Test
-    public void testCreateCollection() {
-        getConnector().createCollection("Arenas", false, 1, 1);
-        assertTrue(getConnector().existsCollection("Arenas"));
-    }
 }

@@ -17,21 +17,24 @@ import org.mule.module.mongo.automation.AbstractMongoTest;
 import org.mule.module.mongo.automation.RegressionTests;
 import org.mule.module.mongo.automation.SmokeTests;
 
-public class CreateCollectionTestCases extends AbstractMongoTest {
+public class ExistsCollectionTestCases extends AbstractMongoTest {
 
     @Override
-    protected void setUp() {
+    public void setUp() {
+        // Create collection
+        getConnector().createCollection("Arenas", false, 5, 5);
+
     }
 
     @After
     public void tearDown() throws Exception {
         getConnector().dropCollection("Arenas");
+
     }
 
     @Category({ SmokeTests.class, RegressionTests.class })
     @Test
-    public void testCreateCollection() {
-        getConnector().createCollection("Arenas", false, 1, 1);
+    public void testExistsCollection() {
         assertTrue(getConnector().existsCollection("Arenas"));
     }
 }

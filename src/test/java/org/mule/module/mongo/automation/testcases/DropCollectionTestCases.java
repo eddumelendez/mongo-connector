@@ -8,30 +8,25 @@
 
 package org.mule.module.mongo.automation.testcases;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 
-import org.junit.After;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.mule.module.mongo.automation.AbstractMongoTest;
 import org.mule.module.mongo.automation.RegressionTests;
 import org.mule.module.mongo.automation.SmokeTests;
 
-public class CreateCollectionTestCases extends AbstractMongoTest {
+public class DropCollectionTestCases extends AbstractMongoTest {
 
     @Override
-    protected void setUp() {
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        getConnector().dropCollection("Arenas");
+    public void setUp() {
+        getConnector().createCollection("Arenas", false, 5, 5);
     }
 
     @Category({ SmokeTests.class, RegressionTests.class })
     @Test
-    public void testCreateCollection() {
-        getConnector().createCollection("Arenas", false, 1, 1);
-        assertTrue(getConnector().existsCollection("Arenas"));
+    public void testDropCollection() {
+        getConnector().dropCollection("Arenas");
+        assertFalse(getConnector().existsCollection("Arenas"));
     }
 }

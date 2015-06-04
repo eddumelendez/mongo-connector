@@ -20,15 +20,20 @@ import org.mule.module.mongo.automation.testcases.AddUserTestCases;
 import org.mule.module.mongo.automation.testcases.CountObjectsTestCases;
 import org.mule.module.mongo.automation.testcases.CountObjectsUsingQueryMapTestCases;
 import org.mule.module.mongo.automation.testcases.CreateCollectionTestCases;
+import org.mule.module.mongo.automation.testcases.CreateIndexTestCases;
+import org.mule.module.mongo.automation.testcases.DropCollectionTestCases;
+import org.mule.module.mongo.automation.testcases.DropDatabaseTestCases;
+import org.mule.module.mongo.automation.testcases.DropIndexTestCases;
+import org.mule.module.mongo.automation.testcases.DumpTestCases;
+import org.mule.module.mongo.automation.testcases.ExecuteCommandTestCases;
+import org.mule.module.mongo.automation.testcases.ExistsCollectionTestCases;
+import org.mule.module.mongo.automation.testcases.FindFilesTestCases;
+import org.mule.module.mongo.automation.testcases.InsertObjectFromMapTestCases;
+import org.mule.module.mongo.automation.testcases.InsertObjectTestCases;
+import org.mule.module.mongo.automation.testcases.ListCollectionTestCases;
+import org.mule.module.mongo.automation.testcases.ListIndexesTestCases;
+import org.mule.module.mongo.automation.testcases.MapReduceObjectsTestCases;
 import org.mule.module.mongo.automation.testcases.legacy.CreateFileFromPayloadTestCases;
-import org.mule.module.mongo.automation.testcases.legacy.CreateIndexTestCases;
-import org.mule.module.mongo.automation.testcases.legacy.DropCollectionTestCases;
-import org.mule.module.mongo.automation.testcases.legacy.DropDatabaseTestCases;
-import org.mule.module.mongo.automation.testcases.legacy.DropIndexTestCases;
-import org.mule.module.mongo.automation.testcases.legacy.DumpTestCases;
-import org.mule.module.mongo.automation.testcases.legacy.ExecuteCommandTestCases;
-import org.mule.module.mongo.automation.testcases.legacy.ExistsCollectionTestCases;
-import org.mule.module.mongo.automation.testcases.legacy.FindFilesTestCases;
 import org.mule.module.mongo.automation.testcases.legacy.FindFilesUsingQueryMapTestCases;
 import org.mule.module.mongo.automation.testcases.legacy.FindObjectsTestCases;
 import org.mule.module.mongo.automation.testcases.legacy.FindObjectsUsingQueryMapTestCases;
@@ -39,13 +44,8 @@ import org.mule.module.mongo.automation.testcases.legacy.FindOneObjectUsingQuery
 import org.mule.module.mongo.automation.testcases.legacy.GetFileContentTestCases;
 import org.mule.module.mongo.automation.testcases.legacy.GetFileContentUsingQueryMapTestCases;
 import org.mule.module.mongo.automation.testcases.legacy.IncrementalDumpTestCases;
-import org.mule.module.mongo.automation.testcases.legacy.InsertObjectFromMapTestCases;
-import org.mule.module.mongo.automation.testcases.legacy.InsertObjectTestCases;
-import org.mule.module.mongo.automation.testcases.legacy.ListCollectionTestCases;
 import org.mule.module.mongo.automation.testcases.legacy.ListFilesTestCases;
 import org.mule.module.mongo.automation.testcases.legacy.ListFilesUsingQueryMapTestCases;
-import org.mule.module.mongo.automation.testcases.legacy.ListIndicesTestCases;
-import org.mule.module.mongo.automation.testcases.legacy.MapReduceObjectsTestCases;
 import org.mule.module.mongo.automation.testcases.legacy.RemoveFilesTestCases;
 import org.mule.module.mongo.automation.testcases.legacy.RemoveFilesUsingQueryMapTestCases;
 import org.mule.module.mongo.automation.testcases.legacy.RemoveObjectsTestCases;
@@ -93,7 +93,7 @@ import org.mule.module.mongo.automation.testcases.legacy.UpdateObjectsUsingQuery
 	ListCollectionTestCases.class,
 	ListFilesTestCases.class,
 	ListFilesUsingQueryMapTestCases.class,
-	ListIndicesTestCases.class,
+	ListIndexesTestCases.class,
 	MapReduceObjectsTestCases.class,
 	MongoCollectionUnitTest.class,
 	RemoveFilesTestCases.class,

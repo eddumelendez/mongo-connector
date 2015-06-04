@@ -10,28 +10,36 @@ package org.mule.module.mongo.automation.testcases;
 
 import static org.junit.Assert.assertTrue;
 
+import java.io.File;
+import java.io.IOException;
+
+import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.mule.module.mongo.automation.AbstractMongoTest;
 import org.mule.module.mongo.automation.RegressionTests;
-import org.mule.module.mongo.automation.SmokeTests;
 
-public class CreateCollectionTestCases extends AbstractMongoTest {
+public class DumpTestCases extends AbstractMongoTest {
 
     @Override
-    protected void setUp() {
+    public void setUp() {
+        new File("/home/carlosm/dump");
     }
 
     @After
     public void tearDown() throws Exception {
-        getConnector().dropCollection("Arenas");
+        File dumpOutputDir = new File("/home/carlosm/dump");
+        FileUtils.deleteDirectory(dumpOutputDir);
     }
 
-    @Category({ SmokeTests.class, RegressionTests.class })
+    @Category({ RegressionTests.class })
     @Test
-    public void testCreateCollection() {
-        getConnector().createCollection("Arenas", false, 1, 1);
-        assertTrue(getConnector().existsCollection("Arenas"));
+    public void testDump() throws IOException {
+        File dumpOutputDir;
+        getConnector().dump("/home/carlosm/dump", "test", false, false, 5);
+
+        dumpOutputDir = new File("/home/carlosm/dump");
+        assertTrue("dump directory should exist after test runs", dumpOutputDir.exists());
     }
 }

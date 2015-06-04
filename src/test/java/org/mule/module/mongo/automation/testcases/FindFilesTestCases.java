@@ -8,30 +8,35 @@
 
 package org.mule.module.mongo.automation.testcases;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
 
 import org.junit.After;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.mule.module.mongo.automation.AbstractMongoTest;
 import org.mule.module.mongo.automation.RegressionTests;
-import org.mule.module.mongo.automation.SmokeTests;
 
-public class CreateCollectionTestCases extends AbstractMongoTest {
+public class FindFilesTestCases extends AbstractMongoTest {
 
     @Override
-    protected void setUp() {
+    public void setUp() {
+        // initializeTestRunMessage("findFiles");
+        // getConnector().createFileFromPayload(new BasicDBObject(), "file1", null, null);
+        // getConnector().createFileFromPayload(new BasicDBObject(), "file2", null, null);
+
+        createFileFromPayload("file1");
+        createFileFromPayload("file2");
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         getConnector().dropCollection("Arenas");
     }
 
-    @Category({ SmokeTests.class, RegressionTests.class })
+    @Category({ RegressionTests.class })
     @Test
-    public void testCreateCollection() {
-        getConnector().createCollection("Arenas", false, 1, 1);
-        assertTrue(getConnector().existsCollection("Arenas"));
+    public void testFindFiles() {
+        assertEquals("There should be 2 files found", 2, getConnector().findFiles(null));
     }
+
 }

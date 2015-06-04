@@ -8,7 +8,7 @@
 
 package org.mule.module.mongo.automation.testcases;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.After;
 import org.junit.Test;
@@ -17,15 +17,14 @@ import org.mule.module.mongo.automation.AbstractMongoTest;
 import org.mule.module.mongo.automation.RegressionTests;
 
 import com.mongodb.BasicDBObject;
+import com.mongodb.DBObject;
 
-public class CountObjectsTestCases extends AbstractMongoTest {
-
-    private Integer numObjects = 5;
+public class PoolingTestCases extends AbstractMongoTest {
 
     @Override
     public void setUp() {
         // Create collection
-        getConnector().createCollection("Arenas", false, numObjects, numObjects);
+        getConnector().createCollection("Arenas", false, 5, 5);
     }
 
     @After
@@ -36,9 +35,24 @@ public class CountObjectsTestCases extends AbstractMongoTest {
 
     @Category({ RegressionTests.class })
     @Test
-    public void testCountObjects() {
-        insertObjects(getEmptyDBObjects(numObjects), "Arenas");
+    public void testPoolSizeDoesNotExceedConfiguration() throws Exception {
 
-        assertEquals((long) numObjects, getConnector().countObjects("Arenas", new BasicDBObject()));
+        int numObjects = 5;
+
+        insertObjects(getEmptyDBObjects(numObjects), "Arenas");
+        Integer startingConnections = getConnections();
+
+        for (int i = 0; i < 32; i++) {
+            getConnector().countObjects("Arenas", new BasicDBObject());
+        }
+
+        int newConnections = getConnections() - startingConnections;
+        assertTrue("Too many new connections (" + newConnections + ", ", newConnections <= 2);
+    }
+
+    private int getConnections() {
+        DBObject dbObj = getConnector().executeCommand("serverStatus", "");
+        dbObj = (DBObject) dbObj.get("connections");
+        return (Integer) dbObj.get("current");
     }
 }

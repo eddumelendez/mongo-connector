@@ -11,30 +11,26 @@ package org.mule.module.mongo.automation.testcases;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.mule.module.mongo.automation.MongoMarianoTestParent;
+import org.mule.module.mongo.automation.AbstractMongoTest;
 import org.mule.module.mongo.automation.RegressionTests;
 
 import com.mongodb.WriteResult;
 
-public class AddUserTestCases extends MongoMarianoTestParent {
+public class AddUserTestCases extends AbstractMongoTest {
 
-	@Before
-    public void setUp() throws Exception {
+    @Override
+    public void setUp() {
 
     }
 
-	@Category({RegressionTests.class})
-	@Test
-	public void testAddUser() {
+    @Category({ RegressionTests.class })
+    @Test
+    public void testAddUser() {
+        WriteResult result = getConnector().addUser("newUsername", "newPassword");
 
-			WriteResult result = getConnector().addUser("newUsername", "newPassword");
-
-			assertTrue(result.wasAcknowledged());
-			assertNotNull(result.getN());
-
-	}
-
+        assertTrue(result.wasAcknowledged());
+        assertNotNull(result.getN());
+    }
 }

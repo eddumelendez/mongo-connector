@@ -8,37 +8,38 @@
 
 package org.mule.module.mongo.automation.testcases;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 import org.junit.After;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.mule.module.mongo.api.WriteConcern;
 import org.mule.module.mongo.automation.AbstractMongoTest;
 import org.mule.module.mongo.automation.RegressionTests;
 
 import com.mongodb.BasicDBObject;
+import com.mongodb.DBObject;
 
-public class CountObjectsTestCases extends AbstractMongoTest {
-
-    private Integer numObjects = 5;
+public class DropDatabaseTestCases extends AbstractMongoTest {
 
     @Override
     public void setUp() {
-        // Create collection
-        getConnector().createCollection("Arenas", false, numObjects, numObjects);
+        DBObject dbObject = new BasicDBObject();
+        dbObject.put("key", "mykey");
+
+        getConnector().createCollection("Arenas", false, 5, 5);
+        getConnector().saveObject("Arenas", dbObject, WriteConcern.SAFE);
     }
 
     @After
     public void tearDown() throws Exception {
-        // Delete collection
         getConnector().dropCollection("Arenas");
     }
 
     @Category({ RegressionTests.class })
     @Test
-    public void testCountObjects() {
-        insertObjects(getEmptyDBObjects(numObjects), "Arenas");
-
-        assertEquals((long) numObjects, getConnector().countObjects("Arenas", new BasicDBObject()));
+    public void testDropDatabase() {
+        getConnector().dropDatabase();
+        assertFalse("After dropping the database, the collection Arenas" + " should not exist", getConnector().existsCollection("Arenas"));
     }
 }
