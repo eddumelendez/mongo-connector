@@ -6,7 +6,7 @@
  * LICENSE.md file.
  */
 
-package org.mule.module.mongo.automation.testcases;
+package org.mule.module.mongo.automation.testcases.legacy;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
@@ -19,49 +19,38 @@ import org.mule.module.mongo.automation.MongoTestParent;
 import org.mule.module.mongo.automation.RegressionTests;
 import org.mule.modules.tests.ConnectorTestUtils;
 
-public class RemoveFilesUsingQueryMapTestCases extends MongoTestParent {
+import com.mongodb.DBObject;
+
+public class FindOneFileTestCases extends MongoTestParent {
 
 
 	@Before
 	public void setUp() {
-		initializeTestRunMessage("removeFilesUsingQueryMap");
-		
-		createFileFromPayload(getTestRunMessageValue("filename1"));
+		initializeTestRunMessage("findOneFile");
+
 		createFileFromPayload(getTestRunMessageValue("filename1"));
 		createFileFromPayload(getTestRunMessageValue("filename2"));
+		createFileFromPayload(getTestRunMessageValue("filename3"));
 	}
-	
+
 	@After
 	public void tearDown() {
 		deleteFilesCreatedByCreateFileFromPayload();
 	}
-	
-	@Category({ RegressionTests.class })
-	@Test
-	public void testRemoveFilesUsingQueryMap_emptyQuery() {
-		try {
-			runFlowAndGetPayload("remove-files-using-query-map-empty-query");
-			assertEquals("There should be 0 files found after remove-files-using-query-map with an empty query", 0,
-					findFiles());
-		} catch (Exception e) {
-	         fail(ConnectorTestUtils.getStackTrace(e));
-	    }
-
-
-	}
 
 	@Category({ RegressionTests.class })
 	@Test
-	public void testRemoveFilesUsingQueryMap_nonemptyQuery() {
-		try {
-			runFlowAndGetPayload("remove-files-using-query-map-non-empty-query");
-			assertEquals("There should be 1 files found after removing files with a filename of " + getTestRunMessageValue("value"), 1,
-					findFiles());
+	public void testFindOneFile() {
+		try {			
+			((DBObject) getTestRunMessageValue("queryRef")).put("filename", getTestRunMessageValue("filename1"));
+			DBObject dbObj = runFlowAndGetPayload("find-one-file");
+			
+			assertEquals("The file found should have the name " + getTestRunMessageValue("filename1"), getTestRunMessageValue("filename1"), dbObj.get("filename"));
+			assertEquals("There should be 3 files in total", 3, findFiles());
 		} catch (Exception e) {
 	         fail(ConnectorTestUtils.getStackTrace(e));
 	    }
-
-
+		
 	}
 
 }

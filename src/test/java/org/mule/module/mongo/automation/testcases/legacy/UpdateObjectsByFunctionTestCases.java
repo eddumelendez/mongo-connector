@@ -6,7 +6,7 @@
  * LICENSE.md file.
  */
 
-package org.mule.module.mongo.automation.testcases;
+package org.mule.module.mongo.automation.testcases.legacy;
 
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -26,25 +26,22 @@ import org.mule.modules.tests.ConnectorTestUtils;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 
-public class UpdateObjectsUsingMapTestCases extends MongoTestParent {
-
+public class UpdateObjectsByFunctionTestCases extends MongoTestParent {
+	
 
 	@Before
 	public void setUp() throws Exception {
 			// Create the collection
-			initializeTestRunMessage("updateObjectsUsingMap");
+			initializeTestRunMessage("updateObjectsByFunction");
 			runFlowAndGetPayload("create-collection");
 
-
-			String queryKey = getTestRunMessageValue("queryKey").toString();
-			String queryValue = getTestRunMessageValue("queryValue").toString();
+			DBObject queryDbObj = (DBObject) getTestRunMessageValue("queryRef");
 			int numberOfObjects = (Integer) getTestRunMessageValue("numberOfObjects");
 			
 			// Create the objects with the key-value pair
 			List<DBObject> objects = new ArrayList<DBObject>();
 			for (int i = 0; i < numberOfObjects; i++) {
-				DBObject object = new BasicDBObject(queryKey, queryValue);
-				objects.add(object);
+				objects.add(new BasicDBObject(queryDbObj.toMap()));
 			}
 			
 			// Insert the objects
@@ -55,22 +52,23 @@ public class UpdateObjectsUsingMapTestCases extends MongoTestParent {
 
 	@Category({RegressionTests.class})
 	@Test
-	public void testUpdateObjectsUsingMap() {
+	public void testUpdateObjectsByFunction() {
 		try {
-			String elementKey = getTestRunMessageValue("elementKey").toString();
-			String elementValue = getTestRunMessageValue("elementValue").toString();
+			String queryKey = (String) getTestRunMessageValue("queryKey");
+			DBObject elementDbObj = (DBObject) getTestRunMessageValue("elementRef");
 			int numberOfObjects = (Integer) getTestRunMessageValue("numberOfObjects");
 			
 			// Update objects
-			runFlowAndGetPayload("update-objects-using-map");
+			runFlowAndGetPayload("update-objects-by-function");
 			
 			// Get all objects
 			MongoCollection objects = runFlowAndGetPayload("find-objects");
 			for (DBObject obj : objects) {
-				assertTrue(obj.containsField(elementKey));
-				assertTrue(obj.get(elementKey).equals(elementValue));
+				assertTrue(obj.containsField(queryKey));
+				assertTrue(obj.get(queryKey).equals(elementDbObj.get(queryKey)));
 			}
 			assertTrue(objects.size() == numberOfObjects);
+			
 		} catch (Exception e) {
 	         fail(ConnectorTestUtils.getStackTrace(e));
 	    }

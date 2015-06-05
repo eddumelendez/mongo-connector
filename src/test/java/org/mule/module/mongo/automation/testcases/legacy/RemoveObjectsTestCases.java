@@ -6,13 +6,10 @@
  * LICENSE.md file.
  */
 
-package org.mule.module.mongo.automation.testcases;
+package org.mule.module.mongo.automation.testcases.legacy;
 
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import org.junit.After;
 import org.junit.Before;
@@ -21,47 +18,26 @@ import org.junit.experimental.categories.Category;
 import org.mule.module.mongo.api.MongoCollection;
 import org.mule.module.mongo.automation.MongoTestParent;
 import org.mule.module.mongo.automation.RegressionTests;
-import org.mule.module.mongo.automation.SmokeTests;
 import org.mule.modules.tests.ConnectorTestUtils;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBObject;
+public class RemoveObjectsTestCases extends MongoTestParent {
 
-public class FindObjectsTestCases extends MongoTestParent {
-
-	private List<String> objectIDs = new ArrayList<String>();
-	
 
 	@Before
 	public void setUp() throws Exception {
-			// create collection
-			initializeTestRunMessage("findObjects");
+			initializeTestRunMessage("removeObjects");
 			runFlowAndGetPayload("create-collection");
-
-			int numberOfObjects = (Integer) getTestRunMessageValue("numberOfObjects");
-			
-			for (int i = 0; i < numberOfObjects; i++) {
-				BasicDBObject dbObject = new BasicDBObject();
-				upsertOnTestRunMessage("dbObjectRef", dbObject);
-				
-				String payload = runFlowAndGetPayload("insert-object");
-				objectIDs.add(payload);
-			}
-			
+			runFlowAndGetPayload("insert-object");			
 
 	}
-
-	@Category({SmokeTests.class, RegressionTests.class})
+	
+	@Category({RegressionTests.class})
 	@Test
-	public void testFindObjects() {
+	public void testRemoveObjects() {
 		try {
+			runFlowAndGetPayload("remove-objects");
 			MongoCollection payload = runFlowAndGetPayload("find-objects");
-			
-			assertTrue(objectIDs.size() == payload.size());
-			for (DBObject obj : payload) { 
-				String dbObjectID = obj.get("_id").toString();
-				assertTrue(objectIDs.contains(dbObjectID));
-			}
+			assertTrue(payload.isEmpty());			
 		} catch (Exception e) {
 	         fail(ConnectorTestUtils.getStackTrace(e));
 	    }
@@ -72,7 +48,7 @@ public class FindObjectsTestCases extends MongoTestParent {
 	public void tearDown() throws Exception {
 			runFlowAndGetPayload("drop-collection");
 
+
 	}
-	
 	
 }

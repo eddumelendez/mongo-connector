@@ -9,74 +9,60 @@
 package org.mule.module.mongo.automation.testcases;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.mule.module.mongo.automation.MongoTestParent;
+import org.mule.module.mongo.automation.AbstractMongoTest;
 import org.mule.module.mongo.automation.RegressionTests;
-import org.mule.modules.tests.ConnectorTestUtils;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 
-public class CountObjectsUsingQueryMapTestCases extends MongoTestParent {
+public class CountObjectsUsingQueryMapTestCases extends AbstractMongoTest {
 
+    private Integer numObjects = 5;
 
-	@Before
-	public void setUp() throws Exception {
-			// Create collection
-			initializeTestRunMessage("countObjectsUsingQueryMap");
-			runFlowAndGetPayload("create-collection");
+    @Override
+    public void setUp() {
+        // Create collection
+        getConnector().createCollection("Arenas", false, numObjects, numObjects);
+    }
 
-	}
+    @After
+    public void tearDown() throws Exception {
+        // Delete collection
+        getConnector().dropCollection("Arenas");
+    }
 
-	@After
-	public void tearDown() throws Exception {
-			// Delete collection
-			runFlowAndGetPayload("drop-collection");
+    @Category({ RegressionTests.class })
+    @Test
+    public void testCountObjectsUsingQueryMap_without_map() {
+        insertObjects(getEmptyDBObjects(numObjects), "Arenas");
 
-	}
-	
-	@Category({ RegressionTests.class })
-	@Test
-	public void testCountObjectsUsingQueryMap_without_map() {
-		int numObjects = (Integer) getTestRunMessageValue("numObjects");
-		insertObjects(getEmptyDBObjects(numObjects));
-		
-		try {
-			assertEquals(new Long(numObjects), (Long) runFlowAndGetPayload("count-objects-using-query-map-without-query"));
-		} catch (Exception e) {
-	         fail(ConnectorTestUtils.getStackTrace(e));
-	    }	
+        assertEquals((long) numObjects, getConnector().countObjects("Arenas", new BasicDBObject()));
+    }
 
+    @Category({ RegressionTests.class })
+    @Test
+    public void testCountObjectsUsingQueryMap_with_map() {
+        List<DBObject> list = getEmptyDBObjects(2);
+        Map<String, Object> data = new HashMap<String, Object>();
 
-	}
+        String queryAttribKey = "foo";
+        String queryAttribVal = "bar";
 
-	@Category({ RegressionTests.class })
-	@Test
-	public void testCountObjectsUsingQueryMap_with_map() {
-		List<DBObject> list = getEmptyDBObjects(2);
+        DBObject dbObj = new BasicDBObject();
+        dbObj.put(queryAttribKey, queryAttribVal);
+        list.add(dbObj);
+        data.put(queryAttribKey, queryAttribVal);
 
-		String queryAttribKey = getTestRunMessageValue("queryAttribKey").toString();
-		String queryAttribVal = getTestRunMessageValue("queryAttribVal").toString();
-		
-		DBObject dbObj = new BasicDBObject();
-		dbObj.put(queryAttribKey, queryAttribVal);
-		list.add(dbObj);
+        insertObjects(list, "Arenas");
 
-		insertObjects(list);
-
-		try {
-			assertEquals(new Long(1), (Long) runFlowAndGetPayload("count-objects-using-query-map-with-query"));
-		} catch (Exception e) {
-	         fail(ConnectorTestUtils.getStackTrace(e));
-	    }
-		
-	}
-
+        assertEquals(new Long(1), (Long) getConnector().countObjectsUsingQueryMap("Arenas", data));
+    }
 }

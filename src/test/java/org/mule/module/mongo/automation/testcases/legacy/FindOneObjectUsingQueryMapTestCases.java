@@ -6,8 +6,9 @@
  * LICENSE.md file.
  */
 
-package org.mule.module.mongo.automation.testcases;
+package org.mule.module.mongo.automation.testcases.legacy;
 
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import org.junit.After;
@@ -21,51 +22,36 @@ import org.mule.modules.tests.ConnectorTestUtils;
 
 import com.mongodb.DBObject;
 
-public class SaveObjectTestCases extends MongoTestParent {
+public class FindOneObjectUsingQueryMapTestCases extends MongoTestParent {
 
 
 	@Before
 	public void setUp() throws Exception {
-			initializeTestRunMessage("saveObject");
+			initializeTestRunMessage("findOneObjectUsingQueryMap");
 			runFlowAndGetPayload("create-collection");
-				
-
+			runFlowAndGetPayload("save-object-from-map");
 	}
 	
-	@Category({SmokeTests.class, RegressionTests.class})
-	@Test
-	public void testSaveObject() {
-		try {
-			runFlowAndGetPayload("save-object");
-			
-			DBObject element = (DBObject) getTestRunMessageValue("elementRef");
-			
-			// Check that object was inserted
-//			MongoCollection dbObjects = getObjects(testObjects);
-//			assertTrue(dbObjects.contains(element));			
-			
-			// Get key and value from payload (defined in bean)
-			String key = getTestRunMessageValue("key").toString();
-			String value = getTestRunMessageValue("value").toString();
-			
-			// Modify object and save
-			element.put(key, value);
-			runFlowAndGetPayload("save-object");
-			
-			// Check that object was changed in MongoDB
-//			dbObjects = getObjects(testObjects);
-//			assertTrue(dbObjects.contains(element));
-		} catch (Exception e) {
-	         fail(ConnectorTestUtils.getStackTrace(e));
-	    }
-
-	}
-		
 	@After
 	public void tearDown() throws Exception {
 			runFlowAndGetPayload("drop-collection");
 
 
+	}
+	
+	@Category({SmokeTests.class, RegressionTests.class})
+	@Test
+	public void testFindOneObjectUsingQueryMap() {
+		try {
+			String key = getTestRunMessageValue("key").toString();
+			String value = getTestRunMessageValue("value").toString();
+		
+			DBObject dbObject = runFlowAndGetPayload("find-one-object-using-query-map");
+			assertTrue(dbObject.get(key).equals(value));
+		} catch (Exception e) {
+	         fail(ConnectorTestUtils.getStackTrace(e));
+	    }
+			
 	}
 	
 }

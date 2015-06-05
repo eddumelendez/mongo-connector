@@ -8,47 +8,29 @@
 
 package org.mule.module.mongo.automation.testcases;
 
-import static org.junit.Assert.fail;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
-import java.util.Map;
-
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.mule.module.mongo.automation.MongoMarianoTestParent;
+import org.mule.module.mongo.automation.AbstractMongoTest;
 import org.mule.module.mongo.automation.RegressionTests;
-import org.mule.module.mongo.automation.testdata.TestDataBuilder;
-import org.mule.modules.tests.ConnectorTestUtils;
 
 import com.mongodb.WriteResult;
 
-public class AddUserTestCases extends MongoMarianoTestParent {
+public class AddUserTestCases extends AbstractMongoTest {
 
-	Map<String, Object> testData;
+    @Override
+    public void setUp() {
 
-	@Override
-	@Before
-    public void setUp() throws Exception {
-        testData = TestDataBuilder.addUserTestData();
     }
 
-	@Category({RegressionTests.class})
-	@Test
-	public void testAddUser() {
-		try
-		{
-			WriteResult result = getConnector().addUser(
-					testData.get("newUser").toString(),
-					testData.get("newPassword").toString());
+    @Category({ RegressionTests.class })
+    @Test
+    public void testAddUser() {
+        WriteResult result = getConnector().addUser("newUsername", "newPassword");
 
-//			assertTrue(result.getLastError().ok());
-//			assertTrue(result.getError() == null);
-		}
-		catch (Exception e)
-		{
-	         fail(ConnectorTestUtils.getStackTrace(e));
-	    }
-
-	}
-
+        assertTrue(result.wasAcknowledged());
+        assertNotNull(result.getN());
+    }
 }

@@ -6,7 +6,7 @@
  * LICENSE.md file.
  */
 
-package org.mule.module.mongo.automation.testcases;
+package org.mule.module.mongo.automation.testcases.legacy;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
@@ -19,30 +19,30 @@ import org.mule.module.mongo.automation.MongoTestParent;
 import org.mule.module.mongo.automation.RegressionTests;
 import org.mule.modules.tests.ConnectorTestUtils;
 
-public class RemoveFilesTestCases extends MongoTestParent {
+public class RemoveFilesUsingQueryMapTestCases extends MongoTestParent {
 
 
 	@Before
 	public void setUp() {
-		initializeTestRunMessage("removeFiles");
+		initializeTestRunMessage("removeFilesUsingQueryMap");
 		
 		createFileFromPayload(getTestRunMessageValue("filename1"));
 		createFileFromPayload(getTestRunMessageValue("filename1"));
 		createFileFromPayload(getTestRunMessageValue("filename2"));
 	}
 	
-	
 	@After
 	public void tearDown() {
 		deleteFilesCreatedByCreateFileFromPayload();
 	}
-
+	
 	@Category({ RegressionTests.class })
 	@Test
-	public void testRemoveFiles_emptyQuery() {
+	public void testRemoveFilesUsingQueryMap_emptyQuery() {
 		try {
 			runFlowAndGetPayload("remove-files-using-query-map-empty-query");
-			assertEquals("There should be 0 files found after remove-files with an empty query", 0, findFiles());
+			assertEquals("There should be 0 files found after remove-files-using-query-map with an empty query", 0,
+					findFiles());
 		} catch (Exception e) {
 	         fail(ConnectorTestUtils.getStackTrace(e));
 	    }
@@ -50,18 +50,18 @@ public class RemoveFilesTestCases extends MongoTestParent {
 
 	}
 
-	
-	// For some reason, when running all test cases together, this test fails sometimes (not always). When only the RemoveFilesTestCases is executed, both tests pass
 	@Category({ RegressionTests.class })
 	@Test
-	public void testRemoveFiles_nonemptyQuery() {
+	public void testRemoveFilesUsingQueryMap_nonemptyQuery() {
 		try {
 			runFlowAndGetPayload("remove-files-using-query-map-non-empty-query");
-			assertEquals("There should be 1 files found after remove-files with a non-empty query, which deletes all files of name " + getTestRunMessageValue("value"), 1, findFiles());
+			assertEquals("There should be 1 files found after removing files with a filename of " + getTestRunMessageValue("value"), 1,
+					findFiles());
 		} catch (Exception e) {
 	         fail(ConnectorTestUtils.getStackTrace(e));
 	    }
 
 
 	}
+
 }

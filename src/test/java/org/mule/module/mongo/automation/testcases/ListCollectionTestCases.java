@@ -9,61 +9,46 @@
 package org.mule.module.mongo.automation.testcases;
 
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.mule.module.mongo.automation.MongoTestParent;
+import org.mule.module.mongo.automation.AbstractMongoTest;
 import org.mule.module.mongo.automation.RegressionTests;
-import org.mule.modules.tests.ConnectorTestUtils;
 
-public class ListCollectionTestCases extends MongoTestParent {
+public class ListCollectionTestCases extends AbstractMongoTest {
 
-	private List<String> collectionNames;
-	
+    private List<String> collectionNames = new LinkedList<String>();
 
-	@Before
-	public void setUp() throws Exception {
-			initializeTestRunMessage("collection","collectionName");
-			collectionNames = getBeanFromContext("listCollections");
+    @Override
+    public void setUp() {
+        collectionNames.add("FirstCollection");
+        collectionNames.add("SecondCollection");
+        collectionNames.add("ThirdCollection");
 
-			for (String collectionName : collectionNames) {
-				upsertOnTestRunMessage("collection", collectionName);
-				runFlowAndGetPayload("create-collection");
-			}
+        for (String collectionName : collectionNames) {
+            getConnector().createCollection(collectionName, false, 1, 1);
+        }
+    }
 
-	}
+    @Category({ RegressionTests.class })
+    @Test
+    public void testListCollections() {
+        Collection<String> payload = getConnector().listCollections();
 
+        for (String collectionName : collectionNames) {
+            assertTrue(payload.contains(collectionName));
+        }
+    }
 
-	@Category({ RegressionTests.class})
-	@Test
-	public void testListCollections() {
-		try {
-			Collection<String> payload = runFlowAndGetPayload("list-collections");
-			
-			for (String collectionName : collectionNames) {
-				assertTrue(payload.contains(collectionName));
-			}
-			
-		} catch (Exception e) {
-	         fail(ConnectorTestUtils.getStackTrace(e));
-	    }
-			
-
-	}
-	
-	@After
-	public void tearDown() throws Exception {
-			for (String collectionName : collectionNames) {
-				upsertOnTestRunMessage("collection", collectionName);
-				runFlowAndGetPayload("drop-collection");
-			}
-
-	}
-
+    @After
+    public void tearDown() throws Exception {
+        for (String collectionName : collectionNames) {
+            getConnector().dropCollection(collectionName);
+        }
+    }
 }

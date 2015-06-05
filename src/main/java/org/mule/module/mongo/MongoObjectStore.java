@@ -22,9 +22,6 @@ import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.bson.types.ObjectId;
 import org.mule.api.MuleContext;
-import org.mule.api.annotations.Configurable;
-import org.mule.api.annotations.param.Default;
-import org.mule.api.annotations.param.Optional;
 import org.mule.api.context.MuleContextAware;
 import org.mule.api.store.ObjectDoesNotExistException;
 import org.mule.api.store.ObjectStoreException;
@@ -60,49 +57,31 @@ public class MongoObjectStore implements PartitionableExpirableObjectStore<Seria
     /**
      * The host of the Mongo server
      */
-    @Configurable
-    @Optional
-    @Default("localhost")
     private String host;
 
     /**
      * The port of the Mongo server
      */
-    @Configurable
-    @Optional
-    @Default("27017")
     private int port;
 
     /**
      * The database name of the Mongo server
      */
-    @Configurable
-    @Optional
-    @Default("test")
     private String database;
 
     /**
      * The username used to connect to the Mongo server
      */
-    @Configurable
-    @Optional
-    @Default("")
     private String username;
 
     /**
      * The password used to connect to the Mongo server
      */
-    @Configurable
-    @Optional
-    @Default("")
     private String password;
 
     /**
      * The default concern to use to when writing to Mongo
      */
-    @Configurable
-    @Optional
-    @Default("DATABASE_DEFAULT")
     private WriteConcern writeConcern;
 
     private MongoClient mongoClient;

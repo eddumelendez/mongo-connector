@@ -6,30 +6,29 @@
  * LICENSE.md file.
  */
 
-package org.mule.module.mongo.automation.testcases;
+package org.mule.module.mongo.automation.testcases.legacy;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
-
-import java.io.InputStream;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.mule.api.MuleMessage;
 import org.mule.module.mongo.automation.MongoTestParent;
 import org.mule.module.mongo.automation.RegressionTests;
 import org.mule.modules.tests.ConnectorTestUtils;
 
-public class GetFileContentUsingQueryMapTestCases extends MongoTestParent {
-	
+import com.mongodb.DBObject;
+
+public class FindOneFileUsingQueryMapTestCases extends MongoTestParent {
+
 
 	@Before
 	public void setUp() {
-		initializeTestRunMessage("getFileContentUsingQueryMap");
-		
+		initializeTestRunMessage("findOneFileUsingQueryMap");
+
+		createFileFromPayload(getTestRunMessageValue("filename1"));
 		createFileFromPayload(getTestRunMessageValue("filename1"));
 		createFileFromPayload(getTestRunMessageValue("filename2"));
 	}
@@ -41,13 +40,13 @@ public class GetFileContentUsingQueryMapTestCases extends MongoTestParent {
 
 	@Category({ RegressionTests.class })
 	@Test
-	public void testGetFileContentUsingQueryMap() {
+	public void testFindOneFileUsingQueryMap() {
 		try {
-			MuleMessage response = runFlowAndGetMessage("get-file-content-using-query-map");
+			DBObject dbObj = runFlowAndGetPayload("find-one-file-using-query-map");
 			
-			assertNotNull(response);
-			assertNotNull(response.getPayload());
-			assertTrue(response.getPayload() instanceof InputStream);
+			assertEquals("The file found should have the name " + getTestRunMessageValue("filename1"), getTestRunMessageValue("filename1"), dbObj.get("filename"));
+			assertEquals("There should be 3 files in total", 3, findFiles());
+
 		} catch (Exception e) {
 	         fail(ConnectorTestUtils.getStackTrace(e));
 	    }

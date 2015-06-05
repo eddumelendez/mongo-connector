@@ -10,41 +10,36 @@ package org.mule.module.mongo.automation.testcases;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
-import org.junit.Before;
+import org.junit.After;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.mule.module.mongo.automation.MongoTestParent;
+import org.mule.module.mongo.automation.AbstractMongoTest;
 import org.mule.module.mongo.automation.RegressionTests;
-import org.mule.modules.tests.ConnectorTestUtils;
 
 import com.mongodb.CommandResult;
 
-public class ExecuteCommandTestCases extends MongoTestParent {
+public class ExecuteCommandTestCases extends AbstractMongoTest {
 
-	@Before
-	public void setUp() throws Exception {
-			// Get the collectionName and create a collection
-			initializeTestRunMessage("executeCommand");
-			runFlowAndGetPayload("create-collection");
+    @Override
+    public void setUp() {
+        // Create a collection
+        getConnector().createCollection("Arenas", false, 5, 5);
+    }
 
-	}
-	
-	@Category({ RegressionTests.class})
-	@Test
-	public void testExecuteCommand() {
-		try {
-			// Drop the collection using command
-			CommandResult cmdResult = runFlowAndGetPayload("execute-command");
-			assertTrue(cmdResult.ok());
-			
-			Boolean exists = runFlowAndGetPayload("exists-collection");
-			assertFalse(exists);
-		} catch (Exception e) {
-	         fail(ConnectorTestUtils.getStackTrace(e));
-	    }
+    @After
+    public void tearDown() throws Exception {
+        getConnector().dropCollection("Arenas");
+    }
 
-	}
-		
+    @Category({ RegressionTests.class })
+    @Test
+    public void testExecuteCommand() {
+        // Drop the collection using command
+        CommandResult cmdResult = (CommandResult) getConnector().executeCommand("drop", "Arenas");
+        assertTrue(cmdResult.ok());
+
+        Boolean exists = getConnector().existsCollection("Arenas");
+        assertFalse(exists);
+    }
 }

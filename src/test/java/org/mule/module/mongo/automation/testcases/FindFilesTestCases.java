@@ -11,32 +11,32 @@ package org.mule.module.mongo.automation.testcases;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.mule.module.mongo.automation.MongoTestParent;
+import org.mule.module.mongo.automation.AbstractMongoTest;
 import org.mule.module.mongo.automation.RegressionTests;
 
-public class FindFilesTestCases extends MongoTestParent {
-	
+public class FindFilesTestCases extends AbstractMongoTest {
 
-	@Before
-	public void setUp() {
-		initializeTestRunMessage("findFiles");
-		
-		createFileFromPayload(getTestRunMessageValue("filename1"));
-		createFileFromPayload(getTestRunMessageValue("filename1"));
-	}
-	
-	@After
-	public void tearDown() {
-		deleteFilesCreatedByCreateFileFromPayload();
-	}
+    @Override
+    public void setUp() {
+        // initializeTestRunMessage("findFiles");
+        // getConnector().createFileFromPayload(new BasicDBObject(), "file1", null, null);
+        // getConnector().createFileFromPayload(new BasicDBObject(), "file2", null, null);
 
-	@Category({ RegressionTests.class })
-	@Test
-	public void testFindFiles() {
-		assertEquals("There should be 2 files found", 2, findFiles());
-	}
-	
+        createFileFromPayload("file1");
+        createFileFromPayload("file2");
+    }
+
+    @After
+    public void tearDown() {
+        getConnector().dropCollection("Arenas");
+    }
+
+    @Category({ RegressionTests.class })
+    @Test
+    public void testFindFiles() {
+        assertEquals("There should be 2 files found", 2, getConnector().findFiles(null));
+    }
+
 }

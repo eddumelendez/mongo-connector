@@ -28,4 +28,12 @@ public class TestDataBuilder {
 		return getSpringBean("addUser");
 	}
 
+	public static Map<String, Object> createIndex(){
+		return getSpringBean("createIndex");
+	}
+
+	public static Map<String, Object> dropDatabase(){
+		return getSpringBean("dropDatabase");
+	}
+
 }

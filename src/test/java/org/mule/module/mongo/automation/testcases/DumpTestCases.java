@@ -9,50 +9,37 @@
 package org.mule.module.mongo.automation.testcases;
 
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.io.File;
+import java.io.IOException;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.mule.module.mongo.automation.MongoTestParent;
+import org.mule.module.mongo.automation.AbstractMongoTest;
 import org.mule.module.mongo.automation.RegressionTests;
-import org.mule.modules.tests.ConnectorTestUtils;
 
-public class DumpTestCases extends MongoTestParent {
-	
+public class DumpTestCases extends AbstractMongoTest {
 
-	@Before
-	public void setUp() {
-		initializeTestRunMessage("dump");
-		
-		new File("./" + getTestRunMessageValue("outputDirectory"));
-	}
+    @Override
+    public void setUp() {
+        new File("/home/carlosm/dump");
+    }
 
-	@After
-	public void tearDown() throws Exception {
-			File dumpOutputDir = new File("./" + getTestRunMessageValue("outputDirectory"));
-			FileUtils.deleteDirectory(dumpOutputDir);
+    @After
+    public void tearDown() throws Exception {
+        File dumpOutputDir = new File("/home/carlosm/dump");
+        FileUtils.deleteDirectory(dumpOutputDir);
+    }
 
-	}
+    @Category({ RegressionTests.class })
+    @Test
+    public void testDump() throws IOException {
+        File dumpOutputDir;
+        getConnector().dump("/home/carlosm/dump", "test", false, false, 5);
 
-	@Category({ RegressionTests.class })
-	@Test
-	public void testDump() {
-		File dumpOutputDir;
-		try {
-			runFlowAndGetPayload("dump");
-			dumpOutputDir = new File("./" + getTestRunMessageValue("outputDirectory"));
-			assertTrue("dump directory should exist after test runs", dumpOutputDir.exists());
-			
-		} catch (Exception e) {
-	         fail(ConnectorTestUtils.getStackTrace(e));
-	    }
-
-		
-	}
-
+        dumpOutputDir = new File("/home/carlosm/dump");
+        assertTrue("dump directory should exist after test runs", dumpOutputDir.exists());
+    }
 }
