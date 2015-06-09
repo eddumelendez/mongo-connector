@@ -21,6 +21,7 @@
 		<category>Community</category>
 		<licensePath>LICENSE.md</licensePath>
 		<devkit.studio.package.skip>false</devkit.studio.package.skip>
+        <connector.testing.version>0.9.1</connector.testing.version>
 	</properties>
 
 	<dependencies>
@@ -56,12 +57,19 @@
 			<artifactId>commons-cli</artifactId>
 			<version>1.1</version>
 		</dependency>
-		<dependency>
-			<groupId>org.mule.tools.devkit</groupId>
-			<artifactId>connector-testing-framework</artifactId>
-			<version>0.9.1-SNAPSHOT</version>
-			<scope>test</scope>
+        <dependency>
+		    <groupId>org.mule.tools.devkit</groupId>
+		    <artifactId>connector-testing-framework</artifactId>
+		    <version>${connector.testing.version}</version>
+		    <scope>test</scope>
 		</dependency>
+		<!-- Connector Testing Framework required project -->
+         <dependency>
+            <groupId>org.mule.tools.devkit</groupId>
+            <artifactId>connector-testing-framework-serializers</artifactId>
+            <version>${connector.testing.version}</version>
+            <scope>test</scope>
+        </dependency>
 	</dependencies>
 
 	<repositories>

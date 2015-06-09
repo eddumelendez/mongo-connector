@@ -47,8 +47,6 @@ import org.mule.module.mongo.tools.MongoRestore;
 import org.mule.transformer.types.MimeTypes;
 
 import com.mongodb.BasicDBList;
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBObject;
 import com.mongodb.MongoException;
 import com.mongodb.WriteResult;
 import com.mongodb.util.JSON;
@@ -177,7 +175,7 @@ public class MongoCloudConnector
      * {@sample.xml ../../../doc/mongo-connector.xml.sample mongo:insert-object}
      *
      * @param collection the name of the collection where to insert the given object
-     * @param document a {@link DBObject} instance.
+     * @param document a {@link Document} instance.
      * @param writeConcern the optional write concern of insertion
      * @return the id that was just insterted
      */
@@ -193,7 +191,7 @@ public class MongoCloudConnector
     /**
      * Inserts an object in a collection, setting its id if necessary.
      * <p/>
-     * A shallow conversion into DBObject is performed - that is, no conversion is performed to its
+     * A shallow conversion into Document is performed - that is, no conversion is performed to its
      * values.
      * <p/>
      * {@sample.xml ../../../doc/mongo-connector.xml.sample mongo:insert-object-from-map}
@@ -221,9 +219,9 @@ public class MongoCloudConnector
      * {@sample.xml ../../../doc/mongo-connector.xml.sample mongo:update-objects}
      *
      * @param collection the name of the collection to update
-     * @param query the {@link DBObject} query object used to detect the element to update. If the object Id is an instance of ObjectId you need to specify the value pair as map with the following structure:
+     * @param query the {@link Document} query object used to detect the element to update. If the object Id is an instance of ObjectId you need to specify the value pair as map with the following structure:
      * { "_id" : "ObjectId(OBJECT_ID_VALUE)"}
-     * @param element the {@link DBObject} mandatory object that will replace that one which matches
+     * @param element the {@link Document} mandatory object that will replace that one which matches
      *            the query.
      * @param upsert if the database should create the element if it does not exist
      * @param multi if all or just the first object matching the query will be updated
@@ -232,8 +230,8 @@ public class MongoCloudConnector
     @Processor
 	@ReconnectOn(exceptions = IllegalStateException.class)
     public void updateObjects(final String collection,
-                              final DBObject query,
-                              @Default("#[payload]") final DBObject element,
+                              final Document query,
+                              @Default("#[payload]") final Document element,
                               @Default(CAPPED_DEFAULT_VALUE) final boolean upsert,
                               @Default("true") final boolean multi,
                               @Default(WRITE_CONCERN_DEFAULT_VALUE) final WriteConcern writeConcern)
@@ -251,7 +249,7 @@ public class MongoCloudConnector
      * @param collection the name of the collection to update
      * @param queryAttributes the query object used to detect the element to update. If the object Id is an instance of ObjectId you need to specify the value pair as map with the following structure:
      * { "_id" : "ObjectId(OBJECT_ID_VALUE)"}
-     * @param element the {@link DBObject} mandatory object that will replace that one which matches
+     * @param element the {@link Document} mandatory object that will replace that one which matches
      *            the query.
      * @param upsert if the database should create the element if it does not exist
      * @param multi if all or just the first object matching the query will be updated
@@ -261,12 +259,12 @@ public class MongoCloudConnector
 	@ReconnectOn(exceptions = IllegalStateException.class)
     public void updateObjectsUsingQueryMap(final String collection,
                                            final Map<String, Object> queryAttributes,
-                                           final DBObject element,
+                                           final Document element,
                                            @Default(CAPPED_DEFAULT_VALUE) final boolean upsert,
                                            @Default("true") final boolean multi,
                                            @Default(WRITE_CONCERN_DEFAULT_VALUE) final WriteConcern writeConcern)
     {
-        strategy.getClient().updateObjects(collection, (DBObject) adapt(queryAttributes), element, upsert, multi,
+        strategy.getClient().updateObjects(collection, (Document) adapt(queryAttributes), element, upsert, multi,
             writeConcern);
     }
 
@@ -294,8 +292,8 @@ public class MongoCloudConnector
                                       @Default("true") final boolean multi,
                                       @Default(WRITE_CONCERN_DEFAULT_VALUE) final WriteConcern writeConcern)
     {
-        strategy.getClient().updateObjects(collection, (DBObject) adapt(queryAttributes),
-            (DBObject) adapt(elementAttributes), upsert, multi, writeConcern);
+        strategy.getClient().updateObjects(collection, (Document) adapt(queryAttributes),
+            (Document) adapt(elementAttributes), upsert, multi, writeConcern);
     }
 
     /**
@@ -306,8 +304,8 @@ public class MongoCloudConnector
      *
      * @param collection the name of the collection to update
      * @param function the function used to execute the update
-     * @param query the {@link DBObject} query object used to detect the element to update.
-     * @param element the {@link DBObject} mandatory object that will replace that one which matches
+     * @param query the {@link Document} query object used to detect the element to update.
+     * @param element the {@link Document} mandatory object that will replace that one which matches
      *            the query.
      * @param upsert if the database should create the element if it does not exist
      * @param multi if all or just the first object matching the query will be updated
@@ -317,15 +315,15 @@ public class MongoCloudConnector
 	@ReconnectOn(exceptions = IllegalStateException.class)
     public void updateObjectsByFunction(final String collection,
                                         final String function,
-                                        final DBObject query,
-                                        final DBObject element,
+                                        final Document query,
+                                        final Document element,
                                         @Default(CAPPED_DEFAULT_VALUE) final boolean upsert,
                                         @Default(value = "true") final boolean multi,
                                         @Default(WRITE_CONCERN_DEFAULT_VALUE) final WriteConcern writeConcern)
     {
-        final DBObject functionDbObject = fromFunction(function, element);
+        final Document functionDocument = fromFunction(function, element);
 
-        strategy.getClient().updateObjects(collection, query, functionDbObject, upsert, multi, writeConcern);
+        strategy.getClient().updateObjects(collection, query, functionDocument, upsert, multi, writeConcern);
     }
 
     /**
@@ -354,9 +352,9 @@ public class MongoCloudConnector
                                                 @Default(value = "true") final boolean multi,
                                                 @Default(WRITE_CONCERN_DEFAULT_VALUE) final WriteConcern writeConcern)
     {
-        final DBObject functionDbObject = fromFunction(function, (DBObject) adapt(elementAttributes));
+        final Document functionDocument = fromFunction(function, (Document) adapt(elementAttributes));
 
-        strategy.getClient().updateObjects(collection, (DBObject) adapt(queryAttributes), functionDbObject, upsert, multi,
+        strategy.getClient().updateObjects(collection, (Document) adapt(queryAttributes), functionDocument, upsert, multi,
             writeConcern);
     }
 
@@ -366,16 +364,16 @@ public class MongoCloudConnector
      * {@sample.xml ../../../doc/mongo-connector.xml.sample mongo:save-object}
      *
      * @param collection the collection where to insert the object
-     * @param element the mandatory {@link DBObject} object to insert.
+     * @param document the mandatory {@link Document} object to insert.
      * @param writeConcern the write concern used to persist the object
      */
     @Processor
 	@ReconnectOn(exceptions = IllegalStateException.class)
     public void saveObject(final String collection,
-                           @Default("#[payload]") final DBObject element,
+                           @Default("#[payload]") final Document document,
                            @Default(WRITE_CONCERN_DEFAULT_VALUE) final WriteConcern writeConcern)
     {
-        strategy.getClient().saveObject(collection, from(element), writeConcern);
+        strategy.getClient().saveObject(collection, from(document), writeConcern);
     }
 
     /**
@@ -393,7 +391,7 @@ public class MongoCloudConnector
                                   @Placement(group = "Element Attributes") final Map<String, Object> elementAttributes,
                                   @Default(WRITE_CONCERN_DEFAULT_VALUE) final WriteConcern writeConcern)
     {
-        strategy.getClient().saveObject(collection, (DBObject) adapt(elementAttributes), writeConcern);
+        strategy.getClient().saveObject(collection, (Document) adapt(elementAttributes), writeConcern);
     }
 
     /**
@@ -404,14 +402,14 @@ public class MongoCloudConnector
      * {@sample.xml ../../../doc/mongo-connector.xml.sample mongo:remove-objects}
      *
      * @param collection the collection whose elements will be removed
-     * @param query the optional {@link DBObject} query object. Objects that match it will be
+     * @param query the optional {@link Document} query object. Objects that match it will be
      *            removed.
      * @param writeConcern the write concern used to remove the object
      */
     @Processor
 	@ReconnectOn(exceptions = IllegalStateException.class)
     public void removeObjects(final String collection,
-                              @Default("#[payload]") final DBObject query,
+                              @Default("#[payload]") final Document query,
                               @Default(WRITE_CONCERN_DEFAULT_VALUE) final WriteConcern writeConcern)
     {
         strategy.getClient().removeObjects(collection, query, writeConcern);
@@ -434,7 +432,7 @@ public class MongoCloudConnector
                                     @Placement(group = "Query Attributes") @Optional final Map<String, Object> queryAttributes,
                                     @Default(WRITE_CONCERN_DEFAULT_VALUE) final WriteConcern writeConcern)
     {
-        strategy.getClient().removeObjects(collection, (DBObject) adapt(queryAttributes), writeConcern);
+        strategy.getClient().removeObjects(collection, (Document) adapt(queryAttributes), writeConcern);
     }
 
     /**
@@ -457,11 +455,11 @@ public class MongoCloudConnector
      *            previous collection if existed, mandatory when results may be larger than 16MB. If
      *            outputCollection is unspecified, the computation is performed in-memory and not
      *            persisted.
-     * @return an iterable that retrieves the resulting collection of {@link DBObject}
+     * @return an iterable that retrieves the resulting collection of {@link Document}
      */
     @Processor
 	@ReconnectOn(exceptions = IllegalStateException.class)
-    public Iterable<DBObject> mapReduceObjects(final String collection,
+    public Iterable<Document> mapReduceObjects(final String collection,
                                                final String mapFunction,
                                                final String reduceFunction,
                                                @Optional final String outputCollection)
@@ -476,7 +474,7 @@ public class MongoCloudConnector
      * {@sample.xml ../../../doc/mongo-connector.xml.sample mongo:count-objects}
      *
      * @param collection the target collection
-     * @param query the optional {@link DBObject} query for counting objects. Only objects matching
+     * @param query the optional {@link Document} query for counting objects. Only objects matching
      *            it will be counted. If unspecified, all objects are counted.
      * @return the amount of objects that matches the query
      */
@@ -513,22 +511,22 @@ public class MongoCloudConnector
      * {@sample.xml ../../../doc/mongo-connector.xml.sample mongo:find-objects}
      *
      * @param collection the target collection
-     * @param query the optional {@link DBObject} query object. If unspecified, all documents are
+     * @param query the optional {@link Document} query object. If unspecified, all documents are
      *            returned.
      * @param fields alternative way of passing fields as a literal List
      * @param numToSkip number of objects skip (offset)
      * @param limit limit of objects to return
-     * @param sortBy indicates the {@link DBObject} used to sort the results
-     * @return an iterable of {@link DBObject}
+     * @param sortBy indicates the {@link Document} used to sort the results
+     * @return an iterable of {@link Document}
      */
     @Processor
 	@ReconnectOn(exceptions = IllegalStateException.class)
-    public Iterable<DBObject> findObjects(final String collection,
-                                          @Default("") final DBObject query,
+    public Iterable<Document> findObjects(final String collection,
+                                          @Default("") final Document query,
                                           @Placement(group = "Fields") @Optional final List<String> fields,
                                           @Optional final Integer numToSkip,
                                           @Optional final Integer limit,
-                                          @Optional DBObject sortBy)
+                                          @Optional Document sortBy)
     {
         return strategy.getClient().findObjects(collection, query, fields, numToSkip, limit, sortBy);
     }
@@ -544,19 +542,19 @@ public class MongoCloudConnector
      * @param fields alternative way of passing fields as a literal List
      * @param numToSkip number of objects skip (offset)
      * @param limit limit of objects to return
-     * @param sortBy indicates the {@link DBObject} used to sort the results
-     * @return an iterable of {@link DBObject}
+     * @param sortBy indicates the {@link Document} used to sort the results
+     * @return an iterable of {@link Document}
      */
     @Processor
 	@ReconnectOn(exceptions = IllegalStateException.class)
-    public Iterable<DBObject> findObjectsUsingQueryMap(final String collection,
+    public Iterable<Document> findObjectsUsingQueryMap(final String collection,
                                                        @Placement(group = "Query Attributes") @Optional final Map<String, Object> queryAttributes,
                                                        @Placement(group = "Fields") @Optional final List<String> fields,
                                                        @Optional final Integer numToSkip,
                                                        @Optional final Integer limit,
-                                                       @Optional DBObject sortBy)
+                                                       @Optional Document sortBy)
     {
-        return strategy.getClient().findObjects(collection, (DBObject) adapt(queryAttributes), fields, numToSkip, limit, sortBy);
+        return strategy.getClient().findObjects(collection, (Document) adapt(queryAttributes), fields, numToSkip, limit, sortBy);
     }
 
     /**
@@ -566,15 +564,15 @@ public class MongoCloudConnector
      * {@sample.xml ../../../doc/mongo-connector.xml.sample mongo:find-one-object}
      *
      * @param collection the target collection
-     * @param query the mandatory {@link DBObject} query object that the returned object matches.
+     * @param query the mandatory {@link Document} query object that the returned object matches.
      * @param fields alternative way of passing fields as a literal List
      * @param failOnNotFound Flag to specify if an exception will be thrown when no object is found. For backward compatibility the default value is true.
-     * @return a {@link DBObject} that matches the query. If nothing matches and the failOnNotFound is set to false, null will be returned
+     * @return a {@link Document} that matches the query. If nothing matches and the failOnNotFound is set to false, null will be returned
      */
     @Processor
 	@ReconnectOn(exceptions = IllegalStateException.class)
-    public DBObject findOneObject(final String collection,
-                                  @Default("#[payload]") final DBObject query,
+    public Document findOneObject(final String collection,
+                                  @Default("#[payload]") final Document query,
                                   @Placement(group = "Fields") @Optional final List<String> fields,
                                   @Default("true") Boolean failOnNotFound)
     {
@@ -592,16 +590,16 @@ public class MongoCloudConnector
      * @param queryAttributes the mandatory query object that the returned object matches.
      * @param fields alternative way of passing fields as a literal List
      * @param failOnNotFound Flag to specify if an exception will be thrown when no object is found. For backward compatibility the default value is true.
-     * @return a {@link DBObject} that matches the query. If nothing matches and the failOnNotFound is set to false, null will be returned
+     * @return a {@link Document} that matches the query. If nothing matches and the failOnNotFound is set to false, null will be returned
      */
     @Processor
 	@ReconnectOn(exceptions = IllegalStateException.class)
-    public DBObject findOneObjectUsingQueryMap(final String collection,
+    public Document findOneObjectUsingQueryMap(final String collection,
                                                @Placement(group = "Query Attributes") final Map<String, Object> queryAttributes,
                                                @Placement(group = "Fields") @Optional final List<String> fields,
                                                @Default("true") Boolean failOnNotFound)
     {
-        return strategy.getClient().findOneObject(collection, (DBObject) adapt(queryAttributes), fields, failOnNotFound);
+        return strategy.getClient().findOneObject(collection, (Document) adapt(queryAttributes), fields, failOnNotFound);
 
     }
 
@@ -644,11 +642,11 @@ public class MongoCloudConnector
      * {@sample.xml ../../../doc/mongo-connector.xml.sample mongo:list-indices}
      *
      * @param collection the name of the collection
-     * @return a collection of {@link DBObject} with indices information
+     * @return a collection of {@link Document} with indices information
      */
     @Processor
 	@ReconnectOn(exceptions = IllegalStateException.class)
-    public Collection<DBObject> listIndices(final String collection)
+    public Collection<Document> listIndices(final String collection)
     {
         return strategy.getClient().listIndices(collection);
     }
@@ -663,16 +661,16 @@ public class MongoCloudConnector
      *            byte[] or an InputStream.
      * @param filename the mandatory name of new file.
      * @param contentType the optional content type of the new file
-     * @param metadata the optional {@link DBObject} metadata of the new content type
-     * @return the new GridFSFile {@link DBObject}
+     * @param metadata the optional {@link Document} metadata of the new content type
+     * @return the new GridFSFile {@link Document}
      * @throws IOException IOException
      */
     @Processor
 	@ReconnectOn(exceptions = IllegalStateException.class)
-    public DBObject createFileFromPayload(@Payload final Object payload,
+    public Document createFileFromPayload(@Payload final Object payload,
                                           final String filename,
                                           @Optional final String contentType,
-                                          @Optional final DBObject metadata) throws IOException
+                                          @Optional final Document metadata) throws IOException
     {
         final InputStream stream = toStream(payload);
         try
@@ -707,12 +705,12 @@ public class MongoCloudConnector
      * <p/>
      * {@sample.xml ../../../doc/mongo-connector.xml.sample mongo:find-files}
      *
-     * @param query a {@link DBObject} query the optional query
-     * @return a {@link DBObject} files iterable
+     * @param query a {@link Document} query the optional query
+     * @return a {@link Document} files iterable
      */
     @Processor
 	@ReconnectOn(exceptions = IllegalStateException.class)
-    public Iterable<DBObject> findFiles(@Default("#[payload]") final DBObject query)
+    public Iterable<Document> findFiles(@Default("#[payload]") final Document query)
     {
         return strategy.getClient().findFiles(from(query));
     }
@@ -723,13 +721,13 @@ public class MongoCloudConnector
      * {@sample.xml ../../../doc/mongo-connector.xml.sample mongo:find-files-using-query-map}
      *
      * @param queryAttributes the optional query attributes
-     * @return a {@link DBObject} files iterable
+     * @return a {@link Document} files iterable
      */
     @Processor
 	@ReconnectOn(exceptions = IllegalStateException.class)
-    public Iterable<DBObject> findFilesUsingQueryMap(@Placement(group = "Query Attributes") @Optional final Map<String, Object> queryAttributes)
+    public Iterable<Document> findFilesUsingQueryMap(@Placement(group = "Query Attributes") @Optional final Map<String, Object> queryAttributes)
     {
-        return strategy.getClient().findFiles((DBObject) adapt(queryAttributes));
+        return strategy.getClient().findFiles((Document) adapt(queryAttributes));
     }
 
     /**
@@ -738,12 +736,12 @@ public class MongoCloudConnector
      * <p/>
      * {@sample.xml ../../../doc/mongo-connector.xml.sample mongo:find-one-file}
      *
-     * @param query the {@link DBObject} mandatory query
-     * @return a {@link DBObject}
+     * @param query the {@link Document} mandatory query
+     * @return a {@link Document}
      */
     @Processor
 	@ReconnectOn(exceptions = IllegalStateException.class)
-    public DBObject findOneFile(final DBObject query)
+    public Document findOneFile(final Document query)
     {
         return strategy.getClient().findOneFile(from(query));
     }
@@ -755,13 +753,13 @@ public class MongoCloudConnector
      * {@sample.xml ../../../doc/mongo-connector.xml.sample mongo:find-one-file-using-query-map}
      *
      * @param queryAttributes the mandatory query
-     * @return a {@link DBObject}
+     * @return a {@link Document}
      */
     @Processor
 	@ReconnectOn(exceptions = IllegalStateException.class)
-    public DBObject findOneFileUsingQueryMap(@Placement(group = "Query Attributes") final Map<String, Object> queryAttributes)
+    public Document findOneFileUsingQueryMap(@Placement(group = "Query Attributes") final Map<String, Object> queryAttributes)
     {
-        return strategy.getClient().findOneFile((DBObject) adapt(queryAttributes));
+        return strategy.getClient().findOneFile((Document) adapt(queryAttributes));
     }
 
     /**
@@ -770,12 +768,12 @@ public class MongoCloudConnector
      * <p/>
      * {@sample.xml ../../../doc/mongo-connector.xml.sample mongo:get-file-content}
      *
-     * @param query the {@link DBObject} mandatory query
+     * @param query the {@link Document} mandatory query
      * @return an InputStream to the file contents
      */
     @Processor
 	@ReconnectOn(exceptions = IllegalStateException.class)
-    public InputStream getFileContent(@Default("#[payload]") final DBObject query)
+    public InputStream getFileContent(@Default("#[payload]") final Document query)
     {
         return strategy.getClient().getFileContent(from(query));
     }
@@ -793,7 +791,7 @@ public class MongoCloudConnector
 	@ReconnectOn(exceptions = IllegalStateException.class)
     public InputStream getFileContentUsingQueryMap(@Placement(group = "Query Attributes") final Map<String, Object> queryAttributes)
     {
-        return strategy.getClient().getFileContent((DBObject) adapt(queryAttributes));
+        return strategy.getClient().getFileContent((Document) adapt(queryAttributes));
     }
 
     /**
@@ -802,12 +800,12 @@ public class MongoCloudConnector
      * <p/>
      * {@sample.xml ../../../doc/mongo-connector.xml.sample mongo:list-files}
      *
-     * @param query the {@link DBObject} optional query
-     * @return an iterable of {@link DBObject}
+     * @param query the {@link Document} optional query
+     * @return an iterable of {@link Document}
      */
     @Processor
 	@ReconnectOn(exceptions = IllegalStateException.class)
-    public Iterable<DBObject> listFiles(@Default("#[payload]") final DBObject query)
+    public Iterable<Document> listFiles(@Default("#[payload]") final Document query)
     {
         return strategy.getClient().listFiles(from(query));
     }
@@ -819,13 +817,13 @@ public class MongoCloudConnector
      * {@sample.xml ../../../doc/mongo-connector.xml.sample mongo:list-files-using-query-map}
      *
      * @param queryAttributes the optional query
-     * @return an iterable of {@link DBObject}
+     * @return an iterable of {@link Document}
      */
     @Processor
 	@ReconnectOn(exceptions = IllegalStateException.class)
-    public Iterable<DBObject> listFilesUsingQueryMap(@Placement(group = "Query Attributes") @Optional final Map<String, Object> queryAttributes)
+    public Iterable<Document> listFilesUsingQueryMap(@Placement(group = "Query Attributes") @Optional final Map<String, Object> queryAttributes)
     {
-        return strategy.getClient().listFiles((DBObject) adapt(queryAttributes));
+        return strategy.getClient().listFiles((Document) adapt(queryAttributes));
     }
 
     /**
@@ -834,11 +832,11 @@ public class MongoCloudConnector
      * <p/>
      * {@sample.xml ../../../doc/mongo-connector.xml.sample mongo:remove-files}
      *
-     * @param query the {@link DBObject} optional query
+     * @param query the {@link Document} optional query
      */
     @Processor
 	@ReconnectOn(exceptions = IllegalStateException.class)
-    public void removeFiles(@Default("#[payload]") final DBObject query)
+    public void removeFiles(@Default("#[payload]") final Document query)
     {
         strategy.getClient().removeFiles(from(query));
     }
@@ -855,7 +853,7 @@ public class MongoCloudConnector
 	@ReconnectOn(exceptions = IllegalStateException.class)
     public void removeFilesUsingQueryMap(@Placement(group = "Query Attributes") @Optional final Map<String, Object> queryAttributes)
     {
-        strategy.getClient().removeFiles((DBObject) adapt(queryAttributes));
+        strategy.getClient().removeFiles((Document) adapt(queryAttributes));
     }
 
     /**
@@ -870,11 +868,11 @@ public class MongoCloudConnector
      */
     @Processor
 	@ReconnectOn(exceptions = IllegalStateException.class)
-    public DBObject executeCommand(final String commandName, @Optional final String commandValue)
+    public Document executeCommand(final String commandName, @Optional final String commandValue)
     {
-        final DBObject dbObject = fromCommand(commandName, commandValue);
+        final Document document = fromCommand(commandName, commandValue);
 
-        return strategy.getClient().executeComamnd(dbObject);
+        return strategy.getClient().executeComamnd(document);
     }
 
     /**
@@ -961,17 +959,17 @@ public class MongoCloudConnector
     }
 
     /**
-     * Convert JSON to DBObject.
+     * Convert JSON to Document.
      * <p/>
      * {@sample.xml ../../../doc/mongo-connector.xml.sample mongo:jsonToDbobject}
      *
      * @param input the input for this transformer
-     * @return the converted {@link DBObject}
+     * @return the converted {@link Document}
      */
     @Transformer(sourceTypes = {String.class})
-    public static DBObject jsonToDbobject(final String input)
+    public static Document jsonToDocument(final String input)
     {
-        DBObject o = null;
+        Document o = null;
         BSONObject bsonObj = null;
 
         Object obj = JSON.parse(input);
@@ -993,21 +991,21 @@ public class MongoCloudConnector
                     }
                     else
                     {
-                        o = new BasicDBObject(entries);
+                        o = new Document(entries);
                     }
                 }
             }
         }
         else
         {
-            o = (DBObject) obj;
+            o = (Document) obj;
         }
 
         return o;
     }
 
     /**
-     * Convert DBObject to Json.
+     * Convert Document to Json.
      * <p/>
      * {@sample.xml ../../../doc/mongo-connector.xml.sample mongo:dbobjectToJson}
      *
@@ -1015,8 +1013,8 @@ public class MongoCloudConnector
      * @return the converted string representation
      */
     @Mime(MimeTypes.JSON)
-    @Transformer(sourceTypes = {DBObject.class})
-    public static String dbobjectToJson(final DBObject input)
+    @Transformer(sourceTypes = {Document.class})
+    public static String documentToJson(final Document input)
     {
         return JSONSerializers.getStrict().serialize(input);
     }
@@ -1052,7 +1050,7 @@ public class MongoCloudConnector
     }
 
     /**
-     * Convert a DBObject into Map.
+     * Convert a Document into Map.
      * <p/>
      * {@sample.xml ../../../doc/mongo-connector.xml.sample mongo:dbObjectToMap}
      *
@@ -1060,8 +1058,8 @@ public class MongoCloudConnector
      * @return the converted Map representation
      */
     @SuppressWarnings("rawtypes")
-    @Transformer(sourceTypes = {DBObject.class})
-    public static Map dbObjectToMap(final DBObject input)
+    @Transformer(sourceTypes = {Document.class})
+    public static Map documentToMap(final Document input)
     {
         return input.toMap();
     }

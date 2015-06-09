@@ -7,6 +7,7 @@
  */
 
 package org.mule.module.mongo.api;
+import static com.mongodb.client.model.Filters.eq;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,6 +16,10 @@ import java.util.List;
 
 import javax.validation.constraints.NotNull;
 
+import jersey.repackaged.com.google.common.base.Predicates;
+import jersey.repackaged.com.google.common.collect.Iterables;
+import jersey.repackaged.com.google.common.collect.Lists;
+
 import org.apache.commons.lang.Validate;
 import org.bson.Document;
 import org.bson.conversions.Bson;
@@ -22,14 +27,13 @@ import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
-import com.mongodb.DBObject;
 import com.mongodb.MapReduceCommand.OutputType;
 import com.mongodb.MongoException;
 import com.mongodb.WriteResult;
+import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.gridfs.GridFS;
 import com.mongodb.gridfs.GridFSDBFile;
@@ -39,6 +43,9 @@ public class MongoClientImpl implements MongoClient
 {
     private static final Logger LOGGER = LoggerFactory.getLogger(MongoClientImpl.class);
 
+    private static final String ID_FIELD_NAME = "_id";
+
+    @Deprecated
     private final DB db;
     private final MongoDatabase database;
     private final com.mongodb.MongoClient mongo;
@@ -79,7 +86,7 @@ public class MongoClientImpl implements MongoClient
                                  final Integer size)
     {
         Validate.notNull(collection);
-        final BasicDBObject options = new BasicDBObject("capped", capped);
+        final Document options = new Document("capped", capped);
         if (maxObjects != null)
         {
             options.put("maxObject", maxObjects);
@@ -128,16 +135,16 @@ public class MongoClientImpl implements MongoClient
 	public boolean existsCollection(@NotNull final String collection)
     {
         Validate.notNull(collection);
-        return db.collectionExists(collection);
+        return Iterables.find(database.listCollectionNames(), Predicates.equalTo(collection), null) != null;
     }
 
     @Override
-    public Iterable<DBObject> findObjects(@NotNull final String collection,
-                                          final DBObject query,
+    public Iterable<Document> findObjects(@NotNull final String collection,
+                                          final Document query,
                                           final List<String> fields,
                                           final Integer numToSkip,
                                           final Integer limit,
-                                          DBObject sortBy)
+                                          Document sortBy)
     {
         Validate.notNull(collection);
 
@@ -158,12 +165,12 @@ public class MongoClientImpl implements MongoClient
     }
 
     @Override
-	public DBObject findOneObject(@NotNull final String collection,
-                                  final DBObject query,
+	public Document findOneObject(@NotNull final String collection,
+                                  final Document query,
                                   final List<String> fields, boolean failOnNotFound)
     {
         Validate.notNull(collection);
-        final DBObject element = db.getCollection(collection).findOne(query,
+        final Document element = db.getCollection(collection).findOne(query,
             FieldsSet.from(fields));
 
         if (element == null && failOnNotFound)
@@ -204,11 +211,11 @@ public class MongoClientImpl implements MongoClient
     @Override
 	public Collection<String> listCollections()
     {
-        return db.getCollectionNames();
+        return Lists.newArrayList(database.listCollectionNames());
     }
 
     @Override
-	public Iterable<DBObject> mapReduceObjects(@NotNull final String collection,
+	public Iterable<Document> mapReduceObjects(@NotNull final String collection,
                                                @NotNull final String mapFunction,
                                                @NotNull final String reduceFunction,
                                                final String outputCollection)
@@ -228,30 +235,45 @@ public class MongoClientImpl implements MongoClient
 
     @Override
 	public void removeObjects(@NotNull final String collection,
-                              final DBObject query,
+                              final Document query,
                               @NotNull final WriteConcern writeConcern)
     {
         Validate.notNull(collection);
         Validate.notNull(writeConcern);
-        db.getCollection(collection).remove(query != null ? query : new BasicDBObject(),
+        db.getCollection(collection).remove(query != null ? query : new Document(),
             writeConcern.toMongoWriteConcern(db));
     }
 
     @Override
-	public void saveObject(@NotNull final String collection,
-                           @NotNull final DBObject object,
+	public void saveObject(@NotNull final String collectionName,
+                           @NotNull final Document object,
                            @NotNull final WriteConcern writeConcern)
     {
-        Validate.notNull(collection);
+        Validate.notNull(collectionName);
         Validate.notNull(object);
         Validate.notNull(writeConcern);
-        db.getCollection(collection).save(object, writeConcern.toMongoWriteConcern(db));
+
+        com.mongodb.client.MongoCollection<Document> collection = database.getCollection(collectionName);
+        Object id = object.get(ID_FIELD_NAME);
+        WriteResult result;
+        if (id == null) {
+            collection.insertOne(object);
+        } else {
+            Bson filter = eq(ID_FIELD_NAME, id);
+            FindIterable find = collection.find(filter);
+            if (!find.iterator().hasNext()) {
+                collection.insertOne(object);
+            } else {
+                collection.updateOne(filter, object);
+            }
+        }
+//        db.getCollection(collectionName).save(object, writeConcern.toMongoWriteConcern(db));
     }
 
     @Override
 	public void updateObjects(@NotNull final String collection,
-                              final DBObject query,
-                              final DBObject object,
+                              final Document query,
+                              final Document object,
                               final boolean upsert,
                               final boolean multi,
                               final WriteConcern writeConcern)
@@ -266,7 +288,7 @@ public class MongoClientImpl implements MongoClient
     @Override
 	public void createIndex(final String collection, final String field, final IndexOrder order)
     {
-        db.getCollection(collection).createIndex(new BasicDBObject(field, order.getValue()));
+        db.getCollection(collection).createIndex(new Document(field, order.getValue()));
     }
 
     @Override
@@ -276,16 +298,16 @@ public class MongoClientImpl implements MongoClient
     }
 
     @Override
-	public Collection<DBObject> listIndices(final String collection)
+	public Collection<Document> listIndices(final String collection)
     {
         return db.getCollection(collection).getIndexInfo();
     }
 
     @Override
-	public DBObject createFile(final InputStream content,
+	public Document createFile(final InputStream content,
                                final String filename,
                                final String contentType,
-                               final DBObject metadata)
+                               final Document metadata)
     {
         Validate.notNull(filename);
         Validate.notNull(content);
@@ -301,13 +323,13 @@ public class MongoClientImpl implements MongoClient
     }
 
     @Override
-	public Iterable<DBObject> findFiles(final DBObject query)
+	public Iterable<Document> findFiles(final Document query)
     {
         return bug5588Workaround(getGridFs().find(query));
     }
 
     @Override
-	public DBObject findOneFile(final DBObject query)
+	public Document findOneFile(final Document query)
     {
         Validate.notNull(query);
         final GridFSDBFile file = getGridFs().findOne(query);
@@ -319,26 +341,26 @@ public class MongoClientImpl implements MongoClient
     }
 
     @Override
-	public InputStream getFileContent(final DBObject query)
+	public InputStream getFileContent(final Document query)
     {
         Validate.notNull(query);
         return ((GridFSDBFile) findOneFile(query)).getInputStream();
     }
 
     @Override
-	public Iterable<DBObject> listFiles(final DBObject query)
+	public Iterable<Document> listFiles(final Document query)
     {
         return bug5588Workaround(getGridFs().getFileList(query));
     }
 
     @Override
-	public void removeFiles(final DBObject query)
+	public void removeFiles(final Document query)
     {
         getGridFs().remove(query);
     }
 
     @Override
-	public DBObject executeComamnd(final DBObject command)
+	public Document executeComamnd(final Document command)
     {
         return db.command(command);
     }
@@ -352,11 +374,11 @@ public class MongoClientImpl implements MongoClient
      * see http://www.mulesoft.org/jira/browse/MULE-5588
      */
     @SuppressWarnings("unchecked")
-    private Iterable<DBObject> bug5588Workaround(final Iterable<? extends DBObject> o)
+    private Iterable<Document> bug5588Workaround(final Iterable<? extends Document> o)
     {
         if (o instanceof Collection<?>)
         {
-            return (Iterable<DBObject>) o;
+            return (Iterable<Document>) o;
         }
         return new MongoCollection(o);
     }

@@ -72,7 +72,7 @@ public class MongoTestCase
     public void listCollections()
     {
         client.listCollections();
-        verify(dbMock).getCollectionNames();
+        verify(dbMock).listCollectionNames();
     }
 
     /** Test {@link MongoClient#existsCollection(String)} */
@@ -80,7 +80,7 @@ public class MongoTestCase
     public void existsCollection()
     {
         client.existsCollection(A_COLLECTION);
-        verify(dbMock).collectionExists(A_COLLECTION);
+        verify(dbMock).listCollectionNames();
     }
 
     /** Test {@link MongoClient#dropCollection(String)} */

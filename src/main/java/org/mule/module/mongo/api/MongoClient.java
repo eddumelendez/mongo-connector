@@ -19,7 +19,6 @@ import org.bson.Document;
 import org.bson.conversions.Bson;
 
 import com.mongodb.DBCollection;
-import com.mongodb.DBObject;
 import com.mongodb.WriteResult;
 
 public interface MongoClient extends Closeable
@@ -39,51 +38,51 @@ public interface MongoClient extends Closeable
                         @NotNull WriteConcern writeConcern);
 
     void updateObjects(@NotNull String collection,
-                       DBObject query,
-                       DBObject object,
+                       Document query,
+                       Document object,
                        boolean upsert,
                        boolean multi,
                        @NotNull WriteConcern writeConcern);
 
-    void saveObject(@NotNull String collection, @NotNull DBObject object, @NotNull WriteConcern writeConcern);
+    void saveObject(@NotNull String collection, @NotNull Document document, @NotNull WriteConcern writeConcern);
 
-    void removeObjects(@NotNull String collection, DBObject query, @NotNull WriteConcern writeConcern);
+    void removeObjects(@NotNull String collection, Document query, @NotNull WriteConcern writeConcern);
 
-    Iterable<DBObject> mapReduceObjects(@NotNull String collection,
+    Iterable<Document> mapReduceObjects(@NotNull String collection,
                                         @NotNull String mapFunction,
                                         @NotNull String reduceFunction,
                                         String outputCollection);
 
     long countObjects(@NotNull String collection, Bson query);
 
-    Iterable<DBObject> findObjects(@NotNull String collection,
-                                   DBObject query,
+    Iterable<Document> findObjects(@NotNull String collection,
+                                   Document query,
                                    List<String> fields,
                                    Integer numToSkip,
                                    Integer limit,
-                                   DBObject sortBy);
+                                   Document sortBy);
 
-    DBObject findOneObject(@NotNull String collection, DBObject query, List<String> fields, boolean failOnNotFound);
+    Document findOneObject(@NotNull String collection, Document query, List<String> fields, boolean failOnNotFound);
 
     void createIndex(String collection, String field, IndexOrder order);
 
     void dropIndex(String collection, String name);
 
-    Collection<DBObject> listIndices(String collection);
+    Collection<Document> listIndices(String collection);
 
-    DBObject createFile(InputStream content, String filename, String contentType, DBObject metadata);
+    Document createFile(InputStream content, String filename, String contentType, Document metadata);
 
-    Iterable<DBObject> findFiles(DBObject query);
+    Iterable<Document> findFiles(Document query);
 
-    DBObject findOneFile(DBObject query);
+    Document findOneFile(Document query);
 
-    InputStream getFileContent(DBObject query);
+    InputStream getFileContent(Document query);
 
-    Iterable<DBObject> listFiles(DBObject query);
+    Iterable<Document> listFiles(Document query);
 
-    void removeFiles(DBObject query);
+    void removeFiles(Document query);
 
-    DBObject executeComamnd(DBObject command);
+    Document executeComamnd(Document command);
 
     WriteResult addUser(String username, String password);
 

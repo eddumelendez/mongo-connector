@@ -20,6 +20,7 @@ import javax.annotation.PostConstruct;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
+import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.mule.api.MuleContext;
 import org.mule.api.context.MuleContextAware;
@@ -33,9 +34,7 @@ import org.mule.module.mongo.api.WriteConcern;
 import org.mule.util.SerializationUtils;
 import org.springframework.util.DigestUtils;
 
-import com.mongodb.BasicDBObject;
 //import com.mongodb.DB;
-import com.mongodb.DBObject;
 import com.mongodb.QueryBuilder;
 
 /**
@@ -173,7 +172,7 @@ public class MongoObjectStore implements PartitionableExpirableObjectStore<Seria
 	public boolean contains(final Serializable key, final String partitionName) throws ObjectStoreException
     {
         final ObjectId objectId = getObjectIdFromKey(key);
-        final DBObject query = getQueryForObjectId(objectId);
+        final Document query = getQueryForObjectId(objectId);
         final String collection = getCollectionName(partitionName);
         return mongoClient.findObjects(collection, query, NO_FIELD_LIST, null, null, null).iterator().hasNext();
     }
@@ -182,11 +181,11 @@ public class MongoObjectStore implements PartitionableExpirableObjectStore<Seria
 	public List<Serializable> allKeys(final String partitionName) throws ObjectStoreException
     {
         final String collection = getCollectionName(partitionName);
-        final Iterable<DBObject> keyObjects = mongoClient.findObjects(collection, new BasicDBObject(),
+        final Iterable<Document> keyObjects = mongoClient.findObjects(collection, new Document(),
             Arrays.asList(KEY_FIELD), null, null, null);
 
         final List<Serializable> results = new ArrayList<Serializable>();
-        for (final DBObject keyObject : keyObjects)
+        for (final Document keyObject : keyObjects)
         {
             results.add((Serializable) SerializationUtils.deserialize((byte[]) keyObject.get(KEY_FIELD)));
         }
@@ -222,13 +221,13 @@ public class MongoObjectStore implements PartitionableExpirableObjectStore<Seria
 
         final byte[] keyAsBytes = SerializationUtils.serialize(key);
         final ObjectId objectId = getObjectIdFromKey(keyAsBytes);
-        final DBObject query = getQueryForObjectId(objectId);
-        final DBObject dbObject = new BasicDBObject();
-        dbObject.put(ID_FIELD, objectId);
-        dbObject.put(TIMESTAMP_FIELD, System.currentTimeMillis());
-        dbObject.put(KEY_FIELD, keyAsBytes);
-        dbObject.put(VALUE_FIELD, SerializationUtils.serialize(value));
-        mongoClient.updateObjects(collection, query, dbObject, true, false, getWriteConcern());
+        final Document query = getQueryForObjectId(objectId);
+        final Document document = new Document();
+        document.put(ID_FIELD, objectId);
+        document.put(TIMESTAMP_FIELD, System.currentTimeMillis());
+        document.put(KEY_FIELD, keyAsBytes);
+        document.put(VALUE_FIELD, SerializationUtils.serialize(value));
+        mongoClient.updateObjects(collection, query, document, true, false, getWriteConcern());
     }
 
     @Override
@@ -237,7 +236,7 @@ public class MongoObjectStore implements PartitionableExpirableObjectStore<Seria
     {
         final String collection = getCollectionName(partitionName);
         final ObjectId objectId = getObjectIdFromKey(key);
-        final DBObject query = getQueryForObjectId(objectId);
+        final Document query = getQueryForObjectId(objectId);
         return retrieveSerializedObject(collection, query);
     }
 
@@ -247,7 +246,7 @@ public class MongoObjectStore implements PartitionableExpirableObjectStore<Seria
     {
         final String collection = getCollectionName(partitionName);
         final ObjectId objectId = getObjectIdFromKey(key);
-        final DBObject query = getQueryForObjectId(objectId);
+        final Document query = getQueryForObjectId(objectId);
 
         final Serializable result = retrieveSerializedObject(collection, query);
         mongoClient.removeObjects(collection, query, getWriteConcern());
@@ -277,7 +276,7 @@ public class MongoObjectStore implements PartitionableExpirableObjectStore<Seria
     {
         final String collection = getCollectionName(partitionName);
         final long expireAt = System.currentTimeMillis() - entryTtl;
-        final DBObject query = QueryBuilder.start(TIMESTAMP_FIELD).lessThan(expireAt).get();
+        final Document query = QueryBuilder.start(TIMESTAMP_FIELD).lessThan(expireAt).get();
         mongoClient.removeObjects(collection, query, getWriteConcern());
     }
 
@@ -380,15 +379,15 @@ public class MongoObjectStore implements PartitionableExpirableObjectStore<Seria
         return objectId;
     }
 
-    private DBObject getQueryForObjectId(final ObjectId objectId)
+    private Document getQueryForObjectId(final ObjectId objectId)
     {
-        return new BasicDBObject(ID_FIELD, objectId);
+        return new Document(ID_FIELD, objectId);
     }
 
-    private Serializable retrieveSerializedObject(final String collection, final DBObject query)
+    private Serializable retrieveSerializedObject(final String collection, final Document query)
         throws ObjectDoesNotExistException
     {
-        final Iterator<DBObject> iterator = mongoClient.findObjects(collection, query,
+        final Iterator<Document> iterator = mongoClient.findObjects(collection, query,
             Arrays.asList(VALUE_FIELD), null, null, null).iterator();
 
         if (!iterator.hasNext())
@@ -396,9 +395,9 @@ public class MongoObjectStore implements PartitionableExpirableObjectStore<Seria
             throw new ObjectDoesNotExistException();
         }
 
-        final DBObject dbObject = iterator.next();
+        final Document document = iterator.next();
 
-        return (Serializable) SerializationUtils.deserialize((byte[]) dbObject.get(VALUE_FIELD), context);
+        return (Serializable) SerializationUtils.deserialize((byte[]) document.get(VALUE_FIELD), context);
     }
 
     @Override

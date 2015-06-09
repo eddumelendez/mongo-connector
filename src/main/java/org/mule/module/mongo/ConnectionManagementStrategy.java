@@ -18,6 +18,7 @@ import org.mule.api.ConnectionException;
 import org.mule.api.ConnectionExceptionCode;
 import org.mule.api.annotations.Configurable;
 import org.mule.api.annotations.Connect;
+import org.mule.api.annotations.ConnectStrategy;
 import org.mule.api.annotations.ConnectionIdentifier;
 import org.mule.api.annotations.Disconnect;
 import org.mule.api.annotations.TestConnectivity;
@@ -119,7 +120,7 @@ public class ConnectionManagementStrategy {
      * @param database Name of the database
      * @throws org.mule.api.ConnectionException
      */
-    @Connect
+    @Connect(strategy = ConnectStrategy.SINGLE_INSTANCE)
     @TestConnectivity
     public void connect(@ConnectionKey final String username,
                         @Optional @Password final String password,

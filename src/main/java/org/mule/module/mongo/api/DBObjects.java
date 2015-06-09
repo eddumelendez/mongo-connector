@@ -17,11 +17,8 @@ import java.util.regex.Pattern;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBObject;
-
 /**
- * Conversions between JSon Strings and Maps into DBObjects
+ * Conversions between JSon Strings and Maps into Documents
  */
 public final class DBObjects
 {
@@ -32,24 +29,24 @@ public final class DBObjects
     }
 
     /**
-     * Performs a shallow conversion of a map into a DBObject: values of type Map
+     * Performs a shallow conversion of a map into a Document: values of type Map
      * will not be converted
      */
-    public static DBObject fromMap(Map<String, Object> map)
+    public static Document fromMap(Map<String, Object> map)
     {
-        return new BasicDBObject(map);
+        return new Document(map);
     }
 
     @SuppressWarnings("unchecked")
-    public static DBObject from(Object o)
+    public static Document from(Object o)
     {
         if (o == null)
         {
             return null;
         }
-        if (o instanceof DBObject)
+        if (o instanceof Document)
         {
-            return (DBObject) o;
+            return (Document) o;
         }
         if (o instanceof Map<?, ?>)
         {
@@ -58,34 +55,34 @@ public final class DBObjects
         throw new IllegalArgumentException("Unsupported object type " + o);
     }
     
-    public static DBObject fromFunction(String function, DBObject dbObject)
+    public static Document fromFunction(String function, Document document)
     {
-        return new BasicDBObject(function, dbObject);
+        return new Document(function, document);
     }
     
-    public static DBObject fromCommand(String commandName, String commandValue)
+    public static Document fromCommand(String commandName, String commandValue)
     {
-        DBObject dbObject;
+        Document document;
         if (commandValue == null)
     	{
-            dbObject = new BasicDBObject(commandName, 1);
+            document = new Document(commandName, 1);
     	}
     	else
     	{
-            dbObject = new BasicDBObject(commandName, commandValue);
+            document = new Document(commandName, commandValue);
     	}
     	
-        return dbObject;
+        return document;
     }
 
     @SuppressWarnings("unchecked")
     public static Object adapt(Object o)
     {
         Object obj = o;
-        if (obj instanceof DBObject)
+        if (obj instanceof Document)
         {
-            adaptObjectId((DBObject) obj);
-            adaptAttributes((DBObject) obj);
+            adaptObjectId((Document) obj);
+            adaptAttributes((Document) obj);
         }
         else if (obj instanceof Map<?, ?>)
         {
@@ -112,7 +109,7 @@ public final class DBObjects
         }
     }
 
-    private static void adaptAttributes(DBObject o)
+    private static void adaptAttributes(Document o)
     {
         for (String key : o.keySet())
         {
@@ -120,7 +117,7 @@ public final class DBObjects
         }
     }
 
-    private static void adaptObjectId(DBObject o)
+    private static void adaptObjectId(Document o)
     {
         Object id = o.get("_id");
 
