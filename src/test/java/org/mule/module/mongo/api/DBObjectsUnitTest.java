@@ -77,17 +77,19 @@ public class DBObjectsUnitTest {
     @Category({ RegressionTests.class })
     @Test
     public void fromMapWithObjectId() throws Exception {
-        DBObject o = DBObjects.from(new HashMap<String, Object>() {
+        HashMap<String, Object> map = new HashMap<String, Object>() {
 
             {
                 put("name", "John");
                 put("surname", "Doe");
                 put("age", 35);
-                put("_id", "4df7b8e8663b85b105725d34");
+                put("_id", new ObjectId("4df7b8e8663b85b105725d34"));
             }
-        });
+        };
+        DBObject o = DBObjects.from(map);
         assertEquals("John", o.get("name"));
         assertEquals(new ObjectId("4df7b8e8663b85b105725d34"), o.get("_id"));
+        assertEquals(o.keySet(), map.keySet());
     }
 
     @Category({ RegressionTests.class })

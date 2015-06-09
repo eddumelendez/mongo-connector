@@ -28,25 +28,44 @@ import org.mule.module.mongo.automation.testcases.DropDatabaseTestCases;
 import org.mule.module.mongo.automation.testcases.DropIndexTestCases;
 import org.mule.module.mongo.automation.testcases.ExecuteCommandTestCases;
 import org.mule.module.mongo.automation.testcases.ExistsCollectionTestCases;
+import org.mule.module.mongo.automation.testcases.FindObjectsTestCases;
 import org.mule.module.mongo.automation.testcases.InsertObjectFromMapTestCases;
 import org.mule.module.mongo.automation.testcases.InsertObjectTestCases;
 import org.mule.module.mongo.automation.testcases.ListCollectionTestCases;
 import org.mule.module.mongo.automation.testcases.ListIndexesTestCases;
 import org.mule.module.mongo.automation.testcases.MapReduceObjectsTestCases;
 import org.mule.module.mongo.automation.testcases.PoolingTestCases;
+import org.mule.module.mongo.automation.testcases.RemoveObjectsTestCases;
+import org.mule.module.mongo.automation.testcases.RemoveObjectsUsingQueryMapTestCases;
+import org.mule.module.mongo.automation.testcases.RestoreTestCases;
+import org.mule.module.mongo.automation.testcases.SaveObjectFromMapTestCases;
+import org.mule.module.mongo.automation.testcases.SaveObjectTestCases;
+import org.mule.module.mongo.automation.testcases.UpdateObjectsByFunctionTestCases;
+import org.mule.module.mongo.automation.testcases.UpdateObjectsByFunctionUsingMapTestCases;
+import org.mule.module.mongo.automation.testcases.UpdateObjectsTestCases;
+import org.mule.module.mongo.automation.testcases.UpdateObjectsUsingMapTestCases;
+import org.mule.module.mongo.automation.testcases.UpdateObjectsUsingQueryMapTestCases;
 import org.mule.tools.devkit.ctf.mockup.ConnectorTestContext;
-import org.mule.tools.devkit.ctf.platform.PlatformManager;
 
 @RunWith(Categories.class)
 @IncludeCategory(RegressionTests.class)
-@SuiteClasses({ AddUserTestCases.class, CountObjectsTestCases.class, CountObjectsUsingQueryMapTestCases.class, CreateCollectionTestCases.class,
-// CreateFileFromPayloadTestCases.class,
-        CreateIndexTestCases.class, DBObjectsUnitTest.class, DropCollectionTestCases.class, DropDatabaseTestCases.class, DropIndexTestCases.class, // DumpTestCases.class,
-        ExecuteCommandTestCases.class, ExistsCollectionTestCases.class,
+@SuiteClasses({
+        AddUserTestCases.class,
+        CountObjectsTestCases.class,
+        CountObjectsUsingQueryMapTestCases.class,
+        CreateCollectionTestCases.class,
+        // CreateFileFromPayloadTestCases.class,
+        CreateIndexTestCases.class,
+        DBObjectsUnitTest.class,
+        DropCollectionTestCases.class,
+        DropDatabaseTestCases.class,
+        DropIndexTestCases.class, // DumpTestCases.class,
+        ExecuteCommandTestCases.class,
+        ExistsCollectionTestCases.class,
         // FieldsSetUnitTest.class,
         // FindFilesTestCases.class,
         // FindFilesUsingQueryMapTestCases.class,
-        // FindObjectsTestCases.class,
+        FindObjectsTestCases.class,
         // FindObjectsUsingQueryMapTestCases.class,
         // FindOneFileTestCases.class,
         // FindOneFileUsingQueryMapTestCases.class,
@@ -55,23 +74,20 @@ import org.mule.tools.devkit.ctf.platform.PlatformManager;
         // GetFileContentTestCases.class,
         // GetFileContentUsingQueryMapTestCases.class,
         // IncrementalDumpTestCases.class,
-        InsertObjectFromMapTestCases.class, InsertObjectTestCases.class, ListCollectionTestCases.class,
+        InsertObjectFromMapTestCases.class,
+        InsertObjectTestCases.class,
+        ListCollectionTestCases.class,
         // ListFilesTestCases.class,
         // ListFilesUsingQueryMapTestCases.class,
-        ListIndexesTestCases.class, MapReduceObjectsTestCases.class, MongoCollectionUnitTest.class, PoolingTestCases.class,
-// RemoveFilesTestCases.class,
-// RemoveFilesUsingQueryMapTestCases.class,
-// RemoveObjectsTestCases.class,
-// RemoveObjectsUsingQueryMapTestCases.class,
-// RestoreTestCases.class,
-// SaveObjectFromMapTestCases.class,
-// SaveObjectTestCases.class,
-// UpdateObjectsByFunctionTestCases.class,
-// UpdateObjectsByFunctionUsingMapTestCases.class,
-// UpdateObjectsTestCases.class,
-// UpdateObjectsUsingMapTestCases.class,
-// UpdateObjectsUsingQueryMapTestCases.class
-})
+        ListIndexesTestCases.class,
+        MapReduceObjectsTestCases.class,
+        MongoCollectionUnitTest.class,
+        PoolingTestCases.class,
+        // RemoveFilesTestCases.class,
+        // RemoveFilesUsingQueryMapTestCases.class,
+        RemoveObjectsTestCases.class, RemoveObjectsUsingQueryMapTestCases.class, RestoreTestCases.class, SaveObjectFromMapTestCases.class, SaveObjectTestCases.class,
+        UpdateObjectsByFunctionTestCases.class, UpdateObjectsByFunctionUsingMapTestCases.class, UpdateObjectsTestCases.class, UpdateObjectsUsingMapTestCases.class,
+        UpdateObjectsUsingQueryMapTestCases.class })
 public class RegressionTestSuite {
 
     @BeforeClass
@@ -81,9 +97,6 @@ public class RegressionTestSuite {
 
     @AfterClass
     public static void shutdownSuite() throws Exception {
-        ConnectorTestContext<MongoCloudConnector> context = ConnectorTestContext.getInstance(MongoCloudConnector.class);
-        PlatformManager platform = context.getPlatformManager();
-        platform.shutdown();
         ConnectorTestContext.shutDown();
     }
 }

@@ -97,6 +97,10 @@ public abstract class AbstractMongoTest {
         return createFileFromPayload(filename.toString());
     }
 
+    protected Iterable<DBObject> getObjects(String collection, DBObject testObjects) {
+        return getConnector().findObjects(collection, testObjects, null, null, null, null);
+    }
+
     @Before
     public void init() throws Exception {
 

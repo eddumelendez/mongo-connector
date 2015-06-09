@@ -10,48 +10,53 @@ package org.mule.module.mongo.automation.testcases;
 
 import static org.junit.Assert.assertTrue;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.After;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.mule.module.mongo.api.IndexOrder;
-import org.mule.module.mongo.api.automation.MongoHelper;
+import org.mule.module.mongo.api.WriteConcern;
 import org.mule.module.mongo.automation.AbstractMongoTest;
 import org.mule.module.mongo.automation.RegressionTests;
 import org.mule.module.mongo.automation.SmokeTests;
 
+import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 
-public class CreateIndexTestCases extends AbstractMongoTest {
+public class FindObjectsTestCases extends AbstractMongoTest {
 
-    private String indexKey = "myField";
-    private IndexOrder indexOrder;
+    private List<String> objectIDs = new ArrayList<String>();
 
     @Override
     public void setUp() {
-        indexOrder = IndexOrder.ASC;
+        // create collection
         getConnector().createCollection("Arenas", false, 5, 5);
+        int numberOfObjects = 25;
+
+        for (int i = 0; i < numberOfObjects; i++) {
+            BasicDBObject dbObject = new BasicDBObject();
+            String payload = getConnector().insertObject("Arenas", dbObject, WriteConcern.SAFE);
+            objectIDs.add(payload);
+        }
     }
 
     @Category({ SmokeTests.class, RegressionTests.class })
     @Test
-    public void testCreateIndex() {
-        String indexName = indexKey + "_" + indexOrder.getValue();
+    public void testFindObjects() {
+        int size = 0;
+        Iterable<DBObject> payload = getConnector().findObjects("Arenas", null, null, null, null, null);
 
-        getConnector().createIndex("Arenas", indexKey, indexOrder);
-
-        List<DBObject> payload = (List<DBObject>) getConnector().listIndices("Arenas");
-        assertTrue(MongoHelper.indexExistsInList(payload, indexName));
+        for (DBObject obj : payload) {
+            String dbObjectID = obj.get("_id").toString();
+            assertTrue(objectIDs.contains(dbObjectID));
+            size++;
+        }
+        assertTrue(objectIDs.size() == size);
     }
 
     @After
     public void tearDown() throws Exception {
-        // Drop the created index
-        String indexName = indexKey + "_" + indexOrder.getValue();
-        getConnector().dropIndex("Arenas", indexName);
-
-        // Drop the collection
         getConnector().dropCollection("Arenas");
     }
 }
