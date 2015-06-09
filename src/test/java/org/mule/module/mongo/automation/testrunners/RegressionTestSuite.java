@@ -49,12 +49,8 @@ import org.mule.tools.devkit.ctf.mockup.ConnectorTestContext;
 
 @RunWith(Categories.class)
 @IncludeCategory(RegressionTests.class)
-@SuiteClasses({
-        AddUserTestCases.class,
-        CountObjectsTestCases.class,
-        CountObjectsUsingQueryMapTestCases.class,
-        CreateCollectionTestCases.class,
-        // CreateFileFromPayloadTestCases.class,
+@SuiteClasses({ AddUserTestCases.class, CountObjectsTestCases.class, CountObjectsUsingQueryMapTestCases.class, CreateCollectionTestCases.class,
+// CreateFileFromPayloadTestCases.class,
         CreateIndexTestCases.class,
         DBObjectsUnitTest.class,
         DropCollectionTestCases.class,
@@ -85,8 +81,15 @@ import org.mule.tools.devkit.ctf.mockup.ConnectorTestContext;
         PoolingTestCases.class,
         // RemoveFilesTestCases.class,
         // RemoveFilesUsingQueryMapTestCases.class,
-        RemoveObjectsTestCases.class, RemoveObjectsUsingQueryMapTestCases.class, RestoreTestCases.class, SaveObjectFromMapTestCases.class, SaveObjectTestCases.class,
-        UpdateObjectsByFunctionTestCases.class, UpdateObjectsByFunctionUsingMapTestCases.class, UpdateObjectsTestCases.class, UpdateObjectsUsingMapTestCases.class,
+        RemoveObjectsTestCases.class,
+        RemoveObjectsUsingQueryMapTestCases.class,
+        RestoreTestCases.class,
+        SaveObjectFromMapTestCases.class,
+        SaveObjectTestCases.class,
+        UpdateObjectsByFunctionTestCases.class,
+        UpdateObjectsByFunctionUsingMapTestCases.class,
+        UpdateObjectsTestCases.class,
+        UpdateObjectsUsingMapTestCases.class,
         UpdateObjectsUsingQueryMapTestCases.class })
 public class RegressionTestSuite {
 

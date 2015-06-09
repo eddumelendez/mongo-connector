@@ -12,7 +12,6 @@ import org.junit.rules.TemporaryFolder;
 import org.junit.rules.Timeout;
 import org.mule.module.mongo.MongoCloudConnector;
 import org.mule.module.mongo.api.WriteConcern;
-import org.mule.tck.testmodels.mule.TestConnector;
 import org.mule.tools.devkit.ctf.mockup.ConnectorDispatcher;
 import org.mule.tools.devkit.ctf.mockup.ConnectorTestContext;
 
@@ -105,7 +104,7 @@ public abstract class AbstractMongoTest {
     public void init() throws Exception {
 
         // Single-test runs
-        ConnectorTestContext.initialize(TestConnector.class, false);
+        ConnectorTestContext.initialize(MongoCloudConnector.class, false);
 
         // Current context instance
         ConnectorTestContext<MongoCloudConnector> context = ConnectorTestContext.getInstance(MongoCloudConnector.class);
