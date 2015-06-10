@@ -64,7 +64,7 @@ import org.mule.api.annotations.ReconnectOn;
  * 
  * @author MuleSoft, inc.
  */
-@Connector(name = "mongo", schemaVersion = "2.0", friendlyName = "Mongo DB", minMuleVersion = "3.5", metaData = MetaDataSwitch.OFF)
+@Connector(name = "mongo", schemaVersion = "2.0", friendlyName = "Mongo DB", minMuleVersion = "3.5")
 public class MongoCloudConnector
 {
     private static final Logger logger = LoggerFactory.getLogger(MongoCloudConnector.class);
@@ -1162,6 +1162,7 @@ public class MongoCloudConnector
      * @return the newly created {@link MongoSession}
      * @throws org.mule.api.ConnectionException
      */
+    @TestConnectivity
     @Connect
     public void connect(@ConnectionKey final String username,
                         @Optional @Password final String password,
