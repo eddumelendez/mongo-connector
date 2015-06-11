@@ -16,12 +16,18 @@ import org.junit.experimental.categories.Category;
 import org.mule.module.mongo.automation.AbstractMongoTest;
 import org.mule.module.mongo.automation.RegressionTests;
 
-public class FindFilesTestCases extends AbstractMongoTest {
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBObject;
+
+public class FindOneFileTestCases extends AbstractMongoTest {
+
+    private DBObject query = new BasicDBObject("filename", "file1");
 
     @Override
     public void setUp() {
         createFileFromPayload("file1");
         createFileFromPayload("file2");
+        createFileFromPayload("file3");
     }
 
     @After
@@ -31,8 +37,10 @@ public class FindFilesTestCases extends AbstractMongoTest {
 
     @Category({ RegressionTests.class })
     @Test
-    public void testFindFiles() {
-        assertEquals("There should be 2 files found", 2, findFiles(null));
-    }
+    public void testFindOneFile() {
+        DBObject dbObj = getConnector().findOneFile(query);
 
+        assertEquals("The file found should have the name file1", query.get("filename"), dbObj.get("filename"));
+        assertEquals("There should be 3 files in total", 3, findFiles(null));
+    }
 }

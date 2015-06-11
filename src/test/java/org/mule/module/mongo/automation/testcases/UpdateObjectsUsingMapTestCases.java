@@ -55,27 +55,12 @@ public class UpdateObjectsUsingMapTestCases extends AbstractMongoTest {
         int size = 0;
         String elementValue = "newValue";
         Map<String, Object> newMap = new HashMap<String, Object>();
-        newMap.put(queryKey, elementValue);
-
-        /*
-         * ANTES
-         */
-        Iterable<DBObject> objects2 = getConnector().findObjects("Arenas", null, null, null, null, null);
-        for (DBObject obj : objects2) {
-            System.out.println(obj);
-        }
+        Map<String, Object> data = new HashMap<String, Object>();
+        data.put(queryKey, elementValue);
+        newMap.put("$set", data);
 
         // Update objects
         getConnector().updateObjectsUsingMap("Arenas", oldMap, newMap, false, true, WriteConcern.SAFE);
-
-        System.out.println("Despues");
-        /*
-         * DESPUES
-         */
-        Iterable<DBObject> objects3 = getConnector().findObjects("Arenas", null, null, null, null, null);
-        for (DBObject obj : objects3) {
-            System.out.println(obj);
-        }
 
         // Get all objects
         Iterable<DBObject> objects = getConnector().findObjects("Arenas", null, null, null, null, null);

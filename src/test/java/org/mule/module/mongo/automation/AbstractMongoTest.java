@@ -54,37 +54,26 @@ public abstract class AbstractMongoTest {
     // Returns all number of all files in database as per find-files operation
     protected int findFiles(DBObject query) {
         int size = 0;
-        if (query == null) {
-            Iterable<DBObject> iterable = null;
+        Iterable<DBObject> iterable = null;
 
-            iterable = connector.findFiles(query);
+        iterable = connector.findFiles(query);
 
-            for (DBObject dbObj : iterable) {
-                if (dbObj.containsField("filename")) {
-                    size++;
-                }
+        for (DBObject dbObj : iterable) {
+            if (dbObj.containsField("filename")) {
+                size++;
             }
-            return size;
         }
-        return 0;
+        return size;
     }
 
-    // TODO
     protected GridFSInputFile createFileFromPayload(DBObject dbObj, String filename) {
         GridFSInputFile res = null;
         try {
             File file = folder.newFile(filename);
-
-            // upsertOnTestRunMessage("filename", filename);
-            // upsertOnTestRunMessage("metadataRef", dbObj);
-            // upsertOnTestRunMessage("payloadContent", file);
-
-            // res = runFlowAndGetPayload("create-file-from-payload");
             res = (GridFSInputFile) getConnector().createFileFromPayload(file, filename, "foo", dbObj);
         } catch (IOException io) {
             throw new RuntimeException(io.getMessage(), io);
         }
-
         return res;
     }
 
@@ -94,6 +83,11 @@ public abstract class AbstractMongoTest {
 
     protected GridFSInputFile createFileFromPayload(Object filename) {
         return createFileFromPayload(filename.toString());
+    }
+
+    protected void deleteFilesCreatedByCreateFileFromPayload() {
+        getConnector().dropCollection("fs.chunks");
+        getConnector().dropCollection("fs.files");
     }
 
     protected Iterable<DBObject> getObjects(String collection, DBObject testObjects) {

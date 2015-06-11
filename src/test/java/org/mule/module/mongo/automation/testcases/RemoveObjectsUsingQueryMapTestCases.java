@@ -20,6 +20,7 @@ import org.junit.After;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.mule.module.mongo.api.WriteConcern;
+import org.mule.module.mongo.api.automation.MongoHelper;
 import org.mule.module.mongo.automation.AbstractMongoTest;
 import org.mule.module.mongo.automation.RegressionTests;
 
@@ -61,7 +62,6 @@ public class RemoveObjectsUsingQueryMapTestCases extends AbstractMongoTest {
     @Category({ RegressionTests.class })
     @Test
     public void testRemoveUsingQueryMap_WithQueryMap() {
-        int size = 0;
         Map<String, Object> query = new HashMap<String, Object>();
         query.put(key, value);
 
@@ -75,9 +75,8 @@ public class RemoveObjectsUsingQueryMapTestCases extends AbstractMongoTest {
         // Check that each returned object does not contain the defined key-value pair
         for (DBObject dbo : objects) {
             assertTrue(!dbo.containsField(key));
-            size++;
         }
-        assertTrue(size == extraObjects);
+        assertTrue(MongoHelper.getIterableSize(objects) == extraObjects);
     }
 
     @Category({ RegressionTests.class })

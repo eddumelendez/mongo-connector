@@ -20,7 +20,7 @@ import org.junit.experimental.categories.Category;
 import org.mule.module.mongo.automation.AbstractMongoTest;
 import org.mule.module.mongo.automation.RegressionTests;
 
-public class DumpTestCases extends AbstractMongoTest {
+public class IncrementalDumpTestCases extends AbstractMongoTest {
 
     @Override
     public void setUp() {
@@ -30,18 +30,17 @@ public class DumpTestCases extends AbstractMongoTest {
 
     @After
     public void tearDown() throws Exception {
-        File dumpOutputDir = new File("./dump");
-        FileUtils.deleteDirectory(dumpOutputDir);
+        FileUtils.deleteDirectory(new File("./dump"));
         getConnector().dropCollection("Arenas");
     }
 
     @Category({ RegressionTests.class })
     @Test
-    public void testDump() throws IOException {
-        File dumpOutputDir;
-        getConnector().dump("./dump", "test", false, false, 5);
+    public void testIncrementalDump() throws IOException {
 
-        dumpOutputDir = new File("./dump");
+        getConnector().dump("./dump", "test", false, false, 5);
+        getConnector().incrementalDump("./dump", "footime");
+        File dumpOutputDir = new File("./dump");
         assertTrue("dump directory should exist after test runs", dumpOutputDir.exists());
     }
 }

@@ -17,6 +17,7 @@ import org.junit.After;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.mule.module.mongo.api.WriteConcern;
+import org.mule.module.mongo.api.automation.MongoHelper;
 import org.mule.module.mongo.automation.AbstractMongoTest;
 import org.mule.module.mongo.automation.RegressionTests;
 import org.mule.module.mongo.automation.SmokeTests;
@@ -41,18 +42,18 @@ public class FindObjectsTestCases extends AbstractMongoTest {
         }
     }
 
-    @Category({ SmokeTests.class, RegressionTests.class })
+    @Category({
+            SmokeTests.class,
+            RegressionTests.class })
     @Test
     public void testFindObjects() {
-        int size = 0;
         Iterable<DBObject> payload = getConnector().findObjects("Arenas", null, null, null, null, null);
 
         for (DBObject obj : payload) {
             String dbObjectID = obj.get("_id").toString();
             assertTrue(objectIDs.contains(dbObjectID));
-            size++;
         }
-        assertTrue(objectIDs.size() == size);
+        assertTrue(objectIDs.size() == MongoHelper.getIterableSize(payload));
     }
 
     @After

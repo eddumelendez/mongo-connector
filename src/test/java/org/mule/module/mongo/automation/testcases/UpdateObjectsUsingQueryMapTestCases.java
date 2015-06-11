@@ -19,6 +19,7 @@ import org.junit.After;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.mule.module.mongo.api.WriteConcern;
+import org.mule.module.mongo.api.automation.MongoHelper;
 import org.mule.module.mongo.automation.AbstractMongoTest;
 import org.mule.module.mongo.automation.RegressionTests;
 
@@ -53,11 +54,8 @@ public class UpdateObjectsUsingQueryMapTestCases extends AbstractMongoTest {
     @Category({ RegressionTests.class })
     @Test
     public void testUpdateObjectsUsingQueryMap() {
-        int size = 0;
         String elementValue = "newValue";
-
-        DBObject elementDBObj = new BasicDBObject(queryKey, elementValue);
-        // DBObject elementDbObj = (DBObject) dbObj.get("$set");
+        DBObject elementDBObj = new BasicDBObject("$set", new BasicDBObject(queryKey, elementValue));
 
         // Update objects
         getConnector().updateObjectsUsingQueryMap("Arenas", queryAttributes, elementDBObj, false, true, WriteConcern.DATABASE_DEFAULT);
@@ -66,10 +64,9 @@ public class UpdateObjectsUsingQueryMapTestCases extends AbstractMongoTest {
         Iterable<DBObject> objects = getConnector().findObjects("Arenas", null, null, null, null, null);
         for (DBObject obj : objects) {
             assertTrue(obj.containsField(queryKey));
-            assertTrue(obj.get(queryKey).equals(elementDBObj.get(queryKey)));
-            size++;
+            assertTrue(obj.get(queryKey).equals(elementValue));
         }
-        assertTrue(size == numberOfObjects);
+        assertTrue(MongoHelper.getIterableSize(objects) == numberOfObjects);
     }
 
     @After

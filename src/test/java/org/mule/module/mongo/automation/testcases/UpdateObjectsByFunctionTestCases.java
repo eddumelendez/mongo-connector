@@ -17,6 +17,7 @@ import org.junit.After;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.mule.module.mongo.api.WriteConcern;
+import org.mule.module.mongo.api.automation.MongoHelper;
 import org.mule.module.mongo.automation.AbstractMongoTest;
 import org.mule.module.mongo.automation.RegressionTests;
 
@@ -50,7 +51,6 @@ public class UpdateObjectsByFunctionTestCases extends AbstractMongoTest {
     @Test
     public void testUpdateObjectsByFunction() {
         String queryKey = "key";
-        int size = 0;
         DBObject elementDbObj = new BasicDBObject("key", "newValue");
 
         // Update objects
@@ -61,9 +61,8 @@ public class UpdateObjectsByFunctionTestCases extends AbstractMongoTest {
         for (DBObject obj : objects) {
             assertTrue(obj.containsField(queryKey));
             assertTrue(obj.get(queryKey).equals(elementDbObj.get(queryKey)));
-            size++;
         }
-        assertTrue(size == numberOfObjects);
+        assertTrue(MongoHelper.getIterableSize(objects) == numberOfObjects);
     }
 
     @After

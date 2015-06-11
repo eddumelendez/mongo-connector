@@ -8,7 +8,12 @@
 
 package org.mule.module.mongo.automation.testcases;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.junit.After;
 import org.junit.Test;
@@ -16,12 +21,15 @@ import org.junit.experimental.categories.Category;
 import org.mule.module.mongo.automation.AbstractMongoTest;
 import org.mule.module.mongo.automation.RegressionTests;
 
-public class FindFilesTestCases extends AbstractMongoTest {
+public class GetFileContentUsingQueryMapTestCases extends AbstractMongoTest {
+
+    private Map<String, Object> queryAttributes = new HashMap<String, Object>();
 
     @Override
     public void setUp() {
-        createFileFromPayload("file1");
-        createFileFromPayload("file2");
+        createFileFromPayload("filename1");
+        createFileFromPayload("filename2");
+        queryAttributes.put("filename", "filename1");
     }
 
     @After
@@ -31,8 +39,9 @@ public class FindFilesTestCases extends AbstractMongoTest {
 
     @Category({ RegressionTests.class })
     @Test
-    public void testFindFiles() {
-        assertEquals("There should be 2 files found", 2, findFiles(null));
+    public void testGetFileContentUsingQueryMap() {
+        Object response = getConnector().getFileContentUsingQueryMap(queryAttributes);
+        assertNotNull(response);
+        assertTrue(response instanceof InputStream);
     }
-
 }

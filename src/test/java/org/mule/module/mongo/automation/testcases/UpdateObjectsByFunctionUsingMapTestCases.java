@@ -19,6 +19,7 @@ import org.junit.After;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.mule.module.mongo.api.WriteConcern;
+import org.mule.module.mongo.api.automation.MongoHelper;
 import org.mule.module.mongo.automation.AbstractMongoTest;
 import org.mule.module.mongo.automation.RegressionTests;
 
@@ -50,8 +51,6 @@ public class UpdateObjectsByFunctionUsingMapTestCases extends AbstractMongoTest 
     @Category({ RegressionTests.class })
     @Test
     public void testUpdateObjectsByFunctionUsingMap() {
-
-        int size = 0;
         String elementValue = "newValue";
         Map<String, Object> newMap = new HashMap<String, Object>();
         newMap.put(queryKey, elementValue);
@@ -64,9 +63,8 @@ public class UpdateObjectsByFunctionUsingMapTestCases extends AbstractMongoTest 
         for (DBObject obj : objects) {
             assertTrue(obj.containsField(queryKey));
             assertTrue(obj.get(queryKey).equals(elementValue));
-            size++;
         }
-        assertTrue(size == numberOfObjects);
+        assertTrue(MongoHelper.getIterableSize(objects) == numberOfObjects);
     }
 
     @After
