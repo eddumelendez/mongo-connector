@@ -277,7 +277,4 @@
         <mongo:bson-list-to-json />
     </flow>
 
-    <flow name="dbObjectToMap">
-        <mongo:db-object-to-map />
-    </flow>
 </mule>

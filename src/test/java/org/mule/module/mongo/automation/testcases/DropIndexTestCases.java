@@ -13,6 +13,7 @@ import static org.junit.Assert.assertFalse;
 import java.util.List;
 import java.util.Map;
 
+import org.bson.Document;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -22,8 +23,6 @@ import org.mule.module.mongo.automation.AbstractMongoTest;
 import org.mule.module.mongo.automation.RegressionTests;
 import org.mule.module.mongo.automation.SmokeTests;
 import org.mule.module.mongo.automation.testdata.TestDataBuilder;
-
-import com.mongodb.DBObject;
 
 public class DropIndexTestCases extends AbstractMongoTest {
 
@@ -49,7 +48,7 @@ public class DropIndexTestCases extends AbstractMongoTest {
 
         getConnector().dropIndex("Arenas", indexName);
 
-        List<DBObject> payload = (List<DBObject>) getConnector().listIndices("Arenas");
+        List<Document> payload = (List<Document>) getConnector().listIndices("Arenas");
         assertFalse(MongoHelper.indexExistsInList(payload, indexName));
     }
 

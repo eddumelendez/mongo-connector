@@ -15,15 +15,13 @@ import static org.junit.Assert.fail;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bson.Document;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.mule.module.mongo.api.MongoCollection;
 import org.mule.module.mongo.automation.AbstractMongoTest;
 import org.mule.module.mongo.automation.RegressionTests;
-
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBObject;
 
 public class MapReduceObjectsTestCases extends AbstractMongoTest {
 
@@ -33,13 +31,13 @@ public class MapReduceObjectsTestCases extends AbstractMongoTest {
         getConnector().createCollection("Arenas", false, 5, 5);
 
         // Create sample objects with which we can map reduce
-        List<DBObject> objects = new ArrayList<DBObject>();
+        List<Document> objects = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
-            DBObject obj = new BasicDBObject("item", "apple");
+            Document obj = new Document("item", "apple");
             objects.add(obj);
         }
         for (int i = 0; i < 5; i++) {
-            DBObject obj = new BasicDBObject("item", "orange");
+            Document obj = new Document("item", "orange");
             objects.add(obj);
         }
 
@@ -56,15 +54,15 @@ public class MapReduceObjectsTestCases extends AbstractMongoTest {
         assertTrue(resultCollection != null);
         assertTrue(resultCollection.size() == 2); // We only have apples and oranges
 
-        for (DBObject obj : resultCollection) {
-            DBObject valueObject = (DBObject) obj.get("value");
+        for (Document obj : resultCollection) {
+            Document valueObject = (Document) obj.get("value");
             assertNotNull(valueObject);
             if (obj.get("_id").equals("apple")) {
-                assertTrue(valueObject.containsField("count"));
+                assertTrue(valueObject.containsKey("count"));
                 assertTrue((Double) valueObject.get("count") == 10); // map reduce returns doubles, typecast to Double and compare
             } else {
                 if (obj.get("_id").equals("orange")) {
-                    assertTrue(valueObject.containsField("count"));
+                    assertTrue(valueObject.containsKey("count"));
                     assertTrue((Double) valueObject.get("count") == 5); // map reduce returns doubles, typecast to Double and compare
                 } else {
                     fail();

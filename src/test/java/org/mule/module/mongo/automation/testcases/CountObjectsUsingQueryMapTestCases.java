@@ -14,14 +14,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.bson.Document;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.mule.module.mongo.automation.AbstractMongoTest;
 import org.mule.module.mongo.automation.RegressionTests;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBObject;
 
 public class CountObjectsUsingQueryMapTestCases extends AbstractMongoTest {
 
@@ -42,21 +41,21 @@ public class CountObjectsUsingQueryMapTestCases extends AbstractMongoTest {
     @Category({ RegressionTests.class })
     @Test
     public void testCountObjectsUsingQueryMap_without_map() {
-        insertObjects(getEmptyDBObjects(numObjects), "Arenas");
+        insertObjects(getEmptyDocuments(numObjects), "Arenas");
 
-        assertEquals((long) numObjects, getConnector().countObjects("Arenas", new BasicDBObject()));
+        assertEquals((long) numObjects, getConnector().countObjects("Arenas", new Document()));
     }
 
     @Category({ RegressionTests.class })
     @Test
     public void testCountObjectsUsingQueryMap_with_map() {
-        List<DBObject> list = getEmptyDBObjects(2);
+        List<Document> list = getEmptyDocuments(2);
         Map<String, Object> data = new HashMap<String, Object>();
 
         String queryAttribKey = "foo";
         String queryAttribVal = "bar";
 
-        DBObject dbObj = new BasicDBObject();
+        Document dbObj = new Document();
         dbObj.put(queryAttribKey, queryAttribVal);
         list.add(dbObj);
         data.put(queryAttribKey, queryAttribVal);

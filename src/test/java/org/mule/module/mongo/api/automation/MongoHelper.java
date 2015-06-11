@@ -12,9 +12,8 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+import org.bson.Document;
 import org.mule.module.mongo.api.IndexOrder;
-
-import com.mongodb.DBObject;
 
 public class MongoHelper {
 
@@ -36,8 +35,8 @@ public class MongoHelper {
 		}
 	}
 	
-	public static boolean indexExistsInList(List<DBObject> objects, String indexName) {
-		for (DBObject obj : objects) {
+	public static boolean indexExistsInList(List<Document> objects, String indexName) {
+		for (Document obj : objects) {
 			if (obj.get("name").equals(indexName)) {
 				return true;
 			}

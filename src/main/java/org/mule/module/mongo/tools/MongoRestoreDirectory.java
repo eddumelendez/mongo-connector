@@ -8,12 +8,6 @@
 
 package org.mule.module.mongo.tools;
 
-import org.mule.module.mongo.api.MongoClient;
-
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBCollection;
-import com.mongodb.DBObject;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -22,6 +16,11 @@ import java.util.List;
 import java.util.concurrent.Callable;
 
 import org.apache.commons.lang.Validate;
+import org.bson.Document;
+import org.mule.module.mongo.api.MongoClient;
+
+import com.mongodb.DBCollection;
+import com.mongodb.DBObject;
 
 public class MongoRestoreDirectory implements Callable<Void>
 {
@@ -79,7 +78,7 @@ public class MongoRestoreDirectory implements Callable<Void>
         {
             for(RestoreFile oplogRestore : oplogRestores)
             {
-                mongoClient.executeComamnd(new BasicDBObject("applyOps", filterOplogForDatabase(oplogRestore).toArray()));
+                mongoClient.executeCommand(new Document("applyOps", filterOplogForDatabase(oplogRestore).toArray()));
             }
         }
     }

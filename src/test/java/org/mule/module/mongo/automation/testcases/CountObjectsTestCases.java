@@ -37,7 +37,7 @@ public class CountObjectsTestCases extends AbstractMongoTest {
     @Category({ RegressionTests.class })
     @Test
     public void testCountObjects() {
-        insertObjects(getEmptyDBObjects(numObjects), "Arenas");
+        insertObjects(getEmptyDocuments(numObjects), "Arenas");
 
         assertEquals((long) numObjects, getConnector().countObjects("Arenas", new BasicDBObject()));
     }

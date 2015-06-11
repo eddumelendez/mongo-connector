@@ -13,77 +13,60 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import jersey.repackaged.com.google.common.collect.Iterables;
+
+import org.bson.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.mongodb.DBObject;
+public class MongoCollection extends AbstractCollection<Document> {
 
-public class MongoCollection extends AbstractCollection<DBObject>
-{
     private static final Logger logger = LoggerFactory.getLogger(MongoCollection.class);
-    private Iterable<? extends DBObject> o;
+    private Iterable<? extends Document> o;
 
-    public MongoCollection(Iterable<? extends DBObject> o)
-    {
+    public MongoCollection(Iterable<? extends Document> o) {
         this.o = o;
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    public Iterator<DBObject> iterator()
-    {
-        return (Iterator<DBObject>) o.iterator();
+    public Iterator<Document> iterator() {
+        return (Iterator<Document>) o.iterator();
     }
 
     @Override
-    public Object[] toArray()
-    {
+    public Object[] toArray() {
         warnEagerMessage("toArray");
         List<Object> l = new LinkedList<Object>();
-        for (Object o : this)
-        {
+        for (Object o : this) {
             l.add(o);
         }
         return l.toArray();
     }
 
     @Override
-	public int size()
-	{
+    public int size() {
         warnEagerMessage("size");
-        int i = 0;        
-        for (Iterator<? extends DBObject> it = o.iterator(); it.hasNext();) 
-        {
-            it.next();
-            i++;
-        }
-        return i;
-	}
+        return Iterables.size(o);
+    }
 
     /**
-     * Same impl that those found in Object, in order to avoid eager elements
-     * consumption
+     * Same impl that those found in Object, in order to avoid eager elements consumption
      */
     @Override
-    public String toString()
-    {
+    public String toString() {
         return getClass().getName() + "@" + Integer.toHexString(hashCode());
     }
 
     /**
-     * Warns that sending the given message implied processing all the elements,
-     * which is not efficient at all, and most times is a bad idea, as lazy iterables
-     * should be traversed only once and in a lazy manner.
+     * Warns that sending the given message implied processing all the elements, which is not efficient at all, and most times is a bad idea, as lazy iterables should be traversed
+     * only once and in a lazy manner.
      * 
      * @param message
      */
-    private void warnEagerMessage(String message)
-    {
-        if (logger.isWarnEnabled())
-        {
-            logger.warn(
-                "Method {} needs to consume all the element. It is inefficient and thus should be used with care",
-                message);
+    private void warnEagerMessage(String message) {
+        if (logger.isWarnEnabled()) {
+            logger.warn("Method {} needs to consume all the element. It is inefficient and thus should be used with care", message);
         }
     }
 

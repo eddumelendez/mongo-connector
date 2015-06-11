@@ -10,15 +10,13 @@ package org.mule.module.mongo.automation.testcases;
 
 import static org.junit.Assert.assertTrue;
 
+import org.bson.Document;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.mule.module.mongo.api.WriteConcern;
 import org.mule.module.mongo.automation.AbstractMongoTest;
 import org.mule.module.mongo.automation.RegressionTests;
 import org.mule.module.mongo.automation.SmokeTests;
-
-import com.mongodb.BasicDBObject;
 
 public class InsertObjectTestCases extends AbstractMongoTest {
 
@@ -30,7 +28,7 @@ public class InsertObjectTestCases extends AbstractMongoTest {
     @Category({ SmokeTests.class, RegressionTests.class })
     @Test
     public void testInsertObject() {
-        String objectID = getConnector().insertObject("Arenas", new BasicDBObject(), WriteConcern.SAFE);
+        String objectID = getConnector().insertObject("Arenas", new Document());
         assertTrue(objectID != null && !objectID.equals("") && !objectID.trim().equals(""));
     }
 

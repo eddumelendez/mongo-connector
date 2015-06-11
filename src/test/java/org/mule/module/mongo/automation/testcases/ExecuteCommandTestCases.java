@@ -11,13 +11,12 @@ package org.mule.module.mongo.automation.testcases;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import org.bson.Document;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.mule.module.mongo.automation.AbstractMongoTest;
 import org.mule.module.mongo.automation.RegressionTests;
-
-import com.mongodb.CommandResult;
 
 public class ExecuteCommandTestCases extends AbstractMongoTest {
 
@@ -36,8 +35,9 @@ public class ExecuteCommandTestCases extends AbstractMongoTest {
     @Test
     public void testExecuteCommand() {
         // Drop the collection using command
-        CommandResult cmdResult = (CommandResult) getConnector().executeCommand("drop", "Arenas");
-        assertTrue(cmdResult.ok());
+        Document cmdResult = getConnector().executeCommand("drop", "Arenas");
+        assertTrue(cmdResult.containsKey("status"));
+        assertTrue(cmdResult.get("status").equals("ok"));
 
         Boolean exists = getConnector().existsCollection("Arenas");
         assertFalse(exists);

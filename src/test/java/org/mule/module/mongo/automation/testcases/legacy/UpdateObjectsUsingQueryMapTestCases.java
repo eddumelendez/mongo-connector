@@ -14,6 +14,7 @@ import static org.junit.Assert.fail;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bson.Document;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -66,8 +67,8 @@ public class UpdateObjectsUsingQueryMapTestCases extends MongoTestParent {
 			
 			// Get all objects	
 			MongoCollection objects = runFlowAndGetPayload("find-objects");
-			for (DBObject obj : objects) {
-				assertTrue(obj.containsField(queryKey));
+			for (Document obj : objects) {
+				assertTrue(obj.containsKey(queryKey));
 				assertTrue(obj.get(queryKey).equals(elementDbObj.get(queryKey)));
 			}
 			assertTrue(objects.size() == numberOfObjects);

@@ -10,6 +10,7 @@ package org.mule.module.mongo.automation.testcases;
 
 import static org.junit.Assert.assertTrue;
 
+import org.bson.Document;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -17,7 +18,6 @@ import org.mule.module.mongo.automation.AbstractMongoTest;
 import org.mule.module.mongo.automation.RegressionTests;
 
 import com.mongodb.BasicDBObject;
-import com.mongodb.DBObject;
 
 public class PoolingTestCases extends AbstractMongoTest {
 
@@ -39,7 +39,7 @@ public class PoolingTestCases extends AbstractMongoTest {
 
         int numObjects = 5;
 
-        insertObjects(getEmptyDBObjects(numObjects), "Arenas");
+        insertObjects(getEmptyDocuments(numObjects), "Arenas");
         Integer startingConnections = getConnections();
 
         for (int i = 0; i < 32; i++) {
@@ -51,8 +51,8 @@ public class PoolingTestCases extends AbstractMongoTest {
     }
 
     private int getConnections() {
-        DBObject dbObj = getConnector().executeCommand("serverStatus", "");
-        dbObj = (DBObject) dbObj.get("connections");
+        Document dbObj = getConnector().executeCommand("serverStatus", "");
+        dbObj = (Document) dbObj.get("connections");
         return (Integer) dbObj.get("current");
     }
 }

@@ -14,6 +14,7 @@ import static org.junit.Assert.fail;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bson.Document;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -25,7 +26,6 @@ import org.mule.module.mongo.automation.SmokeTests;
 import org.mule.modules.tests.ConnectorTestUtils;
 
 import com.mongodb.BasicDBObject;
-import com.mongodb.DBObject;
 
 public class FindObjectsTestCases extends MongoTestParent {
 
@@ -58,7 +58,7 @@ public class FindObjectsTestCases extends MongoTestParent {
 			MongoCollection payload = runFlowAndGetPayload("find-objects");
 			
 			assertTrue(objectIDs.size() == payload.size());
-			for (DBObject obj : payload) { 
+			for (Document obj : payload) { 
 				String dbObjectID = obj.get("_id").toString();
 				assertTrue(objectIDs.contains(dbObjectID));
 			}

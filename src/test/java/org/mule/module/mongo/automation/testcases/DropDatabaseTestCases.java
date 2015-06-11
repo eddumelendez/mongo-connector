@@ -10,25 +10,22 @@ package org.mule.module.mongo.automation.testcases;
 
 import static org.junit.Assert.assertFalse;
 
+import org.bson.Document;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.mule.module.mongo.api.WriteConcern;
 import org.mule.module.mongo.automation.AbstractMongoTest;
 import org.mule.module.mongo.automation.RegressionTests;
-
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBObject;
 
 public class DropDatabaseTestCases extends AbstractMongoTest {
 
     @Override
     public void setUp() {
-        DBObject dbObject = new BasicDBObject();
+        Document dbObject = new Document();
         dbObject.put("key", "mykey");
 
         getConnector().createCollection("Arenas", false, 5, 5);
-        getConnector().saveObject("Arenas", dbObject, WriteConcern.SAFE);
+        getConnector().saveObject("Arenas", dbObject);
     }
 
     @After

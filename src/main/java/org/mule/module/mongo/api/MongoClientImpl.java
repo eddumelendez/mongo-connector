@@ -27,14 +27,16 @@ import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.mongodb.CursorType;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
-import com.mongodb.DBCursor;
-import com.mongodb.MapReduceCommand.OutputType;
+import com.mongodb.DBObject;
 import com.mongodb.MongoException;
 import com.mongodb.WriteResult;
 import com.mongodb.client.FindIterable;
+import com.mongodb.client.MapReduceIterable;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.CreateCollectionOptions;
 import com.mongodb.gridfs.GridFS;
 import com.mongodb.gridfs.GridFSDBFile;
 import com.mongodb.gridfs.GridFSInputFile;
@@ -86,16 +88,9 @@ public class MongoClientImpl implements MongoClient
                                  final Integer size)
     {
         Validate.notNull(collection);
-        final Document options = new Document("capped", capped);
-        if (maxObjects != null)
-        {
-            options.put("maxObject", maxObjects);
-        }
-        if (size != null)
-        {
-            options.put("size", size);
-        }
-        db.createCollection(collection, options);
+        final CreateCollectionOptions options = new CreateCollectionOptions();
+        options.capped(capped);
+        database.createCollection(collection, options);
     }
 
     @Override
@@ -148,7 +143,7 @@ public class MongoClientImpl implements MongoClient
     {
         Validate.notNull(collection);
 
-        DBCursor dbCursor = db.getCollection(collection).find(query, FieldsSet.from(fields));
+        FindIterable<Document> dbCursor = database.getCollection(collection).find(query).projection(FieldsSet.from(fields)).cursorType(CursorType.NonTailable);
         if (numToSkip != null)
         {
             dbCursor = dbCursor.skip(numToSkip);
@@ -160,8 +155,7 @@ public class MongoClientImpl implements MongoClient
         if(sortBy != null){
             dbCursor.sort(sortBy);
         }
-
-        return bug5588Workaround(dbCursor);
+        return bug5588WorkaroundDocument(dbCursor);
     }
 
     @Override
@@ -170,9 +164,8 @@ public class MongoClientImpl implements MongoClient
                                   final List<String> fields, boolean failOnNotFound)
     {
         Validate.notNull(collection);
-        final Document element = db.getCollection(collection).findOne(query,
-            FieldsSet.from(fields));
-
+        FindIterable<Document> findIterable = database.getCollection(collection).find(query).projection(FieldsSet.from(fields));
+        final Document element = findIterable.first(); 
         if (element == null && failOnNotFound)
 		{
             throw new MongoException("No object found for query " + query);
@@ -182,12 +175,10 @@ public class MongoClientImpl implements MongoClient
 
     @Override
 	public String insertObject(@NotNull final String collection,
-                               @NotNull final Document document,
-                               @NotNull final WriteConcern writeConcern)
+                               @NotNull final Document document)
     {
         Validate.notNull(collection);
         Validate.notNull(document);
-        Validate.notNull(writeConcern);
         database.getCollection(collection).insertOne(document);
 
         final String id;
@@ -223,72 +214,62 @@ public class MongoClientImpl implements MongoClient
         Validate.notNull(collection);
         Validate.notEmpty(mapFunction);
         Validate.notEmpty(reduceFunction);
-        return bug5588Workaround(db.getCollection(collection)
-            .mapReduce(mapFunction, reduceFunction, outputCollection, outputTypeFor(outputCollection), null)
-            .results());
-    }
-
-    private OutputType outputTypeFor(final String outputCollection)
-    {
-        return outputCollection != null ? OutputType.REPLACE : OutputType.INLINE;
+        
+        MapReduceIterable<Document> mapReduceIterable = database.getCollection(collection).mapReduce(mapFunction, reduceFunction);
+        if (outputCollection != null) {
+            mapReduceIterable = mapReduceIterable.collectionName(outputCollection);
+        }
+        return bug5588WorkaroundDocument(mapReduceIterable);
     }
 
     @Override
 	public void removeObjects(@NotNull final String collection,
-                              final Document query,
-                              @NotNull final WriteConcern writeConcern)
+                              final Bson query)
     {
         Validate.notNull(collection);
-        Validate.notNull(writeConcern);
-        db.getCollection(collection).remove(query != null ? query : new Document(),
-            writeConcern.toMongoWriteConcern(db));
+        database.getCollection(collection).deleteMany(query);
     }
 
     @Override
 	public void saveObject(@NotNull final String collectionName,
-                           @NotNull final Document object,
-                           @NotNull final WriteConcern writeConcern)
+                           @NotNull final Document document)
     {
         Validate.notNull(collectionName);
-        Validate.notNull(object);
-        Validate.notNull(writeConcern);
+        Validate.notNull(document);
 
         com.mongodb.client.MongoCollection<Document> collection = database.getCollection(collectionName);
-        Object id = object.get(ID_FIELD_NAME);
-        WriteResult result;
+        Object id = document.get(ID_FIELD_NAME);
         if (id == null) {
-            collection.insertOne(object);
+            collection.insertOne(document);
         } else {
             Bson filter = eq(ID_FIELD_NAME, id);
-            FindIterable find = collection.find(filter);
+            FindIterable<Document> find = collection.find(filter);
             if (!find.iterator().hasNext()) {
-                collection.insertOne(object);
+                collection.insertOne(document);
             } else {
-                collection.updateOne(filter, object);
+                collection.updateOne(filter, document);
             }
         }
-//        db.getCollection(collectionName).save(object, writeConcern.toMongoWriteConcern(db));
     }
 
     @Override
 	public void updateObjects(@NotNull final String collection,
                               final Document query,
-                              final Document object,
-                              final boolean upsert,
-                              final boolean multi,
-                              final WriteConcern writeConcern)
+                              final Document document,
+                              final boolean multi)
     {
         Validate.notNull(collection);
-        Validate.notNull(writeConcern);
-        db.getCollection(collection).update(query, object, upsert, multi,
-            writeConcern.toMongoWriteConcern(db));
-
+        if (!multi)
+            database.getCollection(collection).updateOne(query, document);
+        else {
+            database.getCollection(collection).updateMany(query, document);
+        }
     }
 
     @Override
 	public void createIndex(final String collection, final String field, final IndexOrder order)
     {
-        db.getCollection(collection).createIndex(new Document(field, order.getValue()));
+        database.getCollection(collection).createIndex(new Document(field, order.getValue()));
     }
 
     @Override
@@ -300,14 +281,15 @@ public class MongoClientImpl implements MongoClient
     @Override
 	public Collection<Document> listIndices(final String collection)
     {
-        return db.getCollection(collection).getIndexInfo();
+        // TODO See if we can change API to return an iterable, and prevent materializing the consumed list
+        return Lists.newArrayList(database.getCollection(collection).listIndexes());
     }
 
     @Override
-	public Document createFile(final InputStream content,
+	public DBObject createFile(final InputStream content,
                                final String filename,
                                final String contentType,
-                               final Document metadata)
+                               final DBObject metadata)
     {
         Validate.notNull(filename);
         Validate.notNull(content);
@@ -323,13 +305,13 @@ public class MongoClientImpl implements MongoClient
     }
 
     @Override
-	public Iterable<Document> findFiles(final Document query)
+	public Iterable<DBObject> findFiles(final DBObject query)
     {
         return bug5588Workaround(getGridFs().find(query));
     }
 
     @Override
-	public Document findOneFile(final Document query)
+	public DBObject findOneFile(final DBObject query)
     {
         Validate.notNull(query);
         final GridFSDBFile file = getGridFs().findOne(query);
@@ -341,40 +323,53 @@ public class MongoClientImpl implements MongoClient
     }
 
     @Override
-	public InputStream getFileContent(final Document query)
+	public InputStream getFileContent(final DBObject query)
     {
         Validate.notNull(query);
         return ((GridFSDBFile) findOneFile(query)).getInputStream();
     }
 
     @Override
-	public Iterable<Document> listFiles(final Document query)
+	public Iterable<DBObject> listFiles(final DBObject query)
     {
         return bug5588Workaround(getGridFs().getFileList(query));
     }
 
     @Override
-	public void removeFiles(final Document query)
+	public void removeFiles(final DBObject query)
     {
         getGridFs().remove(query);
     }
 
     @Override
-	public Document executeComamnd(final Document command)
+	public Document executeCommand(final Document command)
     {
-        return db.command(command);
+        return database.runCommand(command);
     }
 
     protected GridFS getGridFs()
     {
         return new GridFS(db);
     }
+    
+    /*
+     * see http://www.mulesoft.org/jira/browse/MULE-5588
+     */
+    @SuppressWarnings("unchecked")
+    private Iterable<DBObject> bug5588Workaround(final Iterable<? extends DBObject> o)
+    {
+        if (o instanceof Collection<?>)
+        {
+            return (Iterable<DBObject>) o;
+        }
+        return (Iterable<DBObject>) Iterables.consumingIterable(o);
+    }
 
     /*
      * see http://www.mulesoft.org/jira/browse/MULE-5588
      */
     @SuppressWarnings("unchecked")
-    private Iterable<Document> bug5588Workaround(final Iterable<? extends Document> o)
+    private Iterable<Document> bug5588WorkaroundDocument(final Iterable<? extends Document> o)
     {
         if (o instanceof Collection<?>)
         {

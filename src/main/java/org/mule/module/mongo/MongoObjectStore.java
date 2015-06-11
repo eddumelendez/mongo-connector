@@ -8,6 +8,8 @@
 
 package org.mule.module.mongo;
 
+import static com.mongodb.client.model.Filters.lt;
+
 import java.io.Serializable;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -21,6 +23,7 @@ import javax.annotation.PostConstruct;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.bson.Document;
+import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 import org.mule.api.MuleContext;
 import org.mule.api.context.MuleContextAware;
@@ -33,9 +36,7 @@ import org.mule.module.mongo.api.MongoClientImpl;
 import org.mule.module.mongo.api.WriteConcern;
 import org.mule.util.SerializationUtils;
 import org.springframework.util.DigestUtils;
-
 //import com.mongodb.DB;
-import com.mongodb.QueryBuilder;
 
 /**
  * A PartitionableExpirableObjectStore backed by MongoDB.
@@ -227,7 +228,7 @@ public class MongoObjectStore implements PartitionableExpirableObjectStore<Seria
         document.put(TIMESTAMP_FIELD, System.currentTimeMillis());
         document.put(KEY_FIELD, keyAsBytes);
         document.put(VALUE_FIELD, SerializationUtils.serialize(value));
-        mongoClient.updateObjects(collection, query, document, true, false, getWriteConcern());
+        mongoClient.updateObjects(collection, query, document, false);
     }
 
     @Override
@@ -249,7 +250,7 @@ public class MongoObjectStore implements PartitionableExpirableObjectStore<Seria
         final Document query = getQueryForObjectId(objectId);
 
         final Serializable result = retrieveSerializedObject(collection, query);
-        mongoClient.removeObjects(collection, query, getWriteConcern());
+        mongoClient.removeObjects(collection, query);
         return result;
     }
 
@@ -276,8 +277,8 @@ public class MongoObjectStore implements PartitionableExpirableObjectStore<Seria
     {
         final String collection = getCollectionName(partitionName);
         final long expireAt = System.currentTimeMillis() - entryTtl;
-        final Document query = QueryBuilder.start(TIMESTAMP_FIELD).lessThan(expireAt).get();
-        mongoClient.removeObjects(collection, query, getWriteConcern());
+        final Bson query = lt(TIMESTAMP_FIELD, expireAt);
+        mongoClient.removeObjects(collection, query);
     }
 
     // --------- Java Accessor Festival ---------

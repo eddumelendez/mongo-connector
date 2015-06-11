@@ -15,6 +15,7 @@ import java.io.File;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
+import org.bson.Document;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -24,8 +25,6 @@ import org.mule.module.mongo.api.automation.MongoHelper;
 import org.mule.module.mongo.automation.MongoTestParent;
 import org.mule.module.mongo.automation.RegressionTests;
 import org.mule.modules.tests.ConnectorTestUtils;
-
-import com.mongodb.DBObject;
 
 public class RestoreTestCases extends MongoTestParent {
 	
@@ -77,7 +76,7 @@ public class RestoreTestCases extends MongoTestParent {
 			
 			String indexName = MongoHelper.getIndexName(indexKey, indexOrder);
 			
-			List<DBObject> payload = runFlowAndGetPayload("list-indices-for-drop-restore");
+			List<Document> payload = runFlowAndGetPayload("list-indices-for-drop-restore");
 			
 			assertTrue("After restoring the database, the index with index name = " + indexName + " should exist", MongoHelper.indexExistsInList(payload, indexName));
 		} catch (Exception e) {

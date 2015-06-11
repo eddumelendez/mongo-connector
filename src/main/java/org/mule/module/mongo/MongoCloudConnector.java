@@ -9,9 +9,11 @@
 package org.mule.module.mongo;
 
 import static org.mule.module.mongo.api.DBObjects.adapt;
+import static org.mule.module.mongo.api.DBObjects.adaptToDbObject;
 import static org.mule.module.mongo.api.DBObjects.from;
 import static org.mule.module.mongo.api.DBObjects.fromCommand;
 import static org.mule.module.mongo.api.DBObjects.fromFunction;
+import static org.mule.module.mongo.api.DBObjects.fromToDbObject;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -47,6 +49,7 @@ import org.mule.module.mongo.tools.MongoRestore;
 import org.mule.transformer.types.MimeTypes;
 
 import com.mongodb.BasicDBList;
+import com.mongodb.DBObject;
 import com.mongodb.MongoException;
 import com.mongodb.WriteResult;
 import com.mongodb.util.JSON;
@@ -176,16 +179,14 @@ public class MongoCloudConnector
      *
      * @param collection the name of the collection where to insert the given object
      * @param document a {@link Document} instance.
-     * @param writeConcern the optional write concern of insertion
      * @return the id that was just insterted
      */
     @Processor
 	@ReconnectOn(exceptions = IllegalStateException.class)
     public String insertObject(final String collection,
-                               @Default("#[payload]") final Document document,
-                               @Default(WRITE_CONCERN_DEFAULT_VALUE) final WriteConcern writeConcern)
+                               @Default("#[payload]") final Document document)
     {
-        return strategy.getClient().insertObject(collection, document, writeConcern);
+        return strategy.getClient().insertObject(collection, document);
     }
 
     /**
@@ -208,7 +209,7 @@ public class MongoCloudConnector
                                       @Placement(group = "Element Attributes") final Map<String, Object> elementAttributes,
                                       @Default(WRITE_CONCERN_DEFAULT_VALUE) final WriteConcern writeConcern)
     {
-        return strategy.getClient().insertObject(collection, adapt(elementAttributes), writeConcern);
+        return strategy.getClient().insertObject(collection, adapt(elementAttributes));
     }
 
     /**
@@ -223,20 +224,16 @@ public class MongoCloudConnector
      * { "_id" : "ObjectId(OBJECT_ID_VALUE)"}
      * @param element the {@link Document} mandatory object that will replace that one which matches
      *            the query.
-     * @param upsert if the database should create the element if it does not exist
      * @param multi if all or just the first object matching the query will be updated
-     * @param writeConcern the write concern used to update
      */
     @Processor
 	@ReconnectOn(exceptions = IllegalStateException.class)
     public void updateObjects(final String collection,
                               final Document query,
                               @Default("#[payload]") final Document element,
-                              @Default(CAPPED_DEFAULT_VALUE) final boolean upsert,
-                              @Default("true") final boolean multi,
-                              @Default(WRITE_CONCERN_DEFAULT_VALUE) final WriteConcern writeConcern)
+                              @Default("true") final boolean multi)
     {
-        strategy.getClient().updateObjects(collection, query, element, upsert, multi, writeConcern);
+        strategy.getClient().updateObjects(collection, query, element, multi);
     }
 
     /**
@@ -264,8 +261,7 @@ public class MongoCloudConnector
                                            @Default("true") final boolean multi,
                                            @Default(WRITE_CONCERN_DEFAULT_VALUE) final WriteConcern writeConcern)
     {
-        strategy.getClient().updateObjects(collection, (Document) adapt(queryAttributes), element, upsert, multi,
-            writeConcern);
+        strategy.getClient().updateObjects(collection, (Document) adapt(queryAttributes), element, multi);
     }
 
     /**
@@ -293,7 +289,7 @@ public class MongoCloudConnector
                                       @Default(WRITE_CONCERN_DEFAULT_VALUE) final WriteConcern writeConcern)
     {
         strategy.getClient().updateObjects(collection, (Document) adapt(queryAttributes),
-            (Document) adapt(elementAttributes), upsert, multi, writeConcern);
+            (Document) adapt(elementAttributes), multi);
     }
 
     /**
@@ -323,7 +319,7 @@ public class MongoCloudConnector
     {
         final Document functionDocument = fromFunction(function, element);
 
-        strategy.getClient().updateObjects(collection, query, functionDocument, upsert, multi, writeConcern);
+        strategy.getClient().updateObjects(collection, query, functionDocument, multi);
     }
 
     /**
@@ -354,8 +350,7 @@ public class MongoCloudConnector
     {
         final Document functionDocument = fromFunction(function, (Document) adapt(elementAttributes));
 
-        strategy.getClient().updateObjects(collection, (Document) adapt(queryAttributes), functionDocument, upsert, multi,
-            writeConcern);
+        strategy.getClient().updateObjects(collection, (Document) adapt(queryAttributes), functionDocument, multi);
     }
 
     /**
@@ -365,15 +360,13 @@ public class MongoCloudConnector
      *
      * @param collection the collection where to insert the object
      * @param document the mandatory {@link Document} object to insert.
-     * @param writeConcern the write concern used to persist the object
      */
     @Processor
 	@ReconnectOn(exceptions = IllegalStateException.class)
     public void saveObject(final String collection,
-                           @Default("#[payload]") final Document document,
-                           @Default(WRITE_CONCERN_DEFAULT_VALUE) final WriteConcern writeConcern)
+                           @Default("#[payload]") final Document document)
     {
-        strategy.getClient().saveObject(collection, from(document), writeConcern);
+        strategy.getClient().saveObject(collection, from(document));
     }
 
     /**
@@ -391,7 +384,7 @@ public class MongoCloudConnector
                                   @Placement(group = "Element Attributes") final Map<String, Object> elementAttributes,
                                   @Default(WRITE_CONCERN_DEFAULT_VALUE) final WriteConcern writeConcern)
     {
-        strategy.getClient().saveObject(collection, (Document) adapt(elementAttributes), writeConcern);
+        strategy.getClient().saveObject(collection, (Document) adapt(elementAttributes));
     }
 
     /**
@@ -412,7 +405,7 @@ public class MongoCloudConnector
                               @Default("#[payload]") final Document query,
                               @Default(WRITE_CONCERN_DEFAULT_VALUE) final WriteConcern writeConcern)
     {
-        strategy.getClient().removeObjects(collection, query, writeConcern);
+        strategy.getClient().removeObjects(collection, query);
     }
 
     /**
@@ -432,7 +425,7 @@ public class MongoCloudConnector
                                     @Placement(group = "Query Attributes") @Optional final Map<String, Object> queryAttributes,
                                     @Default(WRITE_CONCERN_DEFAULT_VALUE) final WriteConcern writeConcern)
     {
-        strategy.getClient().removeObjects(collection, (Document) adapt(queryAttributes), writeConcern);
+        strategy.getClient().removeObjects(collection, (Document) adapt(queryAttributes));
     }
 
     /**
@@ -667,19 +660,13 @@ public class MongoCloudConnector
      */
     @Processor
 	@ReconnectOn(exceptions = IllegalStateException.class)
-    public Document createFileFromPayload(@Payload final Object payload,
+    public DBObject createFileFromPayload(@Payload final Object payload,
                                           final String filename,
                                           @Optional final String contentType,
-                                          @Optional final Document metadata) throws IOException
+                                          @Optional final DBObject metadata) throws IOException
     {
-        final InputStream stream = toStream(payload);
-        try
-        {
+        try (InputStream stream = toStream(payload)) {
             return strategy.getClient().createFile(stream, filename, contentType, metadata);
-        }
-        finally
-        {
-            stream.close();
         }
     }
 
@@ -710,9 +697,9 @@ public class MongoCloudConnector
      */
     @Processor
 	@ReconnectOn(exceptions = IllegalStateException.class)
-    public Iterable<Document> findFiles(@Default("#[payload]") final Document query)
+    public Iterable<DBObject> findFiles(@Default("#[payload]") final DBObject query)
     {
-        return strategy.getClient().findFiles(from(query));
+        return strategy.getClient().findFiles(fromToDbObject(query));
     }
 
     /**
@@ -725,9 +712,9 @@ public class MongoCloudConnector
      */
     @Processor
 	@ReconnectOn(exceptions = IllegalStateException.class)
-    public Iterable<Document> findFilesUsingQueryMap(@Placement(group = "Query Attributes") @Optional final Map<String, Object> queryAttributes)
+    public Iterable<DBObject> findFilesUsingQueryMap(@Placement(group = "Query Attributes") @Optional final Map<String, Object> queryAttributes)
     {
-        return strategy.getClient().findFiles((Document) adapt(queryAttributes));
+        return strategy.getClient().findFiles(adaptToDbObject(queryAttributes));
     }
 
     /**
@@ -741,9 +728,9 @@ public class MongoCloudConnector
      */
     @Processor
 	@ReconnectOn(exceptions = IllegalStateException.class)
-    public Document findOneFile(final Document query)
+    public DBObject findOneFile(final DBObject query)
     {
-        return strategy.getClient().findOneFile(from(query));
+        return strategy.getClient().findOneFile(fromToDbObject(query));
     }
 
     /**
@@ -757,9 +744,9 @@ public class MongoCloudConnector
      */
     @Processor
 	@ReconnectOn(exceptions = IllegalStateException.class)
-    public Document findOneFileUsingQueryMap(@Placement(group = "Query Attributes") final Map<String, Object> queryAttributes)
+    public DBObject findOneFileUsingQueryMap(@Placement(group = "Query Attributes") final Map<String, Object> queryAttributes)
     {
-        return strategy.getClient().findOneFile((Document) adapt(queryAttributes));
+        return strategy.getClient().findOneFile(adaptToDbObject(queryAttributes));
     }
 
     /**
@@ -773,9 +760,9 @@ public class MongoCloudConnector
      */
     @Processor
 	@ReconnectOn(exceptions = IllegalStateException.class)
-    public InputStream getFileContent(@Default("#[payload]") final Document query)
+    public InputStream getFileContent(@Default("#[payload]") final DBObject query)
     {
-        return strategy.getClient().getFileContent(from(query));
+        return strategy.getClient().getFileContent(fromToDbObject(query));
     }
 
     /**
@@ -791,7 +778,7 @@ public class MongoCloudConnector
 	@ReconnectOn(exceptions = IllegalStateException.class)
     public InputStream getFileContentUsingQueryMap(@Placement(group = "Query Attributes") final Map<String, Object> queryAttributes)
     {
-        return strategy.getClient().getFileContent((Document) adapt(queryAttributes));
+        return strategy.getClient().getFileContent(adaptToDbObject(queryAttributes));
     }
 
     /**
@@ -805,9 +792,9 @@ public class MongoCloudConnector
      */
     @Processor
 	@ReconnectOn(exceptions = IllegalStateException.class)
-    public Iterable<Document> listFiles(@Default("#[payload]") final Document query)
+    public Iterable<DBObject> listFiles(@Default("#[payload]") final DBObject query)
     {
-        return strategy.getClient().listFiles(from(query));
+        return strategy.getClient().listFiles(fromToDbObject(query));
     }
 
     /**
@@ -821,9 +808,9 @@ public class MongoCloudConnector
      */
     @Processor
 	@ReconnectOn(exceptions = IllegalStateException.class)
-    public Iterable<Document> listFilesUsingQueryMap(@Placement(group = "Query Attributes") @Optional final Map<String, Object> queryAttributes)
+    public Iterable<DBObject> listFilesUsingQueryMap(@Placement(group = "Query Attributes") @Optional final Map<String, Object> queryAttributes)
     {
-        return strategy.getClient().listFiles((Document) adapt(queryAttributes));
+        return strategy.getClient().listFiles(adaptToDbObject(queryAttributes));
     }
 
     /**
@@ -836,9 +823,9 @@ public class MongoCloudConnector
      */
     @Processor
 	@ReconnectOn(exceptions = IllegalStateException.class)
-    public void removeFiles(@Default("#[payload]") final Document query)
+    public void removeFiles(@Default("#[payload]") final DBObject query)
     {
-        strategy.getClient().removeFiles(from(query));
+        strategy.getClient().removeFiles(fromToDbObject(query));
     }
 
     /**
@@ -853,7 +840,7 @@ public class MongoCloudConnector
 	@ReconnectOn(exceptions = IllegalStateException.class)
     public void removeFilesUsingQueryMap(@Placement(group = "Query Attributes") @Optional final Map<String, Object> queryAttributes)
     {
-        strategy.getClient().removeFiles((Document) adapt(queryAttributes));
+        strategy.getClient().removeFiles(adaptToDbObject(queryAttributes));
     }
 
     /**
@@ -872,7 +859,7 @@ public class MongoCloudConnector
     {
         final Document document = fromCommand(commandName, commandValue);
 
-        return strategy.getClient().executeComamnd(document);
+        return strategy.getClient().executeCommand(document);
     }
 
     /**
@@ -1048,21 +1035,5 @@ public class MongoCloudConnector
     {
         return JSONSerializers.getStrict().serialize(input);
     }
-
-    /**
-     * Convert a Document into Map.
-     * <p/>
-     * {@sample.xml ../../../doc/mongo-connector.xml.sample mongo:dbObjectToMap}
-     *
-     * @param input the input for this transformer
-     * @return the converted Map representation
-     */
-    @SuppressWarnings("rawtypes")
-    @Transformer(sourceTypes = {Document.class})
-    public static Map documentToMap(final Document input)
-    {
-        return input.toMap();
-    }
-
 
 }

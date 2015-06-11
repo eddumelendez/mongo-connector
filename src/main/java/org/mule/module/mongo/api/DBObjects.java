@@ -17,6 +17,9 @@ import java.util.regex.Pattern;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBObject;
+
 /**
  * Conversions between JSon Strings and Maps into Documents
  */
@@ -36,6 +39,10 @@ public final class DBObjects
     {
         return new Document(map);
     }
+    public static DBObject fromMapToDbObject(Map<String, Object> map)
+    {
+        return new BasicDBObject(map);
+    }
 
     @SuppressWarnings("unchecked")
     public static Document from(Object o)
@@ -51,6 +58,25 @@ public final class DBObjects
         if (o instanceof Map<?, ?>)
         {
             return fromMap((Map<String, Object>) o);
+        }
+        throw new IllegalArgumentException("Unsupported object type " + o);
+    }
+    
+    
+    @SuppressWarnings("unchecked")
+    public static DBObject fromToDbObject(Object o)
+    {
+        if (o == null)
+        {
+            return null;
+        }
+        if (o instanceof DBObject)
+        {
+            return (DBObject) o;
+        }
+        if (o instanceof Map<?, ?>)
+        {
+            return fromMapToDbObject((Map<String, Object>) o);
         }
         throw new IllegalArgumentException("Unsupported object type " + o);
     }
@@ -100,6 +126,11 @@ public final class DBObjects
     	return new Document(o);
     }
     
+    public static DBObject adaptToDbObject(Map<String, Object> o)
+    {
+        return new BasicDBObject(o);
+    }
+    
     @SuppressWarnings("unchecked")
     private static void adaptElements(Object o)
     {
@@ -135,5 +166,9 @@ public final class DBObjects
     private static Matcher objectIdMatcher(String id)
     {
         return OBJECT_ID_PATTERN.matcher(id);
+    }
+    
+    public static DBObject documentToDbObject(Document doc) {
+        return new BasicDBObject(doc);
     }
 }

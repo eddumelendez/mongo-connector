@@ -20,12 +20,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.mule.module.mongo.automation.RegressionTests;
 
-import com.mongodb.DBObject;
 
 @SuppressWarnings("serial")
 public class DBObjectsUnitTest {
@@ -39,7 +39,7 @@ public class DBObjectsUnitTest {
     @Category({ RegressionTests.class })
     @Test
     public void fromMap() throws Exception {
-        DBObject map = DBObjects.from(new HashMap<String, Object>() {
+        Document map = DBObjects.from(new HashMap<String, Object>() {
 
             {
                 put("key1", 4);
@@ -61,7 +61,7 @@ public class DBObjectsUnitTest {
     @Category({ RegressionTests.class })
     @Test
     public void fromMapWithId() throws Exception {
-        DBObject o = DBObjects.from(new HashMap<String, Object>() {
+        Document o = DBObjects.from(new HashMap<String, Object>() {
 
             {
                 put("name", "John");
@@ -77,7 +77,7 @@ public class DBObjectsUnitTest {
     @Category({ RegressionTests.class })
     @Test
     public void fromMapWithObjectId() throws Exception {
-        DBObject o = DBObjects.from(new HashMap<String, Object>() {
+        Document o = DBObjects.from(new HashMap<String, Object>() {
 
             {
                 put("name", "John");
@@ -93,13 +93,13 @@ public class DBObjectsUnitTest {
     @Category({ RegressionTests.class })
     @Test
     public void fromMapWithNestedObject() throws Exception {
-        final DBObject cat = DBObjects.from(new HashMap<String, Object>() {
+        final Document cat = DBObjects.from(new HashMap<String, Object>() {
 
             {
                 put("name", "Garfield");
             }
         });
-        DBObject o = DBObjects.from(new HashMap<String, Object>() {
+        Document o = DBObjects.from(new HashMap<String, Object>() {
 
             {
                 put("name", "Jon");
@@ -109,26 +109,26 @@ public class DBObjectsUnitTest {
         });
         assertEquals("Jon", o.get("name"));
         assertEquals("Arbuckle", o.get("surname"));
-        assertThat(o.get("cat"), instanceOf(DBObject.class));
-        assertEquals("Garfield", ((DBObject) o.get("cat")).get("name"));
+        assertThat(o.get("cat"), instanceOf(Document.class));
+        assertEquals("Garfield", ((Document) o.get("cat")).get("name"));
     }
 
     @Category({ RegressionTests.class })
     @Test
     public void fromMapWithNestedList() throws Exception {
-        final DBObject garfield = DBObjects.from(new HashMap<String, Object>() {
+        final Document garfield = DBObjects.from(new HashMap<String, Object>() {
 
             {
                 put("name", "Garfield");
             }
         });
-        final DBObject oddie = DBObjects.from(new HashMap<String, Object>() {
+        final Document oddie = DBObjects.from(new HashMap<String, Object>() {
 
             {
                 put("name", "Oddie");
             }
         });
-        DBObject o = DBObjects.from(new HashMap<String, Object>() {
+        Document o = DBObjects.from(new HashMap<String, Object>() {
 
             {
                 put("name", "Jon");
@@ -139,6 +139,6 @@ public class DBObjectsUnitTest {
         assertEquals("Jon", o.get("name"));
         assertEquals("Arbuckle", o.get("surname"));
         assertThat(o.get("pets"), instanceOf(List.class));
-        assertTrue(((List<?>) o.get("pets")).get(0) instanceof DBObject);
+        assertTrue(((List<?>) o.get("pets")).get(0) instanceof Document);
     }
 }

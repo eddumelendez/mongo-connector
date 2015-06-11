@@ -10,25 +10,21 @@ package org.mule.module.mongo.api;
 
 import java.util.List;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBObject;
+import org.bson.Document;
+import org.bson.conversions.Bson;
 
-public final class FieldsSet
-{
-    private FieldsSet()
-    {
+public final class FieldsSet {
+
+    private FieldsSet() {
     }
 
-    public static DBObject from(List<String> fieldsList)
-    {
-        if (fieldsList == null)
-        {
+    public static Bson from(List<String> fieldsList) {
+        if (fieldsList == null) {
             return null;
         }
 
-        BasicDBObject o = new BasicDBObject();
-        for (String s : fieldsList)
-        {
+        Document o = new Document();
+        for (String s : fieldsList) {
             o.put(s, 1);
         }
         return o;

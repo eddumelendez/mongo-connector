@@ -5,14 +5,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bson.Document;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.rules.TemporaryFolder;
 import org.junit.rules.Timeout;
 import org.mule.module.mongo.MongoCloudConnector;
-import org.mule.module.mongo.api.WriteConcern;
-import org.mule.tck.testmodels.mule.TestConnector;
 import org.mule.tools.devkit.ctf.mockup.ConnectorDispatcher;
 import org.mule.tools.devkit.ctf.mockup.ConnectorTestContext;
 
@@ -38,17 +37,17 @@ public abstract class AbstractMongoTest {
         return dispatcher;
     }
 
-    protected List<DBObject> getEmptyDBObjects(int num) {
-        List<DBObject> list = new ArrayList<DBObject>();
+    protected List<Document> getEmptyDocuments(int num) {
+        List<Document> list = new ArrayList<Document>();
         for (int i = 0; i < num; i++) {
-            list.add(new BasicDBObject());
+            list.add(new Document());
         }
         return list;
     }
 
-    protected void insertObjects(List<DBObject> objs, String collection) {
-        for (DBObject obj : objs) {
-            connector.insertObject(collection, obj, WriteConcern.DATABASE_DEFAULT);
+    protected void insertObjects(List<Document> objs, String collection) {
+        for (Document obj : objs) {
+            connector.insertObject(collection, obj);
         }
     }
 
@@ -101,7 +100,7 @@ public abstract class AbstractMongoTest {
     public void init() throws Exception {
 
         // Single-test runs
-        ConnectorTestContext.initialize(TestConnector.class, false);
+        ConnectorTestContext.initialize(MongoCloudConnector.class, false);
 
         // Current context instance
         ConnectorTestContext<MongoCloudConnector> context = ConnectorTestContext.getInstance(MongoCloudConnector.class);

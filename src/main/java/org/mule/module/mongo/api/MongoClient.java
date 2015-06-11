@@ -19,6 +19,7 @@ import org.bson.Document;
 import org.bson.conversions.Bson;
 
 import com.mongodb.DBCollection;
+import com.mongodb.DBObject;
 import com.mongodb.WriteResult;
 
 public interface MongoClient extends Closeable
@@ -34,19 +35,16 @@ public interface MongoClient extends Closeable
     void createCollection(@NotNull String name, boolean capped, Integer maxObjects, Integer size);
 
     String insertObject(@NotNull String collection,
-                        @NotNull Document document,
-                        @NotNull WriteConcern writeConcern);
+                        @NotNull Document document);
 
     void updateObjects(@NotNull String collection,
                        Document query,
                        Document object,
-                       boolean upsert,
-                       boolean multi,
-                       @NotNull WriteConcern writeConcern);
+                       boolean multi);
 
-    void saveObject(@NotNull String collection, @NotNull Document document, @NotNull WriteConcern writeConcern);
+    void saveObject(@NotNull String collection, @NotNull Document document);
 
-    void removeObjects(@NotNull String collection, Document query, @NotNull WriteConcern writeConcern);
+    void removeObjects(@NotNull String collection, Bson query);
 
     Iterable<Document> mapReduceObjects(@NotNull String collection,
                                         @NotNull String mapFunction,
@@ -70,19 +68,19 @@ public interface MongoClient extends Closeable
 
     Collection<Document> listIndices(String collection);
 
-    Document createFile(InputStream content, String filename, String contentType, Document metadata);
+    DBObject createFile(InputStream content, String filename, String contentType, DBObject metadata);
 
-    Iterable<Document> findFiles(Document query);
+    Iterable<DBObject> findFiles(DBObject query);
 
-    Document findOneFile(Document query);
+    DBObject findOneFile(DBObject query);
 
-    InputStream getFileContent(Document query);
+    InputStream getFileContent(DBObject query);
 
-    Iterable<Document> listFiles(Document query);
+    Iterable<DBObject> listFiles(DBObject query);
 
-    void removeFiles(Document query);
+    void removeFiles(DBObject query);
 
-    Document executeComamnd(Document command);
+    Document executeCommand(Document command);
 
     WriteResult addUser(String username, String password);
 

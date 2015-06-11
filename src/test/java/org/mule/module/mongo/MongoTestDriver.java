@@ -136,7 +136,7 @@ public class MongoTestDriver
     public void dropCollectionWithElements() throws Exception
     {
     	Document o = new Document();
-        connector.insertObject(MAIN_COLLECTION, o, WriteConcern.NORMAL);
+        connector.insertObject(MAIN_COLLECTION, o);
         connector.dropCollection(MAIN_COLLECTION);
         assertFalse(connector.existsCollection(MAIN_COLLECTION));
     }
@@ -148,10 +148,10 @@ public class MongoTestDriver
     @Test
     public void createObject() throws Exception
     {
-        connector.insertObject(MAIN_COLLECTION, acmeEmployee(), WriteConcern.NORMAL);
+        connector.insertObject(MAIN_COLLECTION, acmeEmployee());
 
         assertEquals(1, connector.countObjects(MAIN_COLLECTION, acmeQuery()));
-        DBObject employee = connector.findOneObject(MAIN_COLLECTION, acmeQuery(),
+        Document employee = connector.findOneObject(MAIN_COLLECTION, acmeQuery(),
             Arrays.asList("name"),false);
         assertNotNull(employee);
         assertEquals("John", employee.get("name"));
@@ -174,9 +174,9 @@ public class MongoTestDriver
     @Test
     public void removeObject() throws Exception
     {
-        connector.insertObject(MAIN_COLLECTION, acmeEmployee(), WriteConcern.NORMAL);
+        connector.insertObject(MAIN_COLLECTION, acmeEmployee());
 
-        BasicDBObject query = acmeQuery();
+        Document query = acmeQuery();
         connector.removeObjects(MAIN_COLLECTION, query, WriteConcern.DATABASE_DEFAULT);
         assertEquals(0, connector.countObjects(MAIN_COLLECTION, query));
     }
@@ -193,13 +193,13 @@ public class MongoTestDriver
         insertInTestDb(new Document("x", 60));
         insertInTestDb(new Document("x", 70));
         assertEquals(4, connector.countObjects(MAIN_COLLECTION, null));
-        assertEquals(2, connector.countObjects(MAIN_COLLECTION, new BasicDBObject("x", 60)));
-        assertEquals(0, connector.countObjects(MAIN_COLLECTION, new BasicDBObject("x", 36)));
+        assertEquals(2, connector.countObjects(MAIN_COLLECTION, new Document("x", 60)));
+        assertEquals(0, connector.countObjects(MAIN_COLLECTION, new Document("x", 36)));
     }
 
     private void insertInTestDb(Document o)
     {
-        connector.insertObject(MAIN_COLLECTION, o, WriteConcern.DATABASE_DEFAULT);
+        connector.insertObject(MAIN_COLLECTION, o);
     }
 
     /**
@@ -251,20 +251,20 @@ public class MongoTestDriver
                 put("votes", 60);
             }
         });
-        Iterable<DBObject> results = connector.mapReduceObjects(MAIN_COLLECTION,
+        Iterable<Document> results = connector.mapReduceObjects(MAIN_COLLECTION,
             "function() { emit(this.candidate, this.votes) }",
             "function(key, values) { return values.reduce(function(a, e){ return a + e });  } ",
             outputCollection);
         assertNotNull(results);
-        Iterator<DBObject> iter = results.iterator();
-        assertEquals(new BasicDBObject()
+        Iterator<Document> iter = results.iterator();
+        assertEquals(new Document()
         {
             {
                 put("_id", "John");
                 put("value", 120);
             }
         }, iter.next());
-        assertEquals(new BasicDBObject()
+        assertEquals(new Document()
         {
             {
                 put("_id", "Mary");
@@ -283,7 +283,7 @@ public class MongoTestDriver
         insertInTestDb(new Document("x", 4));
         insertInTestDb(new Document("x", 5));
 
-        Iterator<DBObject> iter = connector.findObjects(MAIN_COLLECTION, null, null, 2, 2, null).iterator();
+        Iterator<Document> iter = connector.findObjects(MAIN_COLLECTION, null, null, 2, 2, null).iterator();
 
         assertEquals(3, iter.next().get("x"));
         assertEquals(4, iter.next().get("x"));
@@ -298,10 +298,10 @@ public class MongoTestDriver
         insertInTestDb(new Document("x", 60));
         insertInTestDb(new Document("x", 70));
         connector.updateObjects(MAIN_COLLECTION,
-            new BasicDBObject("x", new BasicDBObject("$gt", 55)), new BasicDBObject("$inc",
-                new BasicDBObject("x", 2)), false, true, WriteConcern.DATABASE_DEFAULT);
+            new Document("x", new Document("$gt", 55)), new Document("$inc",
+                new Document("x", 2)), true);
 
-        Iterator<DBObject> iter = connector.findObjects(MAIN_COLLECTION, null, null, null, null, null).iterator();
+        Iterator<Document> iter = connector.findObjects(MAIN_COLLECTION, null, null, null, null, null).iterator();
         assertEquals(50, iter.next().get("x"));
         assertEquals(62, iter.next().get("x"));
         assertEquals(62, iter.next().get("x"));
@@ -315,10 +315,10 @@ public class MongoTestDriver
         insertInTestDb(new Document("x", 60));
         insertInTestDb(new Document("x", 60));
         connector.updateObjects(MAIN_COLLECTION,
-            new BasicDBObject("x", new BasicDBObject("$gt", 55)), new BasicDBObject("$inc",
-                new BasicDBObject("x", 2)), false, false, WriteConcern.DATABASE_DEFAULT);
+            new Document("x", new Document("$gt", 55)), new Document("$inc",
+                new Document("x", 2)), false);
 
-        Iterator<DBObject> iter = connector.findObjects(MAIN_COLLECTION, null, null, null, null, null).iterator();
+        Iterator<Document> iter = connector.findObjects(MAIN_COLLECTION, null, null, null, null, null).iterator();
         assertEquals(50, iter.next().get("x"));
         assertEquals(62, iter.next().get("x"));
         assertEquals(60, iter.next().get("x"));
@@ -376,14 +376,14 @@ public class MongoTestDriver
         }
     }
 
-    private BasicDBObject filenameQuery(String filename)
+    private DBObject filenameQuery(String filename)
     {
         return new BasicDBObject("filename", filename);
     }
 
-    private BasicDBObject acmeQuery()
+    private Document acmeQuery()
     {
-        BasicDBObject query = new BasicDBObject();
+        Document query = new Document();
         query.put("company", "ACME");
         return query;
     }

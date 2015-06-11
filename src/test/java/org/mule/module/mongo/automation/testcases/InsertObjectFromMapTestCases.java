@@ -15,6 +15,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Test;
@@ -22,8 +23,6 @@ import org.junit.experimental.categories.Category;
 import org.mule.module.mongo.api.WriteConcern;
 import org.mule.module.mongo.automation.AbstractMongoTest;
 import org.mule.module.mongo.automation.RegressionTests;
-
-import com.mongodb.DBObject;
 
 public class InsertObjectFromMapTestCases extends AbstractMongoTest {
 
@@ -42,15 +41,15 @@ public class InsertObjectFromMapTestCases extends AbstractMongoTest {
     @Category({ RegressionTests.class })
     @Test
     public void testInsertObjectFromMap() {
-        Iterable<DBObject> iterable;
+        Iterable<Document> iterable;
         String objectID = getConnector().insertObjectFromMap("Arenas", testData, WriteConcern.SAFE);
 
         assertTrue(objectID != null && !objectID.equals("") && !objectID.trim().equals(""));
 
         iterable = getConnector().findObjectsUsingQueryMap("Arenas", testData, list, null, null, null);
-        for (DBObject dbObj : iterable) {
-            assertTrue(dbObj.containsField("_id"));
-            assertTrue(dbObj.containsField("key"));
+        for (Document dbObj : iterable) {
+            assertTrue(dbObj.containsKey("_id"));
+            assertTrue(dbObj.containsKey("key"));
             ObjectId id = (ObjectId) dbObj.get("_id");
             assertTrue(id.toString().equals(objectID));
         }

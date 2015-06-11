@@ -14,16 +14,15 @@ import static org.junit.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bson.Document;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.mule.module.mongo.automation.RegressionTests;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBObject;
 
 public class MongoCollectionUnitTest
 {
-    private Iterable<? extends DBObject> o;
+    private Iterable<? extends Document> o;
     MongoCollection mo;
     
     @Category({RegressionTests.class})
@@ -40,8 +39,8 @@ public class MongoCollectionUnitTest
     @Test
     public void toArray()
     {
-    	List<DBObject> obj = new ArrayList<DBObject>();
-        DBObject o = new BasicDBObject();
+    	List<Document> obj = new ArrayList<>();
+    	Document o = new Document();
         //Fill with sample data
         o.put( "foo", "bar" );
         obj.add(o);

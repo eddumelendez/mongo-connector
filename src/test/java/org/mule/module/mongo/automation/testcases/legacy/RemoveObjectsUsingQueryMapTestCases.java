@@ -14,6 +14,7 @@ import static org.junit.Assert.fail;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bson.Document;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -81,8 +82,8 @@ public class RemoveObjectsUsingQueryMapTestCases extends MongoTestParent{
 			assertTrue(objects.size() == extraObjects);
 			
 			// Check that each returned object does not contain the defined key-value pair
-			for (DBObject obj : objects) {
-				assertTrue(!obj.containsField(key));
+			for (Document obj : objects) {
+				assertTrue(!obj.containsKey(key));
 			}
 		} catch (Exception e) {
 	         fail(ConnectorTestUtils.getStackTrace(e));
