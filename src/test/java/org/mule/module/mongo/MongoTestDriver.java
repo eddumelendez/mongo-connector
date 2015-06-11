@@ -31,7 +31,6 @@ import org.junit.runner.RunWith;
 import org.mule.api.lifecycle.InitialisationException;
 import org.mule.module.mongo.api.IndexOrder;
 import org.mule.module.mongo.api.MongoClient;
-import org.mule.module.mongo.api.WriteConcern;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
@@ -177,7 +176,7 @@ public class MongoTestDriver
         connector.insertObject(MAIN_COLLECTION, acmeEmployee());
 
         Document query = acmeQuery();
-        connector.removeObjects(MAIN_COLLECTION, query, WriteConcern.DATABASE_DEFAULT);
+        connector.removeObjects(MAIN_COLLECTION, query);
         assertEquals(0, connector.countObjects(MAIN_COLLECTION, query));
     }
 

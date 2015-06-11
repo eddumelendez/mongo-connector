@@ -8,40 +8,38 @@
 
 package org.mule.module.mongo.automation.testcases;
 
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.io.File;
-import java.io.IOException;
-
-import org.apache.commons.io.FileUtils;
+import org.bson.Document;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.mule.module.mongo.automation.AbstractMongoTest;
 import org.mule.module.mongo.automation.RegressionTests;
 
-public class DumpTestCases extends AbstractMongoTest {
+public class FindOneObjectTestCases extends AbstractMongoTest {
 
     @Override
     public void setUp() {
+        // Create the collection
         getConnector().createCollection("Arenas", false, 5, 5);
-        insertObjects(getEmptyDocuments(10), "Arenas");
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        File dumpOutputDir = new File("./dump");
-        FileUtils.deleteDirectory(dumpOutputDir);
-        getConnector().dropCollection("Arenas");
+        // Insert object
+        getConnector().insertObject("Arenas", new Document());
     }
 
     @Category({ RegressionTests.class })
     @Test
-    public void testDump() throws IOException {
-        File dumpOutputDir;
-        getConnector().dump("./dump", "test", false, false, 5);
+    public void testFindOneObject() {
+        // Get the retrieved DBObject
+        Document payload = getConnector().findOneObject("Arenas", new Document(), null, false);
+        assertNotNull(payload);
+        assertTrue(payload.keySet().size() == 1);
+    }
 
-        dumpOutputDir = new File("./dump");
-        assertTrue("dump directory should exist after test runs", dumpOutputDir.exists());
+    @After
+    public void tearDown() throws Exception {
+        // drop the collection
+        getConnector().dropCollection("Arenas");
     }
 }

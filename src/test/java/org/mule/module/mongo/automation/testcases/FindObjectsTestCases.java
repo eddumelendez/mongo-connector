@@ -10,48 +10,51 @@ package org.mule.module.mongo.automation.testcases;
 
 import static org.junit.Assert.assertTrue;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.bson.Document;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.mule.module.mongo.api.IndexOrder;
 import org.mule.module.mongo.api.automation.MongoHelper;
 import org.mule.module.mongo.automation.AbstractMongoTest;
 import org.mule.module.mongo.automation.RegressionTests;
 import org.mule.module.mongo.automation.SmokeTests;
 
+public class FindObjectsTestCases extends AbstractMongoTest {
 
-public class CreateIndexTestCases extends AbstractMongoTest {
-
-    private String indexKey = "myField";
-    private IndexOrder indexOrder;
+    private List<String> objectIDs = new ArrayList<String>();
 
     @Override
     public void setUp() {
-        indexOrder = IndexOrder.ASC;
+        // create collection
         getConnector().createCollection("Arenas", false, 5, 5);
+        int numberOfObjects = 25;
+
+        for (int i = 0; i < numberOfObjects; i++) {
+            Document dbObject = new Document();
+            String payload = getConnector().insertObject("Arenas", dbObject);
+            objectIDs.add(payload);
+        }
     }
 
-    @Category({ SmokeTests.class, RegressionTests.class })
+    @Category({
+            SmokeTests.class,
+            RegressionTests.class })
     @Test
-    public void testCreateIndex() {
-        String indexName = indexKey + "_" + indexOrder.getValue();
+    public void testFindObjects() {
+        Iterable<Document> payload = getConnector().findObjects("Arenas", null, null, null, null, null);
 
-        getConnector().createIndex("Arenas", indexKey, indexOrder);
-
-        List<Document> payload = (List<Document>) getConnector().listIndices("Arenas");
-        assertTrue(MongoHelper.indexExistsInList(payload, indexName));
+        for (Document obj : payload) {
+            String dbObjectID = obj.get("_id").toString();
+            assertTrue(objectIDs.contains(dbObjectID));
+        }
+        assertTrue(objectIDs.size() == MongoHelper.getIterableSize(payload));
     }
 
     @After
     public void tearDown() throws Exception {
-        // Drop the created index
-        String indexName = indexKey + "_" + indexOrder.getValue();
-        getConnector().dropIndex("Arenas", indexName);
-
-        // Drop the collection
         getConnector().dropCollection("Arenas");
     }
 }

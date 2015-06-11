@@ -8,40 +8,42 @@
 
 package org.mule.module.mongo.automation.testcases;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 
-import java.io.File;
-import java.io.IOException;
-
-import org.apache.commons.io.FileUtils;
+import org.bson.Document;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.mule.module.mongo.automation.AbstractMongoTest;
 import org.mule.module.mongo.automation.RegressionTests;
 
-public class DumpTestCases extends AbstractMongoTest {
+public class RemoveObjectsTestCases extends AbstractMongoTest {
 
     @Override
     public void setUp() {
+        // initializeTestRunMessage("removeObjects");
         getConnector().createCollection("Arenas", false, 5, 5);
-        insertObjects(getEmptyDocuments(10), "Arenas");
-    }
+        getConnector().insertObject("Arenas", new Document());
+        // runFlowAndGetPayload("insert-object");
 
-    @After
-    public void tearDown() throws Exception {
-        File dumpOutputDir = new File("./dump");
-        FileUtils.deleteDirectory(dumpOutputDir);
-        getConnector().dropCollection("Arenas");
     }
 
     @Category({ RegressionTests.class })
     @Test
-    public void testDump() throws IOException {
-        File dumpOutputDir;
-        getConnector().dump("./dump", "test", false, false, 5);
+    public void testRemoveObjects() {
 
-        dumpOutputDir = new File("./dump");
-        assertTrue("dump directory should exist after test runs", dumpOutputDir.exists());
+        // runFlowAndGetPayload("remove-objects");
+        getConnector().removeObjects("Arenas", new Document());
+        // MongoCollection payload = runFlowAndGetPayload("find-objects");
+        Iterable<Document> resultCollection = getConnector().findObjects("Arenas", null, null, 0, 0, null);
+        assertFalse(resultCollection.iterator().hasNext());
+
     }
+
+    @After
+    public void tearDown() throws Exception {
+        getConnector().dropCollection("Arenas");
+
+    }
+
 }

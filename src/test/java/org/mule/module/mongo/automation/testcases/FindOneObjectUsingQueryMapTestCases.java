@@ -10,38 +10,38 @@ package org.mule.module.mongo.automation.testcases;
 
 import static org.junit.Assert.assertTrue;
 
-import java.io.File;
-import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
-import org.apache.commons.io.FileUtils;
+import org.bson.Document;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.mule.module.mongo.api.WriteConcern;
 import org.mule.module.mongo.automation.AbstractMongoTest;
 import org.mule.module.mongo.automation.RegressionTests;
+import org.mule.module.mongo.automation.SmokeTests;
 
-public class DumpTestCases extends AbstractMongoTest {
+public class FindOneObjectUsingQueryMapTestCases extends AbstractMongoTest {
+
+    private Map<String, Object> elementAttributes = new HashMap<String, Object>();
 
     @Override
     public void setUp() {
         getConnector().createCollection("Arenas", false, 5, 5);
-        insertObjects(getEmptyDocuments(10), "Arenas");
+        elementAttributes.put("myKey", "myValue");
+        getConnector().saveObjectFromMap("Arenas", elementAttributes, WriteConcern.SAFE);
     }
 
     @After
     public void tearDown() throws Exception {
-        File dumpOutputDir = new File("./dump");
-        FileUtils.deleteDirectory(dumpOutputDir);
         getConnector().dropCollection("Arenas");
     }
 
-    @Category({ RegressionTests.class })
+    @Category({ SmokeTests.class, RegressionTests.class })
     @Test
-    public void testDump() throws IOException {
-        File dumpOutputDir;
-        getConnector().dump("./dump", "test", false, false, 5);
-
-        dumpOutputDir = new File("./dump");
-        assertTrue("dump directory should exist after test runs", dumpOutputDir.exists());
+    public void testFindOneObjectUsingQueryMap() {
+        Document document = getConnector().findOneObjectUsingQueryMap("Arenas", elementAttributes, null, false);
+        assertTrue(document.get("myKey").equals("myValue"));
     }
 }

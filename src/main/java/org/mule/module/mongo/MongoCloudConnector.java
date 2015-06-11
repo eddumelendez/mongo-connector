@@ -305,7 +305,6 @@ public class MongoCloudConnector
      *            the query.
      * @param upsert if the database should create the element if it does not exist
      * @param multi if all or just the first object matching the query will be updated
-     * @param writeConcern the write concern used to update
      */
     @Processor
 	@ReconnectOn(exceptions = IllegalStateException.class)
@@ -314,8 +313,7 @@ public class MongoCloudConnector
                                         final Document query,
                                         final Document element,
                                         @Default(CAPPED_DEFAULT_VALUE) final boolean upsert,
-                                        @Default(value = "true") final boolean multi,
-                                        @Default(WRITE_CONCERN_DEFAULT_VALUE) final WriteConcern writeConcern)
+                                        @Default(value = "true") final boolean multi)
     {
         final Document functionDocument = fromFunction(function, element);
 
@@ -397,13 +395,11 @@ public class MongoCloudConnector
      * @param collection the collection whose elements will be removed
      * @param query the optional {@link Document} query object. Objects that match it will be
      *            removed.
-     * @param writeConcern the write concern used to remove the object
      */
     @Processor
 	@ReconnectOn(exceptions = IllegalStateException.class)
     public void removeObjects(final String collection,
-                              @Default("#[payload]") final Document query,
-                              @Default(WRITE_CONCERN_DEFAULT_VALUE) final WriteConcern writeConcern)
+                              @Default("#[payload]") final Document query)
     {
         strategy.getClient().removeObjects(collection, query);
     }

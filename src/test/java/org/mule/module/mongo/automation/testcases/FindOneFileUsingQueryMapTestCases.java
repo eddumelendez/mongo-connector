@@ -10,18 +10,27 @@ package org.mule.module.mongo.automation.testcases;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.junit.After;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.mule.module.mongo.automation.AbstractMongoTest;
 import org.mule.module.mongo.automation.RegressionTests;
 
-public class FindFilesTestCases extends AbstractMongoTest {
+import com.mongodb.DBObject;
+
+public class FindOneFileUsingQueryMapTestCases extends AbstractMongoTest {
+
+    private Map<String, Object> queryAttributes = new HashMap<String, Object>();
 
     @Override
     public void setUp() {
         createFileFromPayload("file1");
         createFileFromPayload("file2");
+        createFileFromPayload("file3");
+        queryAttributes.put("filename", "file1");
     }
 
     @After
@@ -31,8 +40,10 @@ public class FindFilesTestCases extends AbstractMongoTest {
 
     @Category({ RegressionTests.class })
     @Test
-    public void testFindFiles() {
-        assertEquals("There should be 2 files found", 2, findFiles(null));
-    }
+    public void testFindOneFileUsingQueryMap() {
+        DBObject dbObj = getConnector().findOneFileUsingQueryMap(queryAttributes);
 
+        assertEquals("The file found should have the name file1", queryAttributes.get("filename"), dbObj.get("filename"));
+        assertEquals("There should be 3 files in total", 3, findFiles(null));
+    }
 }
