@@ -28,108 +28,105 @@ import com.mongodb.gridfs.GridFSInputFile;
 
 public class MongoTestParent extends ConnectorTestCase {
 
-	@Rule
-	public TemporaryFolder folder = new TemporaryFolder();
+    @Rule
+    public TemporaryFolder folder = new TemporaryFolder();
 
-	// Set global timeout of tests to 10minutes
+    // Set global timeout of tests to 10minutes
     @Rule
     public Timeout globalTimeout = new Timeout(600000);
 
-	protected List<DBObject> getEmptyDBObjects(int num) {
-		List<DBObject> list = new ArrayList<DBObject>();
-		for (int i = 0; i < num; i++) {
-			list.add(new BasicDBObject());
-		}
-		return list;
-	}
-	
-	protected void setTestObjects(Map<String, Object> testObjects) {
-	}
+    protected List<DBObject> getEmptyDBObjects(int num) {
+        List<DBObject> list = new ArrayList<DBObject>();
+        for (int i = 0; i < num; i++) {
+            list.add(new BasicDBObject());
+        }
+        return list;
+    }
 
-	protected void insertObjects(List<DBObject> objs) {
-		try {
-			for (DBObject obj : objs) {
-				upsertOnTestRunMessage("dbObjectRef", obj);
-				runFlowAndGetPayload("insert-object");
-			}
-		} catch (Exception e) {
-	         fail(ConnectorTestUtils.getStackTrace(e));
-	    }
+    protected void setTestObjects(Map<String, Object> testObjects) {
+    }
 
-	}
+    protected void insertObjects(List<DBObject> objs) {
+        try {
+            for (DBObject obj : objs) {
+                upsertOnTestRunMessage("dbObjectRef", obj);
+                runFlowAndGetPayload("insert-object");
+            }
+        } catch (Exception e) {
+            fail(ConnectorTestUtils.getStackTrace(e));
+        }
 
-	
-	// Returns all number of all files in database as per find-files operation
-	protected int findFiles() {
-		int size = 0;
-		Iterable<DBObject> iterable = null;
-		try {
-//			MuleEvent event = getTestEvent(new BasicDBObject());
-			iterable = runFlowAndGetPayload("find-files");
+    }
 
-		
-		for(DBObject dbObj : iterable) {
-			if(dbObj.containsField("filename")) {
-				size++;
-			}
-			
-		}
-		} catch (Exception e) {
-	         fail(ConnectorTestUtils.getStackTrace(e));
-	    }
-		return size;
-		
-	}
-	
-	protected GridFSInputFile createFileFromPayload(DBObject dbObj, String filename) {
-		GridFSInputFile res = null;
-		try {
-			File file = folder.newFile(filename);
+    // Returns all number of all files in database as per find-files operation
+    protected int findFiles() {
+        int size = 0;
+        Iterable<DBObject> iterable = null;
+        try {
+            // MuleEvent event = getTestEvent(new BasicDBObject());
+            iterable = runFlowAndGetPayload("find-files");
 
-			upsertOnTestRunMessage("filename", filename);
-			upsertOnTestRunMessage("metadataRef", dbObj);
-			upsertOnTestRunMessage("payloadContent", file);
+            for (DBObject dbObj : iterable) {
+                if (dbObj.containsField("filename")) {
+                    size++;
+                }
 
-			res = runFlowAndGetPayload("create-file-from-payload");
-		} catch (Exception e) {
-	         fail(ConnectorTestUtils.getStackTrace(e));
-	    }
-		return res;
-	}
-	
-	protected GridFSInputFile createFileFromPayload(String filename) {
-		return createFileFromPayload(new BasicDBObject(), filename);
-	}
-	
-	protected GridFSInputFile createFileFromPayload(Object filename) {
-		return createFileFromPayload(filename.toString());
-	}
-	
-	protected void deleteFilesCreatedByCreateFileFromPayload() {
-		try {
-			upsertOnTestRunMessage("collection", "fs.chunks");
-			runFlowAndGetPayload("drop-collection");
-			
-			upsertOnTestRunMessage("collection", "fs.files");
-			runFlowAndGetPayload("drop-collection");
-		} catch (Exception e) {
-	         fail(ConnectorTestUtils.getStackTrace(e));
-	    }
-			
-			
-	}
+            }
+        } catch (Exception e) {
+            fail(ConnectorTestUtils.getStackTrace(e));
+        }
+        return size;
 
-	protected void dropIndex(String indexName) {
-		upsertOnTestRunMessage("index", indexName);			
-		try {
-			runFlowAndGetPayload("drop-index");
-		} catch (Exception e) {
-	         fail(ConnectorTestUtils.getStackTrace(e));
-	    }
-	}
-	
-	protected MongoCollection getObjects(Map<String, Object> testObjects) throws Exception {
-		return (MongoCollection) runFlowAndGetPayload("find-objects");
-	}
-	
+    }
+
+    protected GridFSInputFile createFileFromPayload(DBObject dbObj, String filename) {
+        GridFSInputFile res = null;
+        try {
+            File file = folder.newFile(filename);
+
+            upsertOnTestRunMessage("filename", filename);
+            upsertOnTestRunMessage("metadataRef", dbObj);
+            upsertOnTestRunMessage("payloadContent", file);
+
+            res = runFlowAndGetPayload("create-file-from-payload");
+        } catch (Exception e) {
+            fail(ConnectorTestUtils.getStackTrace(e));
+        }
+        return res;
+    }
+
+    protected GridFSInputFile createFileFromPayload(String filename) {
+        return createFileFromPayload(new BasicDBObject(), filename);
+    }
+
+    protected GridFSInputFile createFileFromPayload(Object filename) {
+        return createFileFromPayload(filename.toString());
+    }
+
+    protected void deleteFilesCreatedByCreateFileFromPayload() {
+        try {
+            upsertOnTestRunMessage("collection", "fs.chunks");
+            runFlowAndGetPayload("drop-collection");
+
+            upsertOnTestRunMessage("collection", "fs.files");
+            runFlowAndGetPayload("drop-collection");
+        } catch (Exception e) {
+            fail(ConnectorTestUtils.getStackTrace(e));
+        }
+
+    }
+
+    protected void dropIndex(String indexName) {
+        upsertOnTestRunMessage("index", indexName);
+        try {
+            runFlowAndGetPayload("drop-index");
+        } catch (Exception e) {
+            fail(ConnectorTestUtils.getStackTrace(e));
+        }
+    }
+
+    protected MongoCollection getObjects(Map<String, Object> testObjects) throws Exception {
+        return (MongoCollection) runFlowAndGetPayload("find-objects");
+    }
+
 }

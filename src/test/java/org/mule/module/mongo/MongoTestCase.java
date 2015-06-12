@@ -35,11 +35,11 @@ import com.mongodb.gridfs.GridFSDBFile;
 
 /**
  * Unit test for the {@link MongoClientImpl}
- * 
+ *
  * @author flbulgarelli
  */
-public class MongoTestCase
-{
+public class MongoTestCase {
+
     private static final String A_COLLECTION = "myCollection";
     private MongoClient client;
     private DBCollection collectionMock;
@@ -47,15 +47,13 @@ public class MongoTestCase
     private GridFS gridFsMock;
 
     @Before
-    public void setup()
-    {
+    public void setup() {
         dbMock = mock(DB.class);
         gridFsMock = mock(GridFS.class);
-        client = new MongoClientImpl(dbMock)
-        {
+        client = new MongoClientImpl(dbMock) {
+
             @Override
-            protected GridFS getGridFs()
-            {
+            protected GridFS getGridFs() {
                 return gridFsMock;
             }
         };
@@ -65,52 +63,45 @@ public class MongoTestCase
 
     /** Test {@link MongoClient#listCollections()} */
     @Test
-    public void listCollections()
-    {
+    public void listCollections() {
         client.listCollections();
         verify(dbMock).getCollectionNames();
     }
 
     /** Test {@link MongoClient#existsCollection(String)} */
     @Test
-    public void existsCollection()
-    {
+    public void existsCollection() {
         client.existsCollection(A_COLLECTION);
         verify(dbMock).collectionExists(A_COLLECTION);
     }
 
     /** Test {@link MongoClient#dropCollection(String)} */
     @Test
-    public void dropCollection()
-    {
+    public void dropCollection() {
         client.dropCollection(A_COLLECTION);
         verify(collectionMock).drop();
     }
 
     /** Test {@link MongoClient#saveObject(String, DBObject, WriteConcern)} */
     @Test
-    public void saveObject() throws Exception
-    {
+    public void saveObject() throws Exception {
         BasicDBObject dbObject = new BasicDBObject();
         client.saveObject(A_COLLECTION, dbObject, WriteConcern.NONE);
         verify(collectionMock).save(dbObject, com.mongodb.WriteConcern.NONE);
     }
 
     /**
-     * Test
-     * {@link MongoClient#insertObject(String, com.mongodb.DBObject, org.mule.module.mongo.api.WriteConcern)}
+     * Test {@link MongoClient#insertObject(String, com.mongodb.DBObject, org.mule.module.mongo.api.WriteConcern)}
      */
     @Test
-    public void insertObject() throws Exception
-    {
+    public void insertObject() throws Exception {
         BasicDBObject dbObject = new BasicDBObject();
         client.insertObject(A_COLLECTION, dbObject, WriteConcern.NONE);
         verify(collectionMock).insert(dbObject, com.mongodb.WriteConcern.NONE);
     }
 
     @Test
-    public void removeObjects() throws Exception
-    {
+    public void removeObjects() throws Exception {
         when(dbMock.getWriteConcern()).thenReturn(com.mongodb.WriteConcern.FSYNC_SAFE);
         client.removeObjects(A_COLLECTION, null, WriteConcern.DATABASE_DEFAULT);
         verify(collectionMock).remove(refEq(new BasicDBObject()), eq(com.mongodb.WriteConcern.FSYNC_SAFE));
@@ -118,8 +109,7 @@ public class MongoTestCase
 
     /** Test {@link MongoClient#countObjects(String, com.mongodb.DBObject)} */
     @Test
-    public void countObjectsWithQuery() throws Exception
-    {
+    public void countObjectsWithQuery() throws Exception {
         BasicDBObject o = new BasicDBObject();
         client.countObjects(A_COLLECTION, o);
         verify(collectionMock).count(o);
@@ -127,19 +117,16 @@ public class MongoTestCase
 
     /** Test {@link MongoClient#countObjects(String, com.mongodb.DBObject)} */
     @Test
-    public void countObjects() throws Exception
-    {
+    public void countObjects() throws Exception {
         client.countObjects(A_COLLECTION, null);
         verify(collectionMock).count();
     }
 
     /**
-     * Test
-     * {@link MongoClient#updateObjects(String, com.mongodb.DBObject, com.mongodb.DBObject, boolean, boolean, org.mule.module.mongo.api.WriteConcern)}
+     * Test {@link MongoClient#updateObjects(String, com.mongodb.DBObject, com.mongodb.DBObject, boolean, boolean, org.mule.module.mongo.api.WriteConcern)}
      */
     @Test
-    public void updateObject() throws Exception
-    {
+    public void updateObject() throws Exception {
         DBObject query = new BasicDBObject();
         DBObject dbObject = new BasicDBObject();
         client.updateObjects(A_COLLECTION, query, dbObject, false, true, WriteConcern.SAFE);
@@ -148,73 +135,65 @@ public class MongoTestCase
 
     /** Test {@link MongoClient#createIndex(String, com.mongodb.DBObject)} */
     @Test
-    public void createIndex() throws Exception
-    {
+    public void createIndex() throws Exception {
         client.createIndex(A_COLLECTION, "i", IndexOrder.ASC);
         verify(collectionMock).createIndex(refEq(new BasicDBObject("i", 1)));
     }
 
     /** Tests {@link MongoClient#dropIndex(String, String)} */
     @Test
-    public void dropIndex() throws Exception
-    {
+    public void dropIndex() throws Exception {
         client.dropIndex(A_COLLECTION, "anIndex");
         verify(collectionMock).dropIndex(eq("anIndex"));
     }
 
     /** Tests {@link MongoClient#listIndices(String)} */
     @Test
-    public void listIndices() throws Exception
-    {
+    public void listIndices() throws Exception {
         client.listIndices(A_COLLECTION);
         verify(collectionMock).getIndexInfo();
     }
 
     /**
      * Test for {@link MongoClient#removeFiles(DBObject)}
-     * 
+     *
      * @throws Exception
      */
     @Test
-    public void removeFiles() throws Exception
-    {
+    public void removeFiles() throws Exception {
         client.removeFiles(null);
         verify(gridFsMock).remove((DBObject) null);
     }
 
     /**
      * Test for {@link MongoClient#findFiles(DBObject)}
-     * 
+     *
      * @throws Exception
      */
     @Test
-    public void findFiles() throws Exception
-    {
+    public void findFiles() throws Exception {
         client.findFiles(null);
         verify(gridFsMock).find((DBObject) null);
     }
 
     /**
-     * Test for {@link MongoClient#getFileContent(DBObject)} when no object matches
-     * the query
-     * 
+     * Test for {@link MongoClient#getFileContent(DBObject)} when no object matches the query
+     *
      * @throws Exception
      */
     @Test(expected = MongoException.class)
-    public void getFileContentNoFile() throws Exception
-    {
+    public void getFileContentNoFile() throws Exception {
         BasicDBObject q = new BasicDBObject("foo", "bar");
         client.getFileContent(q);
     }
 
     /**
      * Test for {@link MongoClient#getFileContent(DBObject)}
-     * 
+     *
      * @throws Exception
      */
     @Test
-    public void getFileContent() throws Exception
-    {
+    public void getFileContent() throws Exception {
         BasicDBObject q = new BasicDBObject("foo", "bar");
         when(gridFsMock.findOne(eq(q))).thenReturn(new GridFSDBFile());
         client.getFileContent(q);

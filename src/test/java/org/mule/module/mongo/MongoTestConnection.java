@@ -10,58 +10,50 @@ package org.mule.module.mongo;
 
 import static org.junit.Assert.assertTrue;
 
-import java.io.File;
-
-import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 import org.mule.api.ConnectionException;
 
-public class MongoTestConnection
-{
+public class MongoTestConnection {
+
     private MongoCloudConnector connector;
-    
+
     @Before
-    public void setup() throws Exception
-    {
+    public void setup() throws Exception {
         connector = new MongoCloudConnector();
         connector.setHost("127.0.0.1");
     }
-    
+
     @After
-	public void tearDown() throws Exception {
-			connector.disconnect();
+    public void tearDown() throws Exception {
+        connector.disconnect();
     }
-    
+
     @Test
-    public void connectionIncorrectPort() throws ConnectionException
-    {
-    	connector.setPort(32589);
-        assertTrue(!isConnected("admin","","test"));
+    public void connectionIncorrectPort() throws ConnectionException {
+        connector.setPort(32589);
+        assertTrue(!isConnected("admin", "", "test"));
     }
-    
+
     @Test
-    public void connectionIncorrectCredentials()
-    {
-    	connector.setPort(27017);
-        assertTrue(!isConnected("admin","zdrgdr","test"));
-    }
-    
-    @Test
-    public void validConnection()
-    {
+    public void connectionIncorrectCredentials() {
         connector.setPort(27017);
-        assertTrue(isConnected("admin","","test"));
+        assertTrue(!isConnected("admin", "zdrgdr", "test"));
     }
-    
-    private boolean isConnected(String user,String pass,String db){
-    	try {
-			connector.connect(user, pass, db);
-		} catch (ConnectionException e) {
-			return false;
-		}
-		return true;
+
+    @Test
+    public void validConnection() {
+        connector.setPort(27017);
+        assertTrue(isConnected("admin", "", "test"));
+    }
+
+    private boolean isConnected(String user, String pass, String db) {
+        try {
+            connector.connect(user, pass, db);
+        } catch (ConnectionException e) {
+            return false;
+        }
+        return true;
     }
 }

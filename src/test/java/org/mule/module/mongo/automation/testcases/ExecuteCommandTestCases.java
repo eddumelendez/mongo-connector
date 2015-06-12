@@ -23,28 +23,28 @@ import com.mongodb.CommandResult;
 
 public class ExecuteCommandTestCases extends MongoTestParent {
 
-	@Before
-	public void setUp() throws Exception {
-			// Get the collectionName and create a collection
-			initializeTestRunMessage("executeCommand");
-			runFlowAndGetPayload("create-collection");
+    @Before
+    public void setUp() throws Exception {
+        // Get the collectionName and create a collection
+        initializeTestRunMessage("executeCommand");
+        runFlowAndGetPayload("create-collection");
 
-	}
-	
-	@Category({ RegressionTests.class})
-	@Test
-	public void testExecuteCommand() {
-		try {
-			// Drop the collection using command
-			CommandResult cmdResult = runFlowAndGetPayload("execute-command");
-			assertTrue(cmdResult.ok());
-			
-			Boolean exists = runFlowAndGetPayload("exists-collection");
-			assertFalse(exists);
-		} catch (Exception e) {
-	         fail(ConnectorTestUtils.getStackTrace(e));
-	    }
+    }
 
-	}
-		
+    @Category({ RegressionTests.class })
+    @Test
+    public void testExecuteCommand() {
+        try {
+            // Drop the collection using command
+            CommandResult cmdResult = runFlowAndGetPayload("execute-command");
+            assertTrue(cmdResult.ok());
+
+            Boolean exists = runFlowAndGetPayload("exists-collection");
+            assertFalse(exists);
+        } catch (Exception e) {
+            fail(ConnectorTestUtils.getStackTrace(e));
+        }
+
+    }
+
 }

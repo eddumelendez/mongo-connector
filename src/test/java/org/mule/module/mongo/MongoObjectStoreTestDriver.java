@@ -23,27 +23,23 @@ import org.mule.api.store.ObjectStoreException;
 import org.mule.api.store.PartitionableExpirableObjectStore;
 import org.mule.tck.junit4.FunctionalTestCase;
 
-public class MongoObjectStoreTestDriver extends FunctionalTestCase
-{
+public class MongoObjectStoreTestDriver extends FunctionalTestCase {
 
     private PartitionableExpirableObjectStore<Serializable> objectStore;
 
     @Override
-    protected String getConfigResources()
-    {
+    protected String getConfigResources() {
         return "mongo-objectstore-tests-config.xml";
     }
 
     @Override
-    protected void doSetUp() throws Exception
-    {
+    protected void doSetUp() throws Exception {
         super.doSetUp();
 
         objectStore = muleContext.getRegistry().lookupObject(FakeObjectStoreUser.class).getObjectStore();
     }
 
-    public void testListableObjectStoreOperations() throws ObjectStoreException
-    {
+    public void testListableObjectStoreOperations() throws ObjectStoreException {
         // open and close are noops
         objectStore.open();
         objectStore.close();
@@ -56,13 +52,10 @@ public class MongoObjectStoreTestDriver extends FunctionalTestCase
         assertFalse(objectStore.contains(testKey));
         assertFalse(objectStore.allKeys().contains(testKey));
 
-        try
-        {
+        try {
             objectStore.retrieve(testKey);
             fail("should have got an ObjectDoesNotExistException");
-        }
-        catch (final ObjectDoesNotExistException odnee)
-        {
+        } catch (final ObjectDoesNotExistException odnee) {
             // NOOP
         }
 
@@ -79,13 +72,10 @@ public class MongoObjectStoreTestDriver extends FunctionalTestCase
         assertFalse(objectStore.contains(testKey));
         assertFalse(objectStore.allKeys().contains(testKey));
 
-        try
-        {
+        try {
             objectStore.remove(testKey);
             fail("should have got an ObjectDoesNotExistException");
-        }
-        catch (final ObjectDoesNotExistException odnee)
-        {
+        } catch (final ObjectDoesNotExistException odnee) {
             // NOOP
         }
 
@@ -96,8 +86,7 @@ public class MongoObjectStoreTestDriver extends FunctionalTestCase
         assertFalse(objectStore.contains(testKey));
     }
 
-    public void testPartitionableObjectStoreOperations() throws ObjectStoreException
-    {
+    public void testPartitionableObjectStoreOperations() throws ObjectStoreException {
         final String testPartition = RandomStringUtils.randomAlphanumeric(20);
 
         // open and close are noops
@@ -112,13 +101,10 @@ public class MongoObjectStoreTestDriver extends FunctionalTestCase
         assertFalse(objectStore.contains(testKey, testPartition));
         assertFalse(objectStore.allKeys(testPartition).contains(testKey));
 
-        try
-        {
+        try {
             objectStore.retrieve(testKey, testPartition);
             fail("should have got an ObjectDoesNotExistException");
-        }
-        catch (final ObjectDoesNotExistException odnee)
-        {
+        } catch (final ObjectDoesNotExistException odnee) {
             // NOOP
         }
 
@@ -136,13 +122,10 @@ public class MongoObjectStoreTestDriver extends FunctionalTestCase
         assertFalse(objectStore.contains(testKey, testPartition));
         assertFalse(objectStore.allKeys(testPartition).contains(testKey));
 
-        try
-        {
+        try {
             objectStore.remove(testKey, testPartition);
             fail("should have got an ObjectDoesNotExistException");
-        }
-        catch (final ObjectDoesNotExistException odnee)
-        {
+        } catch (final ObjectDoesNotExistException odnee) {
             // NOOP
         }
 

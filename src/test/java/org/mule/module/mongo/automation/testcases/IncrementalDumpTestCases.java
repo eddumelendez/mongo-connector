@@ -23,30 +23,29 @@ import org.mule.module.mongo.automation.RegressionTests;
 import org.mule.modules.tests.ConnectorTestUtils;
 
 public class IncrementalDumpTestCases extends MongoTestParent {
-	
 
-	@Before
-	public void setUp() {
-		initializeTestRunMessage("dump");
-	}
+    @Before
+    public void setUp() {
+        initializeTestRunMessage("dump");
+    }
 
-	@After
-	public void tearDown() throws Exception {
-			FileUtils.deleteDirectory(new File("./" + getTestRunMessageValue("outputDirectory")));
+    @After
+    public void tearDown() throws Exception {
+        FileUtils.deleteDirectory(new File("./" + getTestRunMessageValue("outputDirectory")));
 
-	}
+    }
 
-	@Category({ RegressionTests.class })
-	@Test
-	public void testIncrementalDump() {
-		try {
-			runFlowAndGetPayload("dump");
-			File dumpOutputDir = new File("./" + getTestRunMessageValue("outputDirectory"));
-			assertTrue("dump directory should exist after test runs", dumpOutputDir.exists());
-		} catch (Exception e) {
-	         fail(ConnectorTestUtils.getStackTrace(e));
-	    }
-		
-	}
+    @Category({ RegressionTests.class })
+    @Test
+    public void testIncrementalDump() {
+        try {
+            runFlowAndGetPayload("dump");
+            File dumpOutputDir = new File("./" + getTestRunMessageValue("outputDirectory"));
+            assertTrue("dump directory should exist after test runs", dumpOutputDir.exists());
+        } catch (Exception e) {
+            fail(ConnectorTestUtils.getStackTrace(e));
+        }
+
+    }
 
 }

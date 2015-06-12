@@ -8,7 +8,6 @@
 
 package org.mule.module.mongo.tools;
 
-import com.mongodb.DB;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -16,13 +15,14 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-public class IncrementalMongoDump extends AbstractMongoUtility
-{
+import com.mongodb.DB;
+
+public class IncrementalMongoDump extends AbstractMongoUtility {
+
     private Map<String, DB> dbs = new HashMap<String, DB>();
     private String incrementalTimestampFile;
 
-    public void dump(String outputDirectory, String database) throws IOException
-    {
+    public void dump(String outputDirectory, String database) throws IOException {
         ExecutorService executor = Executors.newSingleThreadExecutor();
         IncrementalOplogDump incrementalOplogDump = new IncrementalOplogDump();
         incrementalOplogDump.setOutputDirectory(outputDirectory);
@@ -33,13 +33,11 @@ public class IncrementalMongoDump extends AbstractMongoUtility
         propagateException(future);
     }
 
-    public void addDB(DB db)
-    {
+    public void addDB(DB db) {
         dbs.put(db.getName(), db);
     }
 
-    public void setIncrementalTimestampFile(String incrementalTimestampFile)
-    {
+    public void setIncrementalTimestampFile(String incrementalTimestampFile) {
         this.incrementalTimestampFile = incrementalTimestampFile;
     }
 }

@@ -8,41 +8,34 @@
 
 package org.mule.module.mongo.tools;
 
-import com.mongodb.DBObject;
-
 import java.io.File;
 import java.io.IOException;
 
-public abstract class DumpWriter
-{
+import com.mongodb.DBObject;
+
+public abstract class DumpWriter {
+
     private String outputDirectory;
     private String database;
 
-    public DumpWriter(String outputDirectory, String database)
-    {
+    public DumpWriter(String outputDirectory, String database) {
         this.outputDirectory = outputDirectory;
         this.database = database;
     }
 
-    public DumpWriter(String outputDirectory)
-    {
+    public DumpWriter(String outputDirectory) {
         this.outputDirectory = outputDirectory;
     }
 
-    public String getFilePath(String collection)
-    {
+    public String getFilePath(String collection) {
         StringBuilder path = new StringBuilder(outputDirectory);
         path.append(File.separator);
 
-        if(database != null)
-        {
-            path.append(database)
-                .append(File.separator);
+        if (database != null) {
+            path.append(database).append(File.separator);
 
         }
-        path.append(collection)
-            .append(".")
-            .append(getExtension());
+        path.append(collection).append(".").append(getExtension());
         return path.toString();
     }
 

@@ -24,25 +24,21 @@ package org.mule.module.mongo;
 
 import org.mule.module.mongo.api.MongoClient;
 
-public class MongoSession
-{
+public class MongoSession {
 
     private String username;
     private MongoClient client;
 
-    public MongoSession(String username, MongoClient client)
-    {
+    public MongoSession(String username, MongoClient client) {
         this.username = username;
         this.client = client;
     }
 
-    public String getUsername()
-    {
+    public String getUsername() {
         return username;
     }
 
-    public MongoClient getClient()
-    {
+    public MongoClient getClient() {
         return client;
     }
 }

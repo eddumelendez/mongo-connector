@@ -12,7 +12,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import org.junit.Test;
@@ -22,34 +21,32 @@ import org.mule.module.mongo.automation.RegressionTests;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 
-public class MongoCollectionUnitTest
-{
+public class MongoCollectionUnitTest {
+
     private Iterable<? extends DBObject> o;
     MongoCollection mo;
-    
-    @Category({RegressionTests.class})
+
+    @Category({ RegressionTests.class })
     @Test
-    public void collectionToString() 
-    {
-    	mo = new MongoCollection(o);
+    public void collectionToString() {
+        mo = new MongoCollection(o);
         String className = mo.toString();
         className = className.substring(0, className.indexOf("@"));
-        assertEquals("This should be class name","org.mule.module.mongo.api.MongoCollection",className);
+        assertEquals("This should be class name", "org.mule.module.mongo.api.MongoCollection", className);
     }
-    
-    @Category({RegressionTests.class})
+
+    @Category({ RegressionTests.class })
     @Test
-    public void toArray()
-    {
-    	List<DBObject> obj = new ArrayList<DBObject>();
+    public void toArray() {
+        List<DBObject> obj = new ArrayList<DBObject>();
         DBObject o = new BasicDBObject();
-        //Fill with sample data
-        o.put( "foo", "bar" );
+        // Fill with sample data
+        o.put("foo", "bar");
         obj.add(o);
-        //Create a new instance of MongoCollection
+        // Create a new instance of MongoCollection
         mo = new MongoCollection(obj);
         Object test = mo.toArray();
-        
+
         assertTrue(test instanceof Object[]);
         assertTrue("Array length should be 1", mo.size() == 1);
     }

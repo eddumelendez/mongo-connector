@@ -33,8 +33,8 @@ import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 
-public class MongoDump extends AbstractMongoUtility
-{
+public class MongoDump extends AbstractMongoUtility {
+
     public static final String TIMESTAMP_FORMAT = "'.'yyyy-MM-dd-HH-mm";
 
     private final MongoClient mongoClient;
@@ -44,30 +44,25 @@ public class MongoDump extends AbstractMongoUtility
     private DBCollection oplogCollection;
     private BSONTimestamp oplogStart;
 
-    public MongoDump(final MongoClient mongoClient)
-    {
+    public MongoDump(final MongoClient mongoClient) {
         this.mongoClient = mongoClient;
     }
 
-    public void dump(final String outputDirectory, final String database, String outputName, final int threads)
-        throws IOException
-    {
+    public void dump(final String outputDirectory, final String database, String outputName, final int threads) throws IOException {
         Validate.notNull(outputDirectory);
         Validate.notNull(outputName);
         Validate.notNull(database);
-        
+
         String opName = outputName;
         opName += appendTimestamp();
 
         initOplog(database);
 
         final Collection<String> collections = mongoClient.listCollections();
-        if (collections != null)
-        {
+        if (collections != null) {
             final ExecutorService executor = Executors.newFixedThreadPool(threads);
             final DumpWriter dumpWriter = new BsonDumpWriter(outputDirectory, opName);
-            for (final String collectionName : collections)
-            {
+            for (final String collectionName : collections) {
                 final DBCollection dbCollection = mongoClient.getCollection(collectionName);
                 final MongoDumpCollection dumpCollection = new MongoDumpCollection(dbCollection);
                 dumpCollection.setDumpWriter(dumpWriter);
@@ -77,15 +72,12 @@ public class MongoDump extends AbstractMongoUtility
             }
 
             executor.shutdown();
-            try
-            {
-                if (!executor.awaitTermination(60, TimeUnit.SECONDS))
-                {
+            try {
+                if (!executor.awaitTermination(60, TimeUnit.SECONDS)) {
                     executor.shutdownNow();
                 }
 
-                if (oplog)
-                {
+                if (oplog) {
                     final ExecutorService singleExecutor = Executors.newSingleThreadExecutor();
                     final MongoDumpCollection dumpCollection = new MongoDumpCollection(oplogCollection);
                     dumpCollection.setName(BackupConstants.OPLOG);
@@ -101,58 +93,46 @@ public class MongoDump extends AbstractMongoUtility
                     propagateException(future);
                 }
 
-                if (zip)
-                {
+                if (zip) {
                     final String dbDumpPath = outputDirectory + File.separator + opName;
                     ZipUtils.zipDirectory(dbDumpPath);
                     FileUtils.deleteDirectory(new File(dbDumpPath));
                 }
-            }
-            catch (final InterruptedException ie)
-            {
+            } catch (final InterruptedException ie) {
                 executor.shutdownNow();
                 Thread.currentThread().interrupt();
             }
         }
     }
 
-    private void initOplog(final String database) throws IOException
-    {
-        if (oplog)
-        {
-            oplogCollection = new OplogCollection(dbs.get(BackupConstants.ADMIN_DB),
-                dbs.get(BackupConstants.LOCAL_DB)).getOplogCollection();
+    private void initOplog(final String database) throws IOException {
+        if (oplog) {
+            oplogCollection = new OplogCollection(dbs.get(BackupConstants.ADMIN_DB), dbs.get(BackupConstants.LOCAL_DB)).getOplogCollection();
             // Filter for oplogs for the given database
-            final DBObject query = new BasicDBObject(BackupConstants.NAMESPACE_FIELD,
-                BackupUtils.getNamespacePattern(database));
+            final DBObject query = new BasicDBObject(BackupConstants.NAMESPACE_FIELD, BackupUtils.getNamespacePattern(database));
             final DBCursor oplogCursor = oplogCollection.find(query);
             oplogCursor.sort(new BasicDBObject("$natural", -1));
-            if (oplogCursor.hasNext())
-            {
+            if (oplogCursor.hasNext()) {
                 oplogStart = ((BSONTimestamp) oplogCursor.next().get("ts"));
             }
         }
     }
 
-    private String appendTimestamp()
-    {
+    private String appendTimestamp() {
         final SimpleDateFormat dateFormat = new SimpleDateFormat(TIMESTAMP_FORMAT);
         dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
         return dateFormat.format(new Date());
     }
 
-    public void setZip(final boolean zip)
-    {
+    public void setZip(final boolean zip) {
         this.zip = zip;
     }
 
-    public void setOplog(final boolean oplog)
-    {
+    public void setOplog(final boolean oplog) {
         this.oplog = oplog;
     }
 
-    public void addDB(final DB db)
-    {
+    public void addDB(final DB db) {
         dbs.put(db.getName(), db);
     }
 }

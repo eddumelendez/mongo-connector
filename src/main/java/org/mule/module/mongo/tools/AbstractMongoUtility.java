@@ -6,27 +6,20 @@
  * LICENSE.md file.
  */
 
-
 package org.mule.module.mongo.tools;
 
 import java.util.concurrent.Future;
 
-public abstract class AbstractMongoUtility
-{
-    public void propagateException(Future<Void> future)
-    {
-        try
-        {
+public abstract class AbstractMongoUtility {
+
+    public void propagateException(Future<Void> future) {
+        try {
             future.get();
-        }
-        catch(InterruptedException ie)
-        {
+        } catch (InterruptedException ie) {
             Thread.currentThread().interrupt();
             future.cancel(true);
-        }
-        catch(Exception ex)
-        {
-            throw new RuntimeException(ex.getMessage(),ex);
+        } catch (Exception ex) {
+            throw new RuntimeException(ex.getMessage(), ex);
         }
     }
 

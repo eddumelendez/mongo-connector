@@ -29,83 +29,77 @@ import com.mongodb.DBObject;
 
 public class MapReduceObjectsTestCases extends MongoTestParent {
 
+    @Before
+    public void setUp() throws Exception {
+        // Create the collection
+        initializeTestRunMessage("mapReduceObjects");
+        runFlowAndGetPayload("create-collection");
 
+        int numApples = (Integer) getTestRunMessageValue("numApples");
+        int numOranges = (Integer) getTestRunMessageValue("numOranges");
 
-	@Before
-	public void setUp() throws Exception {
-			// Create the collection
-			initializeTestRunMessage("mapReduceObjects");
-			runFlowAndGetPayload("create-collection");
+        // Create sample objects with which we can map reduce
+        List<DBObject> objects = new ArrayList<DBObject>();
+        for (int i = 0; i < numApples; i++) {
+            DBObject obj = new BasicDBObject("item", "apple");
+            objects.add(obj);
+        }
 
+        for (int i = 0; i < numOranges; i++) {
+            DBObject obj = new BasicDBObject("item", "orange");
+            objects.add(obj);
+        }
 
-			int numApples = (Integer) getTestRunMessageValue("numApples");
-			int numOranges = (Integer) getTestRunMessageValue("numOranges");
-			
-			// Create sample objects with which we can map reduce
-			List<DBObject> objects = new ArrayList<DBObject>();
-			for (int i = 0; i < numApples; i++) {
-				DBObject obj = new BasicDBObject("item", "apple");
-				objects.add(obj);
-			}
-			
-			for (int i = 0; i < numOranges; i++) {
-				DBObject obj = new BasicDBObject("item", "orange");
-				objects.add(obj);
-			}
-			
-			// Insert the objects into the collection
-			insertObjects(objects);
-			
+        // Insert the objects into the collection
+        insertObjects(objects);
 
-	}
+    }
 
-	@Category({RegressionTests.class})
-	@Test
-	public void testMapReduceObjects() {
-		try {
+    @Category({ RegressionTests.class })
+    @Test
+    public void testMapReduceObjects() {
+        try {
 
-			int numApples = (Integer) getTestRunMessageValue("numApples");
-			int numOranges = (Integer) getTestRunMessageValue("numOranges");
-			
-			MongoCollection resultCollection = runFlowAndGetPayload("map-reduce-objects");
-			assertTrue(resultCollection != null);
-			assertTrue(resultCollection.size() == 2); // We only have apples and oranges
-								
-			for (DBObject obj : resultCollection) {
-				DBObject valueObject = (DBObject) obj.get("value");
-				assertNotNull(valueObject);
-				if (obj.get("_id").equals("apple")) {
-					assertTrue(valueObject.containsField("count"));
-					assertTrue((Double)valueObject.get("count") == numApples); // map reduce returns doubles, typecast to Double and compare
-				}
-				else {
-					if (obj.get("_id").equals("orange")) {
-						assertTrue(valueObject.containsField("count"));
-						assertTrue((Double)valueObject.get("count") == numOranges); // map reduce returns doubles, typecast to Double and compare
-					}
-					else fail();
-				}
-			}
-		
-		} catch (Exception e) {
-	         fail(ConnectorTestUtils.getStackTrace(e));
-	    }
+            int numApples = (Integer) getTestRunMessageValue("numApples");
+            int numOranges = (Integer) getTestRunMessageValue("numOranges");
 
-	}
-	
-	@After
-	public void tearDown() throws Exception {
-			String outputCollection = getTestRunMessageValue("outputCollection").toString();
-			
-			// drop the collection
-			runFlowAndGetPayload("drop-collection");
+            MongoCollection resultCollection = runFlowAndGetPayload("map-reduce-objects");
+            assertTrue(resultCollection != null);
+            assertTrue(resultCollection.size() == 2); // We only have apples and oranges
 
-			// drop the output collection
-			// replace the "collection" entry so that the drop-collection flow drops the correct collection
-			upsertOnTestRunMessage("collection", outputCollection);
-			runFlowAndGetPayload("drop-collection");
+            for (DBObject obj : resultCollection) {
+                DBObject valueObject = (DBObject) obj.get("value");
+                assertNotNull(valueObject);
+                if (obj.get("_id").equals("apple")) {
+                    assertTrue(valueObject.containsField("count"));
+                    assertTrue((Double) valueObject.get("count") == numApples); // map reduce returns doubles, typecast to Double and compare
+                } else {
+                    if (obj.get("_id").equals("orange")) {
+                        assertTrue(valueObject.containsField("count"));
+                        assertTrue((Double) valueObject.get("count") == numOranges); // map reduce returns doubles, typecast to Double and compare
+                    } else
+                        fail();
+                }
+            }
 
-	}
+        } catch (Exception e) {
+            fail(ConnectorTestUtils.getStackTrace(e));
+        }
 
-	
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        String outputCollection = getTestRunMessageValue("outputCollection").toString();
+
+        // drop the collection
+        runFlowAndGetPayload("drop-collection");
+
+        // drop the output collection
+        // replace the "collection" entry so that the drop-collection flow drops the correct collection
+        upsertOnTestRunMessage("collection", outputCollection);
+        runFlowAndGetPayload("drop-collection");
+
+    }
+
 }

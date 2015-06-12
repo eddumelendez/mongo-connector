@@ -23,31 +23,31 @@ import com.mongodb.BasicDBObject;
 
 public class CountObjectsTestCases extends MongoTestParent {
 
-	@Before
-	public void setUp() throws Exception {
-			// Create collection
-			initializeTestRunMessage("countObjects");
-			runFlowAndGetPayload("create-collection");
-	}
+    @Before
+    public void setUp() throws Exception {
+        // Create collection
+        initializeTestRunMessage("countObjects");
+        runFlowAndGetPayload("create-collection");
+    }
 
-	@After
-	public void tearDown() throws Exception {
-			// Delete collection
-			runFlowAndGetPayload("drop-collection");
+    @After
+    public void tearDown() throws Exception {
+        // Delete collection
+        runFlowAndGetPayload("drop-collection");
 
-	}
+    }
 
-	@Category({ RegressionTests.class })
-	@Test
-	public void testCountObjects() {
-		Integer numObjects = getTestRunMessageValue("numObjects");
-		insertObjects(getEmptyDBObjects(numObjects));
-		try {
-			upsertOnTestRunMessage("queryRef", new BasicDBObject());
-			assertEquals(new Long(numObjects), (Long) runFlowAndGetPayload("count-objects"));
-		} catch (Exception e) {
-	         fail(ConnectorTestUtils.getStackTrace(e));
-	    }
-	}
-	
+    @Category({ RegressionTests.class })
+    @Test
+    public void testCountObjects() {
+        Integer numObjects = getTestRunMessageValue("numObjects");
+        insertObjects(getEmptyDBObjects(numObjects));
+        try {
+            upsertOnTestRunMessage("queryRef", new BasicDBObject());
+            assertEquals(new Long(numObjects), runFlowAndGetPayload("count-objects"));
+        } catch (Exception e) {
+            fail(ConnectorTestUtils.getStackTrace(e));
+        }
+    }
+
 }

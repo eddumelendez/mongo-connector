@@ -6,12 +6,7 @@
  * LICENSE.md file.
  */
 
-
 package org.mule.module.mongo.tools;
-
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBObject;
-import com.mongodb.DefaultDBDecoder;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -24,80 +19,68 @@ import org.bson.BSONDecoder;
 import org.bson.BSONObject;
 import org.bson.BasicBSONObject;
 
-public class RestoreFile implements Comparable<RestoreFile>
-{
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBObject;
+import com.mongodb.DefaultDBDecoder;
+
+public class RestoreFile implements Comparable<RestoreFile> {
+
     private String collection;
     private File file;
 
-    public RestoreFile(File file)
-    {
+    public RestoreFile(File file) {
         this.file = file;
         this.collection = BackupUtils.getCollectionName(file.getName());
     }
 
-    public List<DBObject> getCollectionObjects() throws IOException
-    {
+    public List<DBObject> getCollectionObjects() throws IOException {
         BSONDecoder bsonDecoder = new DefaultDBDecoder();
         BufferedInputStream inputStream = null;
         List<DBObject> dbObjects = new ArrayList<DBObject>();
 
-        try
-        {
+        try {
             inputStream = new BufferedInputStream(new FileInputStream(file));
-            while(inputStream.available() != 0)
-            {
+            while (inputStream.available() != 0) {
                 BSONObject bsonObject = bsonDecoder.readObject(inputStream);
-                if(bsonObject != null)
-                {
+                if (bsonObject != null) {
                     dbObjects.add(new BasicDBObject((BasicBSONObject) bsonObject));
                 }
             }
             return dbObjects;
-        }
-        finally
-        {
-            if(inputStream != null)
-            {
+        } finally {
+            if (inputStream != null) {
                 inputStream.close();
             }
         }
     }
 
-    public String getCollection()
-    {
+    public String getCollection() {
         return collection;
     }
-    
-    public int compareTo(RestoreFile restoreFile)
-    {
+
+    @Override
+    public int compareTo(RestoreFile restoreFile) {
         return collection.compareTo(restoreFile.getCollection());
     }
-    
+
     @Override
-    public boolean equals(Object obj)
-    {
-        if ( this == obj )
-        {  
+    public boolean equals(Object obj) {
+        if (this == obj) {
             return true;
         }
-        if ( !(obj instanceof RestoreFile) ) 
-        {
+        if (!(obj instanceof RestoreFile)) {
             return false;
         }
-        RestoreFile that = (RestoreFile)obj;
-        return
-        areEqual(this.collection, that.collection) &&
-        areEqual(this.file, that.file);
+        RestoreFile that = (RestoreFile) obj;
+        return areEqual(this.collection, that.collection) && areEqual(this.file, that.file);
     }
-      
-    private boolean areEqual(Object oThis, Object oThat)
-    {
+
+    private boolean areEqual(Object oThis, Object oThat) {
         return oThis == null ? oThat == null : oThis.equals(oThat);
     }
-    
+
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         return collection.hashCode();
     }
 }

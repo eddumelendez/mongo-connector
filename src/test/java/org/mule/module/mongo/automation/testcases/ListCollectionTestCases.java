@@ -24,46 +24,43 @@ import org.mule.modules.tests.ConnectorTestUtils;
 
 public class ListCollectionTestCases extends MongoTestParent {
 
-	private List<String> collectionNames;
-	
+    private List<String> collectionNames;
 
-	@Before
-	public void setUp() throws Exception {
-			initializeTestRunMessage("collection","collectionName");
-			collectionNames = getBeanFromContext("listCollections");
+    @Before
+    public void setUp() throws Exception {
+        initializeTestRunMessage("collection", "collectionName");
+        collectionNames = getBeanFromContext("listCollections");
 
-			for (String collectionName : collectionNames) {
-				upsertOnTestRunMessage("collection", collectionName);
-				runFlowAndGetPayload("create-collection");
-			}
+        for (String collectionName : collectionNames) {
+            upsertOnTestRunMessage("collection", collectionName);
+            runFlowAndGetPayload("create-collection");
+        }
 
-	}
+    }
 
+    @Category({ RegressionTests.class })
+    @Test
+    public void testListCollections() {
+        try {
+            Collection<String> payload = runFlowAndGetPayload("list-collections");
 
-	@Category({ RegressionTests.class})
-	@Test
-	public void testListCollections() {
-		try {
-			Collection<String> payload = runFlowAndGetPayload("list-collections");
-			
-			for (String collectionName : collectionNames) {
-				assertTrue(payload.contains(collectionName));
-			}
-			
-		} catch (Exception e) {
-	         fail(ConnectorTestUtils.getStackTrace(e));
-	    }
-			
+            for (String collectionName : collectionNames) {
+                assertTrue(payload.contains(collectionName));
+            }
 
-	}
-	
-	@After
-	public void tearDown() throws Exception {
-			for (String collectionName : collectionNames) {
-				upsertOnTestRunMessage("collection", collectionName);
-				runFlowAndGetPayload("drop-collection");
-			}
+        } catch (Exception e) {
+            fail(ConnectorTestUtils.getStackTrace(e));
+        }
 
-	}
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        for (String collectionName : collectionNames) {
+            upsertOnTestRunMessage("collection", collectionName);
+            runFlowAndGetPayload("drop-collection");
+        }
+
+    }
 
 }

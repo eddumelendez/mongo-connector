@@ -21,30 +21,29 @@ import org.mule.modules.tests.ConnectorTestUtils;
 
 public class DropDatabaseTestCases extends MongoTestParent {
 
-	@Before
-	public void setUp() throws Exception {
-			initializeTestRunMessage("dropDatabase");
-			runFlowAndGetPayload("save-object-for-drop-restore");
-	}
-	
-	@After
-	public void tearDown() throws Exception {
-			runFlowAndGetPayload("drop-collection-for-drop-restore");
-	}	
-	
-	
-	@Category({ RegressionTests.class })
-	@Test
-	public void testDropDatabase() {
-		try {
-			runFlowAndGetPayload("drop-database");
-			assertFalse("After dropping the database, the collection " + getTestRunMessageValue("collection") + " should not exist", 
-					(Boolean) runFlowAndGetPayload("exists-collection-for-drop-restore"));
+    @Before
+    public void setUp() throws Exception {
+        initializeTestRunMessage("dropDatabase");
+        runFlowAndGetPayload("save-object-for-drop-restore");
+    }
 
-		} catch (Exception e) {
-	         fail(ConnectorTestUtils.getStackTrace(e));
-	    }
-			
-	}
-	
+    @After
+    public void tearDown() throws Exception {
+        runFlowAndGetPayload("drop-collection-for-drop-restore");
+    }
+
+    @Category({ RegressionTests.class })
+    @Test
+    public void testDropDatabase() {
+        try {
+            runFlowAndGetPayload("drop-database");
+            assertFalse("After dropping the database, the collection " + getTestRunMessageValue("collection") + " should not exist",
+                    (Boolean) runFlowAndGetPayload("exists-collection-for-drop-restore"));
+
+        } catch (Exception e) {
+            fail(ConnectorTestUtils.getStackTrace(e));
+        }
+
+    }
+
 }

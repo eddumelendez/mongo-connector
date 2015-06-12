@@ -27,62 +27,58 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 
 public class UpdateObjectsUsingQueryMapTestCases extends MongoTestParent {
-	
 
-	@Before
-	public void setUp() throws Exception {
-			// Create the collection
-			initializeTestRunMessage("updateObjectsUsingQueryMap");
-			runFlowAndGetPayload("create-collection");
+    @Before
+    public void setUp() throws Exception {
+        // Create the collection
+        initializeTestRunMessage("updateObjectsUsingQueryMap");
+        runFlowAndGetPayload("create-collection");
 
-			String queryKey = (String) getTestRunMessageValue("queryKey");
-			String queryValue = (String) getTestRunMessageValue("queryValue");
-			int numberOfObjects = (Integer) getTestRunMessageValue("numberOfObjects");
-			
-			// Create the objects with the key-value pair
-			List<DBObject> objects = new ArrayList<DBObject>();
-			for (int i = 0; i < numberOfObjects; i++) {
-				DBObject object = new BasicDBObject(queryKey, queryValue);
-				objects.add(object);
-			}
-			
-			// Insert the objects
-			insertObjects(objects);
-			
+        String queryKey = (String) getTestRunMessageValue("queryKey");
+        String queryValue = (String) getTestRunMessageValue("queryValue");
+        int numberOfObjects = (Integer) getTestRunMessageValue("numberOfObjects");
 
-	}
+        // Create the objects with the key-value pair
+        List<DBObject> objects = new ArrayList<DBObject>();
+        for (int i = 0; i < numberOfObjects; i++) {
+            DBObject object = new BasicDBObject(queryKey, queryValue);
+            objects.add(object);
+        }
 
-	@Category({RegressionTests.class})
-	@Test
-	public void testUpdateObjectsUsingQueryMap() {
-		try {
-			DBObject dbObj = (DBObject) getTestRunMessageValue("dbObject");
-			DBObject elementDbObj = (DBObject) dbObj.get("$set");
-			String queryKey = (String) getTestRunMessageValue("queryKey");
-			int numberOfObjects = (Integer) getTestRunMessageValue("numberOfObjects");
-			
-			// Update objects
-			runFlowAndGetPayload("update-objects-using-query-map");
-			
-			// Get all objects	
-			MongoCollection objects = runFlowAndGetPayload("find-objects");
-			for (DBObject obj : objects) {
-				assertTrue(obj.containsField(queryKey));
-				assertTrue(obj.get(queryKey).equals(elementDbObj.get(queryKey)));
-			}
-			assertTrue(objects.size() == numberOfObjects);
-		} catch (Exception e) {
-	         fail(ConnectorTestUtils.getStackTrace(e));
-	    }	
+        // Insert the objects
+        insertObjects(objects);
 
-	}
-	
-	@After
-	public void tearDown() throws Exception {
-			runFlowAndGetPayload("drop-collection");
+    }
 
+    @Category({ RegressionTests.class })
+    @Test
+    public void testUpdateObjectsUsingQueryMap() {
+        try {
+            DBObject dbObj = (DBObject) getTestRunMessageValue("dbObject");
+            DBObject elementDbObj = (DBObject) dbObj.get("$set");
+            String queryKey = (String) getTestRunMessageValue("queryKey");
+            int numberOfObjects = (Integer) getTestRunMessageValue("numberOfObjects");
 
-	}
+            // Update objects
+            runFlowAndGetPayload("update-objects-using-query-map");
 
-	
+            // Get all objects
+            MongoCollection objects = runFlowAndGetPayload("find-objects");
+            for (DBObject obj : objects) {
+                assertTrue(obj.containsField(queryKey));
+                assertTrue(obj.get(queryKey).equals(elementDbObj.get(queryKey)));
+            }
+            assertTrue(objects.size() == numberOfObjects);
+        } catch (Exception e) {
+            fail(ConnectorTestUtils.getStackTrace(e));
+        }
+
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        runFlowAndGetPayload("drop-collection");
+
+    }
+
 }

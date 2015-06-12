@@ -24,34 +24,33 @@ import org.mule.module.mongo.automation.RegressionTests;
 import org.mule.modules.tests.ConnectorTestUtils;
 
 public class GetFileContentUsingQueryMapTestCases extends MongoTestParent {
-	
 
-	@Before
-	public void setUp() {
-		initializeTestRunMessage("getFileContentUsingQueryMap");
-		
-		createFileFromPayload(getTestRunMessageValue("filename1"));
-		createFileFromPayload(getTestRunMessageValue("filename2"));
-	}
+    @Before
+    public void setUp() {
+        initializeTestRunMessage("getFileContentUsingQueryMap");
 
-	@After
-	public void tearDown() {
-		deleteFilesCreatedByCreateFileFromPayload();
-	}
+        createFileFromPayload(getTestRunMessageValue("filename1"));
+        createFileFromPayload(getTestRunMessageValue("filename2"));
+    }
 
-	@Category({ RegressionTests.class })
-	@Test
-	public void testGetFileContentUsingQueryMap() {
-		try {
-			MuleMessage response = runFlowAndGetMessage("get-file-content-using-query-map");
-			
-			assertNotNull(response);
-			assertNotNull(response.getPayload());
-			assertTrue(response.getPayload() instanceof InputStream);
-		} catch (Exception e) {
-	         fail(ConnectorTestUtils.getStackTrace(e));
-	    }
-		
-	}
+    @After
+    public void tearDown() {
+        deleteFilesCreatedByCreateFileFromPayload();
+    }
+
+    @Category({ RegressionTests.class })
+    @Test
+    public void testGetFileContentUsingQueryMap() {
+        try {
+            MuleMessage response = runFlowAndGetMessage("get-file-content-using-query-map");
+
+            assertNotNull(response);
+            assertNotNull(response.getPayload());
+            assertTrue(response.getPayload() instanceof InputStream);
+        } catch (Exception e) {
+            fail(ConnectorTestUtils.getStackTrace(e));
+        }
+
+    }
 
 }

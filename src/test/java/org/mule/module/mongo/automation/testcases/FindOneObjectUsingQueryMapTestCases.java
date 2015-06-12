@@ -24,34 +24,34 @@ import com.mongodb.DBObject;
 
 public class FindOneObjectUsingQueryMapTestCases extends MongoTestParent {
 
+    @Before
+    public void setUp() throws Exception {
+        initializeTestRunMessage("findOneObjectUsingQueryMap");
+        runFlowAndGetPayload("create-collection");
+        runFlowAndGetPayload("save-object-from-map");
+    }
 
-	@Before
-	public void setUp() throws Exception {
-			initializeTestRunMessage("findOneObjectUsingQueryMap");
-			runFlowAndGetPayload("create-collection");
-			runFlowAndGetPayload("save-object-from-map");
-	}
-	
-	@After
-	public void tearDown() throws Exception {
-			runFlowAndGetPayload("drop-collection");
+    @After
+    public void tearDown() throws Exception {
+        runFlowAndGetPayload("drop-collection");
 
+    }
 
-	}
-	
-	@Category({SmokeTests.class, RegressionTests.class})
-	@Test
-	public void testFindOneObjectUsingQueryMap() {
-		try {
-			String key = getTestRunMessageValue("key").toString();
-			String value = getTestRunMessageValue("value").toString();
-		
-			DBObject dbObject = runFlowAndGetPayload("find-one-object-using-query-map");
-			assertTrue(dbObject.get(key).equals(value));
-		} catch (Exception e) {
-	         fail(ConnectorTestUtils.getStackTrace(e));
-	    }
-			
-	}
-	
+    @Category({
+            SmokeTests.class,
+            RegressionTests.class })
+    @Test
+    public void testFindOneObjectUsingQueryMap() {
+        try {
+            String key = getTestRunMessageValue("key").toString();
+            String value = getTestRunMessageValue("value").toString();
+
+            DBObject dbObject = runFlowAndGetPayload("find-one-object-using-query-map");
+            assertTrue(dbObject.get(key).equals(value));
+        } catch (Exception e) {
+            fail(ConnectorTestUtils.getStackTrace(e));
+        }
+
+    }
+
 }

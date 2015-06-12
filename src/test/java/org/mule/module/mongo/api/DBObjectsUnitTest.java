@@ -28,45 +28,41 @@ import org.mule.module.mongo.automation.RegressionTests;
 import com.mongodb.DBObject;
 
 @SuppressWarnings("serial")
-public class DBObjectsUnitTest
-{
-    @Category({RegressionTests.class})
+public class DBObjectsUnitTest {
+
+    @Category({ RegressionTests.class })
     @Test
-    public void fromNull() throws Exception
-    {
+    public void fromNull() throws Exception {
         assertNull(DBObjects.from(null));
     }
-    
-    @Category({RegressionTests.class})
+
+    @Category({ RegressionTests.class })
     @Test
-    public void fromMap() throws Exception
-    {
-        DBObject map = DBObjects.from(new HashMap<String, Object>()
-        {
+    public void fromMap() throws Exception {
+        DBObject map = DBObjects.from(new HashMap<String, Object>() {
+
             {
                 put("key1", 4);
                 put("key2", Collections.singletonMap("key3", 9));
             }
         });
         assertEquals(4, map.get("key1"));
-        assertThat(map.get("key2"), instanceOf(Map.class));        
+        assertThat(map.get("key2"), instanceOf(Map.class));
         assertThat(map, instanceOf(HashMap.class));
     }
-    
-    @Category({RegressionTests.class})
-    @Test(expected=IllegalArgumentException.class)
-    public void fromMapWithInteger()
-    {
+
+    @Category({ RegressionTests.class })
+    @Test(expected = IllegalArgumentException.class)
+    public void fromMapWithInteger() {
         int map = 43;
         DBObjects.from(map);
     }
-    
-    @Category({RegressionTests.class})
+
+    @Category({ RegressionTests.class })
     @Test
-    public void fromMapWithId() throws Exception
-    {
-        DBObject o = DBObjects.from(new HashMap<String, Object>()
-        {
+    public void fromMapWithId() throws Exception {
+        DBObject o = DBObjects.from(new HashMap<String, Object>() {
+
             {
                 put("name", "John");
                 put("surname", "Doe");
@@ -77,13 +73,12 @@ public class DBObjectsUnitTest
         assertEquals("John", o.get("name"));
         assertEquals(500, o.get("_id"));
     }
-    
-    @Category({RegressionTests.class})
+
+    @Category({ RegressionTests.class })
     @Test
-    public void fromMapWithObjectId() throws Exception
-    {
-        DBObject o = DBObjects.from(new HashMap<String, Object>()
-        {
+    public void fromMapWithObjectId() throws Exception {
+        DBObject o = DBObjects.from(new HashMap<String, Object>() {
+
             {
                 put("name", "John");
                 put("surname", "Doe");
@@ -94,19 +89,18 @@ public class DBObjectsUnitTest
         assertEquals("John", o.get("name"));
         assertEquals(new ObjectId("4df7b8e8663b85b105725d34"), o.get("_id"));
     }
-    
-    @Category({RegressionTests.class})
+
+    @Category({ RegressionTests.class })
     @Test
-    public void fromMapWithNestedObject() throws Exception
-    {
-        final DBObject cat = DBObjects.from(new HashMap<String, Object>()
-        {
+    public void fromMapWithNestedObject() throws Exception {
+        final DBObject cat = DBObjects.from(new HashMap<String, Object>() {
+
             {
                 put("name", "Garfield");
             }
         });
-        DBObject o = DBObjects.from(new HashMap<String, Object>()
-        {
+        DBObject o = DBObjects.from(new HashMap<String, Object>() {
+
             {
                 put("name", "Jon");
                 put("surname", "Arbuckle");
@@ -118,25 +112,24 @@ public class DBObjectsUnitTest
         assertThat(o.get("cat"), instanceOf(DBObject.class));
         assertEquals("Garfield", ((DBObject) o.get("cat")).get("name"));
     }
-    
-    @Category({RegressionTests.class})
+
+    @Category({ RegressionTests.class })
     @Test
-    public void fromMapWithNestedList() throws Exception
-    {
-        final DBObject garfield = DBObjects.from(new HashMap<String, Object>()
-        {
+    public void fromMapWithNestedList() throws Exception {
+        final DBObject garfield = DBObjects.from(new HashMap<String, Object>() {
+
             {
                 put("name", "Garfield");
             }
         });
-        final DBObject oddie = DBObjects.from(new HashMap<String, Object>()
-        {
+        final DBObject oddie = DBObjects.from(new HashMap<String, Object>() {
+
             {
                 put("name", "Oddie");
             }
         });
-        DBObject o = DBObjects.from(new HashMap<String, Object>()
-        {
+        DBObject o = DBObjects.from(new HashMap<String, Object>() {
+
             {
                 put("name", "Jon");
                 put("surname", "Arbuckle");

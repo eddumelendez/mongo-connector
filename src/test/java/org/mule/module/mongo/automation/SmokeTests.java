@@ -10,6 +10,6 @@ package org.mule.module.mongo.automation;
 
 public interface SmokeTests {
 
-	/* category marker */ 
+    /* category marker */
 
 }

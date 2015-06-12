@@ -24,34 +24,32 @@ import com.mongodb.gridfs.GridFSInputFile;
 
 public class CreateFileFromPayloadTestCases extends MongoTestParent {
 
-	@Before
-	public void setUp() {
-		initializeTestRunMessage("createFileFromPayload");
-	}
-	
-	@After
-	public void tearDown() {
-		deleteFilesCreatedByCreateFileFromPayload();
-	}
+    @Before
+    public void setUp() {
+        initializeTestRunMessage("createFileFromPayload");
+    }
 
-	@Category({ SmokeTests.class, RegressionTests.class })
-	@Test
-	public void testCreateFileFromPayload() 
-	{
-		try 
-		{
-		    deleteFilesCreatedByCreateFileFromPayload();
-		    assertEquals("There should be 0 files found before create-file-from-payload", 0, findFiles());
-			
-			GridFSInputFile res = createFileFromPayload(getTestRunMessageValue("filename1"));
-			
-			assertEquals("The created file should be named " + getTestRunMessageValue("filename1"), getTestRunMessageValue("filename1"), res.getFilename());
-			assertEquals("There should be 1 files found after create-file-from-payload", 1, findFiles());
-			
-		} 
-		catch (Exception e) 
-		{
-	         fail(ConnectorTestUtils.getStackTrace(e));
-	    }		
-	}
+    @After
+    public void tearDown() {
+        deleteFilesCreatedByCreateFileFromPayload();
+    }
+
+    @Category({
+            SmokeTests.class,
+            RegressionTests.class })
+    @Test
+    public void testCreateFileFromPayload() {
+        try {
+            deleteFilesCreatedByCreateFileFromPayload();
+            assertEquals("There should be 0 files found before create-file-from-payload", 0, findFiles());
+
+            GridFSInputFile res = createFileFromPayload(getTestRunMessageValue("filename1"));
+
+            assertEquals("The created file should be named " + getTestRunMessageValue("filename1"), getTestRunMessageValue("filename1"), res.getFilename());
+            assertEquals("There should be 1 files found after create-file-from-payload", 1, findFiles());
+
+        } catch (Exception e) {
+            fail(ConnectorTestUtils.getStackTrace(e));
+        }
+    }
 }
