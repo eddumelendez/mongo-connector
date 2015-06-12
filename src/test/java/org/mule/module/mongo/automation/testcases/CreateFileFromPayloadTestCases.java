@@ -43,7 +43,7 @@ public class CreateFileFromPayloadTestCases extends AbstractMongoTest {
     @Test
     public void testCreateFileFromPayload() throws IOException {
 
-        getConnector().dropCollection("Arenas");
+        deleteFilesCreatedByCreateFileFromPayload();
         assertEquals("There should be 0 files found before create-file-from-payload", 0, findFiles(new BasicDBObject()));
 
         GridFSInputFile res = createFileFromPayload(dbObj, "file1");

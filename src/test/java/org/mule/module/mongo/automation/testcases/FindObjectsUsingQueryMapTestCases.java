@@ -21,7 +21,6 @@ import org.junit.experimental.categories.Category;
 import org.mule.module.mongo.api.automation.MongoHelper;
 import org.mule.module.mongo.automation.AbstractMongoTest;
 import org.mule.module.mongo.automation.RegressionTests;
-import org.mule.module.mongo.automation.SmokeTests;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
@@ -61,9 +60,7 @@ public class FindObjectsUsingQueryMapTestCases extends AbstractMongoTest {
         insertObjects(objects, "Arenas");
     }
 
-    @Category({
-            SmokeTests.class,
-            RegressionTests.class })
+    @Category({ RegressionTests.class })
     @Test
     public void testFindObjectsUsingQueryMap_WithQuery() {
         Iterable<DBObject> collection = getConnector().findObjectsUsingQueryMap("Arenas", queryAttributes, null, null, null, null);

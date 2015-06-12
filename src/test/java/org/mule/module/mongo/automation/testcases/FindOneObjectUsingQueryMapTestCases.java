@@ -19,7 +19,6 @@ import org.junit.experimental.categories.Category;
 import org.mule.module.mongo.api.WriteConcern;
 import org.mule.module.mongo.automation.AbstractMongoTest;
 import org.mule.module.mongo.automation.RegressionTests;
-import org.mule.module.mongo.automation.SmokeTests;
 
 import com.mongodb.DBObject;
 
@@ -39,7 +38,7 @@ public class FindOneObjectUsingQueryMapTestCases extends AbstractMongoTest {
         getConnector().dropCollection("Arenas");
     }
 
-    @Category({ SmokeTests.class, RegressionTests.class })
+    @Category({ RegressionTests.class })
     @Test
     public void testFindOneObjectUsingQueryMap() {
         DBObject dbObject = getConnector().findOneObjectUsingQueryMap("Arenas", elementAttributes, null, false);

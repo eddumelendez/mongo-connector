@@ -14,7 +14,6 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.mule.module.mongo.automation.AbstractMongoTest;
 import org.mule.module.mongo.automation.RegressionTests;
-import org.mule.module.mongo.automation.SmokeTests;
 
 public class DropCollectionTestCases extends AbstractMongoTest {
 
@@ -23,7 +22,7 @@ public class DropCollectionTestCases extends AbstractMongoTest {
         getConnector().createCollection("Arenas", false, 5, 5);
     }
 
-    @Category({ SmokeTests.class, RegressionTests.class })
+    @Category({ RegressionTests.class })
     @Test
     public void testDropCollection() {
         getConnector().dropCollection("Arenas");
