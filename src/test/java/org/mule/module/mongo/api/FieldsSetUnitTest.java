@@ -19,26 +19,23 @@ import org.mule.module.mongo.automation.RegressionTests;
 
 import com.mongodb.BasicDBObject;
 
-public class FieldsSetUnitTest
-{
-    @Category({RegressionTests.class})
+public class FieldsSetUnitTest {
+
+    @Category({ RegressionTests.class })
     @Test
-    public void fromEmptyList() throws Exception
-    {
+    public void fromEmptyList() throws Exception {
         assertEquals(new BasicDBObject(), FieldsSet.from(Arrays.<String> asList()));
     }
-    
-    @Category({RegressionTests.class})
+
+    @Category({ RegressionTests.class })
     @Test
-    public void fromNonEmpty() throws Exception
-    {
+    public void fromNonEmpty() throws Exception {
         assertEquals(new BasicDBObject("f1", 1), FieldsSet.from(Arrays.asList("f1")));
     }
-    
-    @Category({RegressionTests.class})
+
+    @Category({ RegressionTests.class })
     @Test
-    public void fromNull() throws Exception
-    {
+    public void fromNull() throws Exception {
         assertNull(FieldsSet.from(null));
     }
 

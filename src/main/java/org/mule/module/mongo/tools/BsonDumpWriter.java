@@ -8,8 +8,6 @@
 
 package org.mule.module.mongo.tools;
 
-import com.mongodb.DBObject;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -18,45 +16,38 @@ import org.bson.BSON;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class BsonDumpWriter extends DumpWriter
-{
+import com.mongodb.DBObject;
+
+public class BsonDumpWriter extends DumpWriter {
+
     private static final String BSON_EXTENSION = "bson";
     private static final Logger logger = LoggerFactory.getLogger(BsonDumpWriter.class);
 
-    public BsonDumpWriter(String outputDirectory, String database)
-    {
+    public BsonDumpWriter(String outputDirectory, String database) {
         super(outputDirectory, database);
     }
 
-    public BsonDumpWriter(String outputDirectory)
-    {
+    public BsonDumpWriter(String outputDirectory) {
         super(outputDirectory);
     }
 
     @Override
-    public String getExtension()
-    {
+    public String getExtension() {
         return BSON_EXTENSION;
     }
 
     @Override
-    public void writeObject(String collection, DBObject dbObject) throws IOException
-    {
+    public void writeObject(String collection, DBObject dbObject) throws IOException {
         FileOutputStream outputStream = null;
         File outputFile = new File(getFilePath(collection));
-        if(!outputFile.getParentFile().mkdirs())
-        {
+        if (!outputFile.getParentFile().mkdirs()) {
             logger.info("Couldn't create dir: " + outputFile.getParentFile());
         }
-        try
-        {
+        try {
             outputStream = new FileOutputStream(outputFile, true);
             outputStream.write(BSON.encode(dbObject));
-        }
-        finally
-        {
-            if(outputStream != null)
-            {
+        } finally {
+            if (outputStream != null) {
                 outputStream.close();
             }
         }

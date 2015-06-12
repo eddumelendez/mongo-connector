@@ -39,8 +39,8 @@ import com.mongodb.gridfs.GridFSDBFile;
  * 
  * @author flbulgarelli
  */
-public class MongoTestCase
-{
+public class MongoTestCase {
+
     private static final String A_COLLECTION = "myCollection";
     private com.mongodb.MongoClient mongo;
     private MongoClientImpl client;
@@ -49,19 +49,17 @@ public class MongoTestCase
     private GridFS gridFsMock;
 
     @Before
-    public void setup()
-    {
-    	mongo = mock(com.mongodb.MongoClient.class);
+    public void setup() {
+        mongo = mock(com.mongodb.MongoClient.class);
         dbMock = mock(MongoDatabase.class);
         gridFsMock = mock(GridFS.class);
         collectionMock = mock(MongoCollection.class);
         when(mongo.getDatabase(A_COLLECTION)).thenReturn(dbMock);
         when(dbMock.getCollection(A_COLLECTION)).thenReturn(collectionMock);
-        client = new MongoClientImpl(mongo, A_COLLECTION)
-        {
+        client = new MongoClientImpl(mongo, A_COLLECTION) {
+
             @Override
-            protected GridFS getGridFs()
-            {
+            protected GridFS getGridFs() {
                 return gridFsMock;
             }
         };
@@ -69,65 +67,57 @@ public class MongoTestCase
 
     /** Test {@link MongoClient#listCollections()} */
     @Test
-    public void listCollections()
-    {
-//        MongoIterable mongoIterable = mock(MongoIterable.class);
-//        Iterable mockIterable = mock(Iterable.class);
-//        Collection col = mock(Collection.class);
-//        when(dbMock.listCollectionNames()).thenReturn(mongoIterable);
+    public void listCollections() {
+        // MongoIterable mongoIterable = mock(MongoIterable.class);
+        // Iterable mockIterable = mock(Iterable.class);
+        // Collection col = mock(Collection.class);
+        // when(dbMock.listCollectionNames()).thenReturn(mongoIterable);
         client.listCollections();
         verify(dbMock).listCollectionNames();
     }
 
     /** Test {@link MongoClient#existsCollection(String)} */
     @Test
-    public void existsCollection()
-    {
+    public void existsCollection() {
         client.existsCollection(A_COLLECTION);
         verify(dbMock).listCollectionNames();
     }
 
     /** Test {@link MongoClient#dropCollection(String)} */
     @Test
-    public void dropCollection()
-    {
+    public void dropCollection() {
         client.dropCollection(A_COLLECTION);
         verify(collectionMock).drop();
     }
 
     /** Test {@link MongoClient#saveObject(String, Document)} */
     @Test
-    public void saveNewObject() throws Exception
-    {
+    public void saveNewObject() throws Exception {
         Document document = new Document();
         client.saveObject(A_COLLECTION, document);
         verify(collectionMock).insertOne(document);
     }
-    
+
     /** Test {@link MongoClient#saveObject(String, Document)} */
     @Test
-    public void saveExistingObject() throws Exception
-    {
+    public void saveExistingObject() throws Exception {
         Document document = new Document("_id", "someId");
         client.saveObject(A_COLLECTION, document);
         verify(collectionMock).updateOne(eq("_id", "someId"), document);
     }
 
     /**
-     * Test
-     * {@link MongoClient#insertObject(String, org.bson.Document)}
+     * Test {@link MongoClient#insertObject(String, org.bson.Document)}
      */
     @Test
-    public void insertObject() throws Exception
-    {
-    	Document document = new Document();
+    public void insertObject() throws Exception {
+        Document document = new Document();
         client.insertObject(A_COLLECTION, document);
         verify(collectionMock).insertOne(document);
     }
 
     @Test
-    public void removeObjects() throws Exception
-    {
+    public void removeObjects() throws Exception {
         when(dbMock.getWriteConcern()).thenReturn(com.mongodb.WriteConcern.FSYNC_SAFE);
         client.removeObjects(A_COLLECTION, null);
         verify(collectionMock).deleteMany(refEq(new Document()));
@@ -135,8 +125,7 @@ public class MongoTestCase
 
     /** Test {@link MongoClient#countObjects(String, org.bson.Document)} */
     @Test
-    public void countObjectsWithQuery() throws Exception
-    {
+    public void countObjectsWithQuery() throws Exception {
         Document o = new Document();
         client.countObjects(A_COLLECTION, o);
         verify(collectionMock).count(o);
@@ -144,32 +133,27 @@ public class MongoTestCase
 
     /** Test {@link MongoClient#countObjects(String, org.bson.Document)} */
     @Test
-    public void countObjects() throws Exception
-    {
+    public void countObjects() throws Exception {
         client.countObjects(A_COLLECTION, null);
         verify(collectionMock).count();
     }
 
     /**
-     * Test
-     * {@link MongoClient#updateObjects(String, org.bson.Document, org.bson.Document, boolean)}
+     * Test {@link MongoClient#updateObjects(String, org.bson.Document, org.bson.Document, boolean)}
      */
     @Test
-    public void updateOneObject() throws Exception
-    {
+    public void updateOneObject() throws Exception {
         Document query = new Document();
         Document document = new Document();
         client.updateObjects(A_COLLECTION, query, document, false);
         verify(collectionMock).updateOne(query, document);
     }
-    
+
     /**
-     * Test
-     * {@link MongoClient#updateObjects(String, org.bson.Document, org.bson.Document, boolean)}
+     * Test {@link MongoClient#updateObjects(String, org.bson.Document, org.bson.Document, boolean)}
      */
     @Test
-    public void updateManyObject() throws Exception
-    {
+    public void updateManyObject() throws Exception {
         Document query = new Document();
         Document document = new Document();
         client.updateObjects(A_COLLECTION, query, document, true);
@@ -178,24 +162,21 @@ public class MongoTestCase
 
     /** Test {@link MongoClient#createIndex(String, org.bson.Document)} */
     @Test
-    public void createIndex() throws Exception
-    {
+    public void createIndex() throws Exception {
         client.createIndex(A_COLLECTION, "i", IndexOrder.ASC);
         verify(collectionMock).createIndex(refEq(new Document("i", 1)));
     }
 
     /** Tests {@link MongoClient#dropIndex(String, String)} */
     @Test
-    public void dropIndex() throws Exception
-    {
+    public void dropIndex() throws Exception {
         client.dropIndex(A_COLLECTION, "anIndex");
         verify(collectionMock).dropIndex(eq("anIndex"));
     }
 
     /** Tests {@link MongoClient#listIndices(String)} */
     @Test
-    public void listIndices() throws Exception
-    {
+    public void listIndices() throws Exception {
         client.listIndices(A_COLLECTION);
         verify(collectionMock).listIndexes();
     }
@@ -206,8 +187,7 @@ public class MongoTestCase
      * @throws Exception
      */
     @Test
-    public void removeFiles() throws Exception
-    {
+    public void removeFiles() throws Exception {
         DBObject someObject = mock(DBObject.class);
         client.removeFiles(someObject);
         verify(gridFsMock).remove(someObject);
@@ -219,22 +199,19 @@ public class MongoTestCase
      * @throws Exception
      */
     @Test
-    public void findFiles() throws Exception
-    {
+    public void findFiles() throws Exception {
         DBObject someObject = mock(DBObject.class);
         client.findFiles(someObject);
         verify(gridFsMock).find(someObject);
     }
 
     /**
-     * Test for {@link MongoClient#getFileContent(DBObject)} when no object matches
-     * the query
+     * Test for {@link MongoClient#getFileContent(DBObject)} when no object matches the query
      * 
      * @throws Exception
      */
     @Test(expected = MongoException.class)
-    public void getFileContentNoFile() throws Exception
-    {
+    public void getFileContentNoFile() throws Exception {
         DBObject q = new BasicDBObject("foo", "bar");
         client.getFileContent(q);
         verify(gridFsMock).find(q);
@@ -246,8 +223,7 @@ public class MongoTestCase
      * @throws Exception
      */
     @Test
-    public void getFileContent() throws Exception
-    {
+    public void getFileContent() throws Exception {
         DBObject q = new BasicDBObject("foo", "bar");
         when(gridFsMock.findOne(eq(q))).thenReturn(new GridFSDBFile());
         client.getFileContent(q);

@@ -26,7 +26,6 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.mule.module.mongo.automation.RegressionTests;
 
-
 @SuppressWarnings("serial")
 public class DBObjectsUnitTest {
 

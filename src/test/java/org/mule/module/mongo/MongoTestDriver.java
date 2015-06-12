@@ -42,25 +42,23 @@ import com.mongodb.MongoException;
  * @author flbulgarelli
  */
 @RunWith(Theories.class)
-public class MongoTestDriver
-{
+public class MongoTestDriver {
+
     private static final String MAIN_COLLECTION = "aCollection";
     private static final String ANOTHER_COLLECTION = "anotherCollection";
     private MongoCloudConnector connector;
 
     /**
-     * Tests methods in this test class assume that there is always a collection
-     * {@link #MAIN_COLLECTION} available
+     * Tests methods in this test class assume that there is always a collection {@link #MAIN_COLLECTION} available
      * 
      * @throws InitialisationException
      */
     @Before
-    public void setup() throws Exception
-    {
+    public void setup() throws Exception {
         connector = new MongoCloudConnector();
         connector.getStrategy().setHost("127.0.0.1");
         connector.getStrategy().setPort(27017);
-        //connector.connect("admin", "pepe", "test");
+        // connector.connect("admin", "pepe", "test");
         connector.getStrategy().connect("admin", "", "test");
         connector.createCollection(MAIN_COLLECTION, false, 100, 1000);
     }
@@ -69,20 +67,16 @@ public class MongoTestDriver
      * Deletes the {@link #MAIN_COLLECTION}
      */
     @After
-    public void tearDown()
-    {
+    public void tearDown() {
         connector.dropCollection(MAIN_COLLECTION);
         connector.dropCollection(ANOTHER_COLLECTION);
     }
 
     /**
-     * Tests that a collection can be created, having side effects on
-     * {@link MongoCloudConnector#existsCollection(String)} and
-     * {@link MongoClient#listCollections()}
+     * Tests that a collection can be created, having side effects on {@link MongoCloudConnector#existsCollection(String)} and {@link MongoClient#listCollections()}
      */
     @Test
-    public void createCollection() throws Exception
-    {
+    public void createCollection() throws Exception {
         int originalSize = connector.listCollections().size();
         connector.createCollection(ANOTHER_COLLECTION, false, 100, 1000);
         assertTrue(connector.existsCollection(ANOTHER_COLLECTION));
@@ -94,19 +88,15 @@ public class MongoTestDriver
      * Tests that a collection can not be created if it already exists
      */
     @Test(expected = MongoException.class)
-    public void createCollectionAlreadyExists() throws Exception
-    {
+    public void createCollectionAlreadyExists() throws Exception {
         connector.createCollection(MAIN_COLLECTION, false, 100, 1000);
     }
 
     /**
-     * Tests that a collection can be dropped, having side effects on
-     * {@link MongoCloudConnector#existsCollection(String)} and
-     * {@link MongoClient#listCollections()}
+     * Tests that a collection can be dropped, having side effects on {@link MongoCloudConnector#existsCollection(String)} and {@link MongoClient#listCollections()}
      */
     @Test
-    public void dropCollection() throws Exception
-    {
+    public void dropCollection() throws Exception {
         int originalSize = connector.listCollections().size();
 
         connector.dropCollection(MAIN_COLLECTION);
@@ -121,37 +111,31 @@ public class MongoTestDriver
      * Tests that a collection can be dropped even if it does not exists
      */
     @Test
-    public void dropCollectionInexistent() throws Exception
-    {
+    public void dropCollectionInexistent() throws Exception {
         connector.dropCollection(ANOTHER_COLLECTION);
     }
 
     /**
-     * Tests that a collection can be dropped, even if it has elements, having side
-     * effects on {@link MongoCloudConnector#existsCollection(String)} and
+     * Tests that a collection can be dropped, even if it has elements, having side effects on {@link MongoCloudConnector#existsCollection(String)} and
      * {@link MongoClient#listCollections()}
      */
     @Test
-    public void dropCollectionWithElements() throws Exception
-    {
-    	Document o = new Document();
+    public void dropCollectionWithElements() throws Exception {
+        Document o = new Document();
         connector.insertObject(MAIN_COLLECTION, o);
         connector.dropCollection(MAIN_COLLECTION);
         assertFalse(connector.existsCollection(MAIN_COLLECTION));
     }
 
     /**
-     * Tests that an object can be created, impacting in the number of objects in the
-     * database
+     * Tests that an object can be created, impacting in the number of objects in the database
      */
     @Test
-    public void createObject() throws Exception
-    {
+    public void createObject() throws Exception {
         connector.insertObject(MAIN_COLLECTION, acmeEmployee());
 
         assertEquals(1, connector.countObjects(MAIN_COLLECTION, acmeQuery()));
-        Document employee = connector.findOneObject(MAIN_COLLECTION, acmeQuery(),
-            Arrays.asList("name"),false);
+        Document employee = connector.findOneObject(MAIN_COLLECTION, acmeQuery(), Arrays.asList("name"), false);
         assertNotNull(employee);
         assertEquals("John", employee.get("name"));
         assertNull(employee.get("company"));
@@ -161,18 +145,15 @@ public class MongoTestDriver
      * Tests that an exception is thrown if no object that matches a query is found
      */
     @Test(expected = MongoException.class)
-    public void findOneObjectNotExists() throws Exception
-    {
-        connector.findOneObject(MAIN_COLLECTION, acmeQuery(), null,true);
+    public void findOneObjectNotExists() throws Exception {
+        connector.findOneObject(MAIN_COLLECTION, acmeQuery(), null, true);
     }
 
     /**
-     * Tests that an object can be removed, impacting in the number of objects in the
-     * database
+     * Tests that an object can be removed, impacting in the number of objects in the database
      */
     @Test
-    public void removeObject() throws Exception
-    {
+    public void removeObject() throws Exception {
         connector.insertObject(MAIN_COLLECTION, acmeEmployee());
 
         Document query = acmeQuery();
@@ -181,12 +162,10 @@ public class MongoTestDriver
     }
 
     /**
-     * Tests that objects in a collection can be properly counted with or without
-     * filters
+     * Tests that objects in a collection can be properly counted with or without filters
      */
     @Test
-    public void countObjects() throws Exception
-    {
+    public void countObjects() throws Exception {
         insertInTestDb(new Document("x", 59));
         insertInTestDb(new Document("x", 60));
         insertInTestDb(new Document("x", 60));
@@ -196,8 +175,7 @@ public class MongoTestDriver
         assertEquals(0, connector.countObjects(MAIN_COLLECTION, new Document("x", 36)));
     }
 
-    private void insertInTestDb(Document o)
-    {
+    private void insertInTestDb(Document o) {
         connector.insertObject(MAIN_COLLECTION, o);
     }
 
@@ -210,61 +188,57 @@ public class MongoTestDriver
     public static final String INLINE_COLLECTION_NAME = "null";
 
     /**
-     * Tests that objects can be map-reduced either in memory or in a persistent way.
-     * In this test, a collection of elections results is grouped by candidate name
-     * and reduced by votes
+     * Tests that objects can be map-reduced either in memory or in a persistent way. In this test, a collection of elections results is grouped by candidate name and reduced by
+     * votes
      */
     @Theory
     @SuppressWarnings("serial")
-    public void mapReduce(String outputCollection) throws Exception
-    {
-        insertInTestDb(new Document()
-        {
+    public void mapReduce(String outputCollection) throws Exception {
+        insertInTestDb(new Document() {
+
             {
                 put("city", "City1");
                 put("candidate", "John");
                 put("votes", 100);
             }
         });
-        insertInTestDb(new Document()
-        {
+        insertInTestDb(new Document() {
+
             {
                 put("city", "City2");
                 put("candidate", "John");
                 put("votes", 20);
             }
         });
-        insertInTestDb(new Document()
-        {
+        insertInTestDb(new Document() {
+
             {
                 put("city", "City3");
                 put("candidate", "Mary");
                 put("votes", 150);
             }
         });
-        insertInTestDb(new Document()
-        {
+        insertInTestDb(new Document() {
+
             {
                 put("city", "City2");
                 put("candidate", "Mary");
                 put("votes", 60);
             }
         });
-        Iterable<Document> results = connector.mapReduceObjects(MAIN_COLLECTION,
-            "function() { emit(this.candidate, this.votes) }",
-            "function(key, values) { return values.reduce(function(a, e){ return a + e });  } ",
-            outputCollection);
+        Iterable<Document> results = connector.mapReduceObjects(MAIN_COLLECTION, "function() { emit(this.candidate, this.votes) }",
+                "function(key, values) { return values.reduce(function(a, e){ return a + e });  } ", outputCollection);
         assertNotNull(results);
         Iterator<Document> iter = results.iterator();
-        assertEquals(new Document()
-        {
+        assertEquals(new Document() {
+
             {
                 put("_id", "John");
                 put("value", 120);
             }
         }, iter.next());
-        assertEquals(new Document()
-        {
+        assertEquals(new Document() {
+
             {
                 put("_id", "Mary");
                 put("value", 210);
@@ -274,8 +248,7 @@ public class MongoTestDriver
     }
 
     @Test
-    public void findWithSkipAndLimit()
-    {
+    public void findWithSkipAndLimit() {
         insertInTestDb(new Document("x", 1));
         insertInTestDb(new Document("x", 2));
         insertInTestDb(new Document("x", 3));
@@ -290,15 +263,12 @@ public class MongoTestDriver
     }
 
     @Test
-    public void updateMulti() throws Exception
-    {
+    public void updateMulti() throws Exception {
         insertInTestDb(new Document("x", 50));
         insertInTestDb(new Document("x", 60));
         insertInTestDb(new Document("x", 60));
         insertInTestDb(new Document("x", 70));
-        connector.updateObjects(MAIN_COLLECTION,
-            new Document("x", new Document("$gt", 55)), new Document("$inc",
-                new Document("x", 2)), true);
+        connector.updateObjects(MAIN_COLLECTION, new Document("x", new Document("$gt", 55)), new Document("$inc", new Document("x", 2)), true);
 
         Iterator<Document> iter = connector.findObjects(MAIN_COLLECTION, null, null, null, null, null).iterator();
         assertEquals(50, iter.next().get("x"));
@@ -308,14 +278,11 @@ public class MongoTestDriver
     }
 
     @Test
-    public void updateSingle() throws Exception
-    {
+    public void updateSingle() throws Exception {
         insertInTestDb(new Document("x", 50));
         insertInTestDb(new Document("x", 60));
         insertInTestDb(new Document("x", 60));
-        connector.updateObjects(MAIN_COLLECTION,
-            new Document("x", new Document("$gt", 55)), new Document("$inc",
-                new Document("x", 2)), false);
+        connector.updateObjects(MAIN_COLLECTION, new Document("x", new Document("$gt", 55)), new Document("$inc", new Document("x", 2)), false);
 
         Iterator<Document> iter = connector.findObjects(MAIN_COLLECTION, null, null, null, null, null).iterator();
         assertEquals(50, iter.next().get("x"));
@@ -324,41 +291,32 @@ public class MongoTestDriver
     }
 
     @Test
-    public void createIndex() throws Exception
-    {
+    public void createIndex() throws Exception {
         assertEquals(1, connector.listIndices(MAIN_COLLECTION).size());
         connector.createIndex(MAIN_COLLECTION, "aField", IndexOrder.DESC);
         assertEquals(2, connector.listIndices(MAIN_COLLECTION).size());
     }
 
     @Test
-    public void testCreateAndGetFile() throws Exception
-    {
-        DBObject file = connector.createFileFromPayload(
-            new ByteArrayInputStream("hello world".getBytes()), "testFile.txt", "text/plain",
-            new BasicDBObject("foo", "bar"));
-        try
-        {
+    public void testCreateAndGetFile() throws Exception {
+        DBObject file = connector.createFileFromPayload(new ByteArrayInputStream("hello world".getBytes()), "testFile.txt", "text/plain", new BasicDBObject("foo", "bar"));
+        try {
             assertEquals("testFile.txt", file.get("filename"));
             assertEquals("text/plain", file.get("contentType"));
             assertEquals("bar", ((DBObject) file.get("metadata")).get("foo"));
 
             try (InputStream in = connector.getFileContent(filenameQuery("testFile.txt"))) {
-            	assertEquals("hello world", new Scanner(in).nextLine());
+                assertEquals("hello world", new Scanner(in).nextLine());
             }
-        }
-        finally
-        {
+        } finally {
             connector.removeFiles(filenameQuery("testFile.txt"));
         }
     }
 
     @Test
-    public void testCreateAndListFile() throws Exception
-    {
+    public void testCreateAndListFile() throws Exception {
         connector.createFileFromPayload("hello world".getBytes(), "testFile.txt", null, null);
-        try
-        {
+        try {
             Iterator<DBObject> iter = connector.listFiles(filenameQuery("testFile.txt")).iterator();
             assertTrue(iter.hasNext());
             iter.next();
@@ -368,28 +326,23 @@ public class MongoTestDriver
             assertTrue(iter.hasNext());
             iter.next();
             assertFalse(iter.hasNext());
-        }
-        finally
-        {
+        } finally {
             connector.removeFiles(filenameQuery("testFile.txt"));
         }
     }
 
-    private DBObject filenameQuery(String filename)
-    {
+    private DBObject filenameQuery(String filename) {
         return new BasicDBObject("filename", filename);
     }
 
-    private Document acmeQuery()
-    {
+    private Document acmeQuery() {
         Document query = new Document();
         query.put("company", "ACME");
         return query;
     }
 
-    private Document acmeEmployee()
-    {
-    	Document employee = new Document();
+    private Document acmeEmployee() {
+        Document employee = new Document();
         employee.put("name", "John");
         employee.put("surname", "Doe");
         employee.put("company", "ACME");

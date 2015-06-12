@@ -44,7 +44,7 @@ import com.mongodb.MongoTimeoutException;
 import com.mongodb.MongoWaitQueueFullException;
 import com.mongodb.ServerAddress;
 
-@ConnectionManagement(friendlyName="ConnectionManagement", configElementName="config")
+@ConnectionManagement(friendlyName = "ConnectionManagement", configElementName = "config")
 public class ConnectionManagementStrategy {
 
     private static final Logger logger = LoggerFactory.getLogger(ConnectionManagementStrategy.class);
@@ -86,8 +86,7 @@ public class ConnectionManagementStrategy {
     public Integer maxWaitTime;
 
     /**
-     * The connection timeout in milliseconds; this is for establishing the socket connections
-     * (open). 0 is default and infinite.
+     * The connection timeout in milliseconds; this is for establishing the socket connections (open). 0 is default and infinite.
      */
     @Configurable
     @Optional
@@ -108,44 +107,42 @@ public class ConnectionManagementStrategy {
     private MongoClient client;
 
     public MongoClient getClient() {
-		return client;
-	}
-    
+        return client;
+    }
+
     /**
      * Method invoked when a Mongo session needs to be created.
      * 
-     * @param username the username to use for authentication.
-     * @param password the password to use for authentication. If the password is null or whitespaces only, the connector
-     *                 won't use authentication and username must be empty too.
-     * @param database Name of the database
+     * @param username
+     *            the username to use for authentication.
+     * @param password
+     *            the password to use for authentication. If the password is null or whitespaces only, the connector won't use authentication and username must be empty too.
+     * @param database
+     *            Name of the database
      * @throws org.mule.api.ConnectionException
      */
     @Connect(strategy = ConnectStrategy.SINGLE_INSTANCE)
     @TestConnectivity
-    public void connect(@ConnectionKey final String username,
-                        @Optional @Password final String password,
-                        @ConnectionKey final String database) throws ConnectionException
-    {
-        try
-        {
-        	final List<ServerAddress> addresses = Lists.transform(Lists.newArrayList(host.split(",\\s?")), new Function<String, ServerAddress>() {
-				@Override
-				public ServerAddress apply(String input) {
-					return new ServerAddress(input, getPort());
-				}
-        	});
+    public void connect(@ConnectionKey final String username, @Optional @Password final String password, @ConnectionKey final String database) throws ConnectionException {
+        try {
+            final List<ServerAddress> addresses = Lists.transform(Lists.newArrayList(host.split(",\\s?")), new Function<String, ServerAddress>() {
+
+                @Override
+                public ServerAddress apply(String input) {
+                    return new ServerAddress(input, getPort());
+                }
+            });
 
             MongoClientOptions mongoOptions = getMongoOptions(database);
-			if (StringUtils.isNotBlank(password))
-            {
+            if (StringUtils.isNotBlank(password)) {
                 Validate.notNull(username, "Username must not be null if password is set");
                 logger.info("Connecting to MongoDB, authenticating as user '{}'", username);
 
                 MongoCredential credential = MongoCredential.createCredential(username, database, password.toCharArray());
-				mongo = new com.mongodb.MongoClient(addresses, Lists.newArrayList(credential), mongoOptions);
+                mongo = new com.mongodb.MongoClient(addresses, Lists.newArrayList(credential), mongoOptions);
             } else {
-				logger.info("Connecting to MongoDB, not using authentication");
-				mongo = new com.mongodb.MongoClient(addresses, mongoOptions);
+                logger.info("Connecting to MongoDB, not using authentication");
+                mongo = new com.mongodb.MongoClient(addresses, mongoOptions);
             }
 
             this.client = new MongoClientImpl(mongo, database);
@@ -153,50 +150,36 @@ public class ConnectionManagementStrategy {
             DB db = mongo.getDB(database);
             System.err.println("DB: " + db.getName());
             db.getStats();
-		}
-		catch (final IllegalArgumentException e)
-		{
-		    throw new ConnectionException(ConnectionExceptionCode.CANNOT_REACH, e.getLocalizedMessage(), e.getMessage(), e.getCause());
-		}
-		catch (MongoSecurityException e)
-		{
-			throw new ConnectionException(ConnectionExceptionCode.INCORRECT_CREDENTIALS, String.valueOf(e.getCode()), "Authentication failed", e);
-		}
-		catch (MongoTimeoutException e)
-		{
-			throw new ConnectionException(ConnectionExceptionCode.CANNOT_REACH, String.valueOf(e.getCode()), "Timeout waiting for server or a connection to become available", e);
-		}
-		catch (MongoWaitQueueFullException e)
-		{
-			throw new ConnectionException(ConnectionExceptionCode.UNKNOWN, String.valueOf(e.getCode()), "Wait Queue is full", e);
-		}
+        } catch (final IllegalArgumentException e) {
+            throw new ConnectionException(ConnectionExceptionCode.CANNOT_REACH, e.getLocalizedMessage(), e.getMessage(), e.getCause());
+        } catch (MongoSecurityException e) {
+            throw new ConnectionException(ConnectionExceptionCode.INCORRECT_CREDENTIALS, String.valueOf(e.getCode()), "Authentication failed", e);
+        } catch (MongoTimeoutException e) {
+            throw new ConnectionException(ConnectionExceptionCode.CANNOT_REACH, String.valueOf(e.getCode()), "Timeout waiting for server or a connection to become available", e);
+        } catch (MongoWaitQueueFullException e) {
+            throw new ConnectionException(ConnectionExceptionCode.UNKNOWN, String.valueOf(e.getCode()), "Wait Queue is full", e);
+        }
     }
 
     private MongoClientOptions getMongoOptions(String database) {
         final MongoClientOptions.Builder options = MongoClientOptions.builder();
 
-        if (connectionsPerHost != null)
-        {
+        if (connectionsPerHost != null) {
             options.connectionsPerHost(connectionsPerHost);
         }
-        if (threadsAllowedToBlockForConnectionMultiplier != null)
-        {
+        if (threadsAllowedToBlockForConnectionMultiplier != null) {
             options.threadsAllowedToBlockForConnectionMultiplier(threadsAllowedToBlockForConnectionMultiplier);
         }
-        if (maxWaitTime != null)
-        {
+        if (maxWaitTime != null) {
             options.maxWaitTime(maxWaitTime);
         }
-        if (connectTimeout != null)
-        {
+        if (connectTimeout != null) {
             options.connectTimeout(connectTimeout);
         }
-        if (socketTimeout != null)
-        {
+        if (socketTimeout != null) {
             options.socketTimeout(socketTimeout);
         }
-        if (database != null)
-        {
+        if (database != null) {
             this.database = database;
         }
         return options.build();
@@ -206,126 +189,101 @@ public class ConnectionManagementStrategy {
      * Method invoked when the Mongo session is to be destroyed.
      */
     @Disconnect
-    public void disconnect() 
-    {
-    	IOUtils.closeQuietly(client);
-    	IOUtils.closeQuietly(mongo);
+    public void disconnect() {
+        IOUtils.closeQuietly(client);
+        IOUtils.closeQuietly(mongo);
     }
 
     @ValidateConnection
-    public boolean isConnected()
-    {
-        return this.client != null && this.mongo != null ; //&& mongo.getConnector().isOpen();
+    public boolean isConnected() {
+        return this.client != null && this.mongo != null; // && mongo.getConnector().isOpen();
     }
 
     @ConnectionIdentifier
-    public String connectionId()
-    {
+    public String connectionId() {
         return mongo == null ? "n/a" : mongo.toString();
     }
 
-    private DB getDatabase(final Mongo mongo,
-                           final String username,
-                           final String password,
-                           final String database) throws ConnectionException
-    {
-		System.err.println(String.format("Entering getDatabase: %s, %s, %s", username, password, database));
-		logger.info("In getDatabase: {}, {}, {},{}", mongo, username, password, database);
+    private DB getDatabase(final Mongo mongo, final String username, final String password, final String database) throws ConnectionException {
+        System.err.println(String.format("Entering getDatabase: %s, %s, %s", username, password, database));
+        logger.info("In getDatabase: {}, {}, {},{}", mongo, username, password, database);
         final DB db = mongo.getDB(database);
-        if (StringUtils.isNotBlank(password))
-        {
+        if (StringUtils.isNotBlank(password)) {
             Validate.notNull(username, "Username must not be null if password is set");
         }
         System.err.println("Exiting getDatabase");
         return db;
     }
 
-    protected MongoClient adaptClient(final MongoClient client)
-    {
+    protected MongoClient adaptClient(final MongoClient client) {
         return MongoClientAdaptor.adapt(client);
     }
-    
-    public Mongo getMongo() {
-		return mongo;
-	}
 
-    public String getHost()
-    {
+    public Mongo getMongo() {
+        return mongo;
+    }
+
+    public String getHost() {
         return host;
     }
 
-    public void setHost(final String host)
-    {
+    public void setHost(final String host) {
         this.host = host;
     }
 
-    public int getPort()
-    {
+    public int getPort() {
         return port;
     }
 
-    public void setPort(final int port)
-    {
+    public void setPort(final int port) {
         this.port = port;
     }
 
-    public String getDatabase()
-    {
+    public String getDatabase() {
         return database;
     }
 
-    public void setDatabase(final String database)
-    {
+    public void setDatabase(final String database) {
         this.database = database;
     }
 
-    public Integer getConnectionsPerHost()
-    {
+    public Integer getConnectionsPerHost() {
         return connectionsPerHost;
     }
 
-    public void setConnectionsPerHost(final Integer connectionsPerHost)
-    {
+    public void setConnectionsPerHost(final Integer connectionsPerHost) {
         this.connectionsPerHost = connectionsPerHost;
     }
 
-    public Integer getThreadsAllowedToBlockForConnectionMultiplier()
-    {
+    public Integer getThreadsAllowedToBlockForConnectionMultiplier() {
         return threadsAllowedToBlockForConnectionMultiplier;
     }
 
-    public void setThreadsAllowedToBlockForConnectionMultiplier(final Integer threadsAllowedToBlockForConnectionMultiplier)
-    {
+    public void setThreadsAllowedToBlockForConnectionMultiplier(final Integer threadsAllowedToBlockForConnectionMultiplier) {
         this.threadsAllowedToBlockForConnectionMultiplier = threadsAllowedToBlockForConnectionMultiplier;
     }
 
-    public Integer getMaxWaitTime()
-    {
+    public Integer getMaxWaitTime() {
         return maxWaitTime;
     }
 
-    public void setMaxWaitTime(final Integer maxWaitTime)
-    {
+    public void setMaxWaitTime(final Integer maxWaitTime) {
         this.maxWaitTime = maxWaitTime;
     }
 
-    public Integer getConnectTimeout()
-    {
+    public Integer getConnectTimeout() {
         return connectTimeout;
     }
 
-    public void setConnectTimeout(final Integer connectTimeout)
-    {
+    public void setConnectTimeout(final Integer connectTimeout) {
         this.connectTimeout = connectTimeout;
     }
 
-    public Integer getSocketTimeout()
-    {
+    public Integer getSocketTimeout() {
         return socketTimeout;
     }
 
-    public void setSocketTimeout(final Integer socketTimeout)
-    {
+    public void setSocketTimeout(final Integer socketTimeout) {
         this.socketTimeout = socketTimeout;
     }
 

@@ -21,7 +21,6 @@ import org.junit.experimental.categories.Category;
 import org.mule.module.mongo.automation.AbstractMongoTest;
 import org.mule.module.mongo.automation.RegressionTests;
 
-
 public class CountObjectsUsingQueryMapTestCases extends AbstractMongoTest {
 
     private Integer numObjects = 5;

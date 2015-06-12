@@ -15,15 +15,14 @@ import java.io.IOException;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-public class ZipUtils
-{
+public class ZipUtils {
+
     private static final String ZIP_EXTENSION = "zip";
-    
+
     private ZipUtils() {
     }
-    
-    public static void zipDirectory(String dbDumpPath) throws IOException
-    {
+
+    public static void zipDirectory(String dbDumpPath) throws IOException {
         FileOutputStream fileOutputStream = new FileOutputStream(dbDumpPath + ".zip");
         ZipOutputStream zipOutputStream = new ZipOutputStream(fileOutputStream);
 
@@ -35,39 +34,31 @@ public class ZipUtils
 
     }
 
-    private static void addDirectory(ZipOutputStream zipOutputStream, File dumpDirectory) throws IOException
-    {
+    private static void addDirectory(ZipOutputStream zipOutputStream, File dumpDirectory) throws IOException {
         File[] files = dumpDirectory.listFiles();
 
-        for(File file : files)
-        {
-            if(file.isDirectory())
-            {
+        for (File file : files) {
+            if (file.isDirectory()) {
                 addDirectory(zipOutputStream, file);
                 continue;
             }
             FileInputStream fileInputStream = new FileInputStream(file);
-            try
-            {
+            try {
                 byte[] buffer = new byte[1024];
                 zipOutputStream.putNextEntry(new ZipEntry(file.getName()));
 
                 int length;
-                while((length = fileInputStream.read(buffer)) > 0)
-                {
+                while ((length = fileInputStream.read(buffer)) > 0) {
                     zipOutputStream.write(buffer, 0, length);
                 }
                 zipOutputStream.closeEntry();
-            }
-            finally
-            {
+            } finally {
                 fileInputStream.close();
             }
         }
     }
 
-    public static boolean isZipFile(File file)
-    {
+    public static boolean isZipFile(File file) {
         return BackupUtils.hasExtension(file, ZIP_EXTENSION);
     }
 }

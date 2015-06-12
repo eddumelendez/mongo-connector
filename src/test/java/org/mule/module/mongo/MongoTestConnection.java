@@ -15,49 +15,45 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mule.api.ConnectionException;
 
-public class MongoTestConnection
-{
+public class MongoTestConnection {
+
     private MongoCloudConnector connector;
-    
+
     @Before
-    public void setup() throws Exception
-    {
+    public void setup() throws Exception {
         connector = new MongoCloudConnector();
         connector.getStrategy().setHost("127.0.0.1");
     }
-    
+
     @After
-	public void tearDown() throws Exception {
-			connector.getStrategy().disconnect();
+    public void tearDown() throws Exception {
+        connector.getStrategy().disconnect();
     }
-    
+
     @Test
-    public void connectionIncorrectPort() throws ConnectionException
-    {
-    	connector.getStrategy().setPort(32589);
-        assertTrue(!isConnected("admin","","test"));
+    public void connectionIncorrectPort() throws ConnectionException {
+        connector.getStrategy().setPort(32589);
+        assertTrue(!isConnected("admin", "", "test"));
     }
-    
+
     @Test
-    public void connectionIncorrectCredentials()
-    {
-    	connector.getStrategy().setPort(27017);
-        assertTrue(!isConnected("admin","zdrgdr","test"));
-    }
-    
-    @Test
-    public void validConnection()
-    {
+    public void connectionIncorrectCredentials() {
         connector.getStrategy().setPort(27017);
-        assertTrue(isConnected("admin","","test"));
+        assertTrue(!isConnected("admin", "zdrgdr", "test"));
     }
-    
-    private boolean isConnected(String user,String pass,String db){
-    	try {
-			connector.getStrategy().connect(user, pass, db);
-		} catch (ConnectionException e) {
-			return false;
-		}
-		return true;
+
+    @Test
+    public void validConnection() {
+        connector.getStrategy().setPort(27017);
+        assertTrue(isConnected("admin", "", "test"));
+    }
+
+    private boolean isConnected(String user, String pass, String db) {
+        try {
+            connector.getStrategy().connect(user, pass, db);
+        } catch (ConnectionException e) {
+            return false;
+        }
+        return true;
     }
 }

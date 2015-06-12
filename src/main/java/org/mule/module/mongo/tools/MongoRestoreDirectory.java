@@ -22,8 +22,8 @@ import org.mule.module.mongo.api.MongoClient;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 
-public class MongoRestoreDirectory implements Callable<Void>
-{
+public class MongoRestoreDirectory implements Callable<Void> {
+
     private MongoClient mongoClient;
     private boolean drop;
     private boolean oplogReplay;
@@ -31,68 +31,52 @@ public class MongoRestoreDirectory implements Callable<Void>
     private String database;
 
     @Override
-    public Void call() throws Exception
-    {
+    public Void call() throws Exception {
         restore();
         return null;
     }
 
-    private void restore() throws IOException
-    {
+    private void restore() throws IOException {
         Validate.notNull(inputPath);
         List<RestoreFile> restoreFiles = getRestoreFiles(inputPath);
         List<RestoreFile> oplogRestores = new ArrayList<RestoreFile>();
-        for(RestoreFile restoreFile : restoreFiles)
-        {
-            if(!isOplog(restoreFile.getCollection()))
-            {
-                if(drop && !BackupUtils.isSystemCollection(restoreFile.getCollection()))
-                {
+        for (RestoreFile restoreFile : restoreFiles) {
+            if (!isOplog(restoreFile.getCollection())) {
+                if (drop && !BackupUtils.isSystemCollection(restoreFile.getCollection())) {
                     mongoClient.dropCollection(restoreFile.getCollection());
                 }
 
                 DBCollection dbCollection = mongoClient.getCollection(restoreFile.getCollection());
                 List<DBObject> dbObjects = restoreFile.getCollectionObjects();
 
-                if(BackupUtils.isUserCollection(restoreFile.getCollection()))
-                {
-                    for(DBObject currentUser : dbCollection.find())
-                    {
-                        if(!dbObjects.contains(currentUser))
-                        {
+                if (BackupUtils.isUserCollection(restoreFile.getCollection())) {
+                    for (DBObject currentUser : dbCollection.find()) {
+                        if (!dbObjects.contains(currentUser)) {
                             dbCollection.remove(currentUser);
                         }
                     }
                 }
 
-                for(DBObject dbObject : dbObjects)
-                {
+                for (DBObject dbObject : dbObjects) {
                     dbCollection.save(dbObject);
                 }
-            }
-            else
-            {
+            } else {
                 oplogRestores.add(restoreFile);
             }
         }
-        if(oplogReplay && !oplogRestores.isEmpty())
-        {
-            for(RestoreFile oplogRestore : oplogRestores)
-            {
+        if (oplogReplay && !oplogRestores.isEmpty()) {
+            for (RestoreFile oplogRestore : oplogRestores) {
                 mongoClient.executeCommand(new Document("applyOps", filterOplogForDatabase(oplogRestore).toArray()));
             }
         }
     }
 
-    private List<DBObject> filterOplogForDatabase(RestoreFile oplogFile) throws IOException
-    {
+    private List<DBObject> filterOplogForDatabase(RestoreFile oplogFile) throws IOException {
         List<DBObject> oplogEntries = oplogFile.getCollectionObjects();
         List<DBObject> dbOplogEntries = new ArrayList<DBObject>();
 
-        for(DBObject oplogEntry : oplogEntries)
-        {
-            if(((String)oplogEntry.get(BackupConstants.NAMESPACE_FIELD)).startsWith(database + "."))
-            {
+        for (DBObject oplogEntry : oplogEntries) {
+            if (((String) oplogEntry.get(BackupConstants.NAMESPACE_FIELD)).startsWith(database + ".")) {
                 dbOplogEntries.add(oplogEntry);
             }
         }
@@ -100,67 +84,52 @@ public class MongoRestoreDirectory implements Callable<Void>
         return dbOplogEntries;
     }
 
-    private void processRestoreFiles(File input, List<RestoreFile> restoreFiles) throws IOException
-    {
+    private void processRestoreFiles(File input, List<RestoreFile> restoreFiles) throws IOException {
         File unzippedFolder;
-        if(ZipUtils.isZipFile(input))
-        {
+        if (ZipUtils.isZipFile(input)) {
             unzippedFolder = new File(BackupUtils.removeExtension(input.getPath()));
             org.mule.util.FileUtils.unzip(input, unzippedFolder);
-    	}
-    	else
-    	{
+        } else {
             unzippedFolder = input;
-    	}
-    	
-        if(unzippedFolder.isDirectory())
-        {
-            for(File file : unzippedFolder.listFiles())
-            {
+        }
+
+        if (unzippedFolder.isDirectory()) {
+            for (File file : unzippedFolder.listFiles()) {
                 processRestoreFiles(file, restoreFiles);
             }
-        }
-        else if(BackupUtils.isBsonFile(unzippedFolder))
-        {
+        } else if (BackupUtils.isBsonFile(unzippedFolder)) {
             restoreFiles.add(new RestoreFile(unzippedFolder));
         }
     }
 
-    private List<RestoreFile> getRestoreFiles(String inputPath) throws IOException
-    {
+    private List<RestoreFile> getRestoreFiles(String inputPath) throws IOException {
         List<RestoreFile> restoreFiles = new ArrayList<RestoreFile>();
         processRestoreFiles(new File(inputPath), restoreFiles);
         Collections.sort(restoreFiles);
         return restoreFiles;
     }
 
-    private boolean isOplog(String collection)
-    {
+    private boolean isOplog(String collection) {
         return collection.startsWith(BackupConstants.OPLOG);
     }
 
-    public void setDrop(boolean drop)
-    {
+    public void setDrop(boolean drop) {
         this.drop = drop;
     }
 
-    public void setOplogReplay(boolean oplogReplay)
-    {
+    public void setOplogReplay(boolean oplogReplay) {
         this.oplogReplay = oplogReplay;
     }
 
-    public void setInputPath(String inputPath)
-    {
+    public void setInputPath(String inputPath) {
         this.inputPath = inputPath;
     }
 
-    public void setMongoClient(MongoClient mongoClient)
-    {
+    public void setMongoClient(MongoClient mongoClient) {
         this.mongoClient = mongoClient;
     }
 
-    public void setDatabase(String database)
-    {
+    public void setDatabase(String database) {
         this.database = database;
     }
 

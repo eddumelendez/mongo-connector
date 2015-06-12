@@ -6,7 +6,6 @@
  * LICENSE.md file.
  */
 
-
 package org.mule.module.mongo.tools;
 
 import java.io.BufferedReader;
@@ -35,8 +34,8 @@ import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 
-public class IncrementalOplogDump implements Callable<Void>
-{
+public class IncrementalOplogDump implements Callable<Void> {
+
     private static final String INCREMENTAL_LAST_TIMESTAMP = "incremental_last_timestamp.txt";
 
     private Map<String, DB> dbs = new HashMap<String, DB>();
@@ -45,25 +44,21 @@ public class IncrementalOplogDump implements Callable<Void>
     private String database;
 
     @Override
-	public Void call() throws Exception
-    {
+    public Void call() throws Exception {
         dump(outputDirectory, database);
         return null;
     }
 
-    private void dump(String outputDirectory, String database) throws IOException
-    {
+    private void dump(String outputDirectory, String database) throws IOException {
         Validate.notNull(outputDirectory);
         Validate.notNull(database);
 
-        String incrementalFilePath = incrementalTimestampFile != null? incrementalTimestampFile :
-                                     outputDirectory + File.separator + INCREMENTAL_LAST_TIMESTAMP;
+        String incrementalFilePath = incrementalTimestampFile != null ? incrementalTimestampFile : outputDirectory + File.separator + INCREMENTAL_LAST_TIMESTAMP;
         BSONTimestamp lastTimestamp = getLastTimestamp(incrementalFilePath);
 
         DBCollection oplogCollection = new OplogCollection(dbs.get(BackupConstants.ADMIN_DB), dbs.get(BackupConstants.LOCAL_DB)).getOplogCollection();
         DBCursor oplogCursor;
-        if(lastTimestamp != null)
-        {
+        if (lastTimestamp != null) {
             DBObject query = new BasicDBObject();
             query.put(BackupConstants.TIMESTAMP_FIELD, new BasicDBObject("$gt", lastTimestamp));
             // Filter only oplogs for given database
@@ -71,75 +66,55 @@ public class IncrementalOplogDump implements Callable<Void>
 
             oplogCursor = oplogCollection.find(query);
             oplogCursor.addOption(Bytes.QUERYOPTION_OPLOGREPLAY);
-        }
-        else
-        {
+        } else {
             oplogCursor = oplogCollection.find();
         }
 
         DumpWriter dumpWriter = new BsonDumpWriter(outputDirectory);
         String oplogCollectionTimestamp = BackupConstants.OPLOG + appendTimestamp();
 
-        try
-        {
-            while(oplogCursor.hasNext())
-            {
+        try {
+            while (oplogCursor.hasNext()) {
                 DBObject oplogEntry = oplogCursor.next();
-                lastTimestamp = (BSONTimestamp)oplogEntry.get("ts");
+                lastTimestamp = (BSONTimestamp) oplogEntry.get("ts");
 
                 dumpWriter.writeObject(oplogCollectionTimestamp, oplogEntry);
             }
-        }
-        finally
-        {
+        } finally {
             writeLastTimestamp(incrementalFilePath, lastTimestamp);
         }
     }
 
-    private BSONTimestamp getLastTimestamp(String incrementalFilePath) throws IOException
-    {
+    private BSONTimestamp getLastTimestamp(String incrementalFilePath) throws IOException {
         File incrementalFile = new File(incrementalFilePath);
-        if(!incrementalFile.exists())
-        {
+        if (!incrementalFile.exists()) {
             return null;
         }
         BufferedReader input = null;
-        try
-        {
+        try {
             input = new BufferedReader(new InputStreamReader(new FileInputStream(incrementalFile), "UTF-8"));
             String line = input.readLine();
             String[] parts = line.split("\\|");
             return new BSONTimestamp(Integer.parseInt(parts[0]), Integer.parseInt(parts[1]));
 
-        }
-        catch(NullPointerException ne)
-        {
-            throw new RuntimeException(ne.getMessage(),ne);
-        }
-        finally
-        {
-            if(input != null)
-            {
+        } catch (NullPointerException ne) {
+            throw new RuntimeException(ne.getMessage(), ne);
+        } finally {
+            if (input != null) {
                 input.close();
             }
         }
     }
 
-    private void writeLastTimestamp(String incrementalFilePath, BSONTimestamp lastTimestamp) throws IOException
-    {
-        if(lastTimestamp != null)
-        {
+    private void writeLastTimestamp(String incrementalFilePath, BSONTimestamp lastTimestamp) throws IOException {
+        if (lastTimestamp != null) {
             Writer writer = null;
-            try
-            {
+            try {
                 OutputStream outputStream = new FileOutputStream(new File(incrementalFilePath));
                 writer = new OutputStreamWriter(outputStream, "UTF-8");
                 writer.write(lastTimestamp.getTime() + "|" + lastTimestamp.getInc());
-            }
-            finally
-            {
-                if(writer != null)
-                {
+            } finally {
+                if (writer != null) {
                     writer.close();
                 }
             }
@@ -147,30 +122,25 @@ public class IncrementalOplogDump implements Callable<Void>
         }
     }
 
-    private String appendTimestamp()
-    {
+    private String appendTimestamp() {
         SimpleDateFormat dateFormat = new SimpleDateFormat(MongoDump.TIMESTAMP_FORMAT);
         dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
         return dateFormat.format(new Date());
     }
 
-    public void setDBs(Map<String, DB> dbs)
-    {
+    public void setDBs(Map<String, DB> dbs) {
         this.dbs.putAll(dbs);
     }
 
-    public void setIncrementalTimestampFile(String incrementalTimestampFile)
-    {
+    public void setIncrementalTimestampFile(String incrementalTimestampFile) {
         this.incrementalTimestampFile = incrementalTimestampFile;
     }
 
-    public void setOutputDirectory(String outputDirectory)
-    {
+    public void setOutputDirectory(String outputDirectory) {
         this.outputDirectory = outputDirectory;
     }
 
-    public void setDatabase(String database)
-    {
+    public void setDatabase(String database) {
         this.database = database;
     }
 }

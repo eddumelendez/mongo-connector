@@ -21,7 +21,6 @@ import org.mule.module.mongo.api.automation.MongoHelper;
 import org.mule.module.mongo.automation.AbstractMongoTest;
 import org.mule.module.mongo.automation.RegressionTests;
 
-
 public class CreateIndexTestCases extends AbstractMongoTest {
 
     private String indexKey = "myField";

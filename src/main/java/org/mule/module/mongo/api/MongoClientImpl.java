@@ -7,6 +7,7 @@
  */
 
 package org.mule.module.mongo.api;
+
 import static com.mongodb.client.model.Filters.eq;
 
 import java.io.IOException;
@@ -41,8 +42,8 @@ import com.mongodb.gridfs.GridFS;
 import com.mongodb.gridfs.GridFSDBFile;
 import com.mongodb.gridfs.GridFSInputFile;
 
-public class MongoClientImpl implements MongoClient
-{
+public class MongoClientImpl implements MongoClient {
+
     private static final Logger logger = LoggerFactory.getLogger(MongoClientImpl.class);
 
     private static final String ID_FIELD_NAME = "_id";
@@ -52,10 +53,9 @@ public class MongoClientImpl implements MongoClient
     private final MongoDatabase database;
     private final com.mongodb.MongoClient mongo;
 
-    public MongoClientImpl(com.mongodb.MongoClient mongo, final String db)
-    {
-    	logger.info("Initializing MongoClientImpl");
-    	Validate.notNull(mongo, "Mongo instance cannot be null");
+    public MongoClientImpl(com.mongodb.MongoClient mongo, final String db) {
+        logger.info("Initializing MongoClientImpl");
+        Validate.notNull(mongo, "Mongo instance cannot be null");
         Validate.notNull(db, "Database cannot be null");
         this.mongo = mongo;
         this.db = mongo.getDB(db);
@@ -63,30 +63,23 @@ public class MongoClientImpl implements MongoClient
     }
 
     @Override
-	public void close() throws IOException
-    {
-    	logger.info("Closing MongoClientImpl");
-    	mongo.close();
+    public void close() throws IOException {
+        logger.info("Closing MongoClientImpl");
+        mongo.close();
     }
 
     @Override
-	public long countObjects(@NotNull final String collection, final Bson query)
-    {
+    public long countObjects(@NotNull final String collection, final Bson query) {
         Validate.notNull(collection);
-        if (query == null)
-        {
+        if (query == null) {
             return database.getCollection(collection).count();
         }
-        
-		return database.getCollection(collection).count(query);
+
+        return database.getCollection(collection).count(query);
     }
 
     @Override
-	public void createCollection(@NotNull final String collection,
-                                 final boolean capped,
-                                 final Integer maxObjects,
-                                 final Integer size)
-    {
+    public void createCollection(@NotNull final String collection, final boolean capped, final Integer maxObjects, final Integer size) {
         Validate.notNull(collection);
         final CreateCollectionOptions options = new CreateCollectionOptions();
         options.capped(capped);
@@ -94,89 +87,71 @@ public class MongoClientImpl implements MongoClient
     }
 
     @Override
-	public DBCollection getCollection(@NotNull final String collection)
-    {
+    public DBCollection getCollection(@NotNull final String collection) {
         Validate.notNull(collection);
         return db.getCollection(collection);
     }
 
     @Override
-	public WriteResult addUser(final String username, final String password)
-    {
+    public WriteResult addUser(final String username, final String password) {
         Validate.notNull(username);
         Validate.notNull(password);
         final WriteResult writeResult = db.addUser(username, password.toCharArray());
-//        if (!writeResult.getLastError().ok())
-//        {
-//            throw new MongoException(writeResult.getLastError().getErrorMessage());
-//        }
+        // if (!writeResult.getLastError().ok())
+        // {
+        // throw new MongoException(writeResult.getLastError().getErrorMessage());
+        // }
         return writeResult;
     }
 
     @Override
-	public void dropDatabase()
-    {
+    public void dropDatabase() {
         db.dropDatabase();
     }
 
     @Override
-	public void dropCollection(@NotNull final String collection)
-    {
+    public void dropCollection(@NotNull final String collection) {
         Validate.notNull(collection);
         db.getCollection(collection).drop();
     }
 
     @Override
-	public boolean existsCollection(@NotNull final String collection)
-    {
+    public boolean existsCollection(@NotNull final String collection) {
         Validate.notNull(collection);
         return Iterables.find(database.listCollectionNames(), Predicates.equalTo(collection), null) != null;
     }
 
     @Override
-    public Iterable<Document> findObjects(@NotNull final String collection,
-                                          final Document query,
-                                          final List<String> fields,
-                                          final Integer numToSkip,
-                                          final Integer limit,
-                                          Document sortBy)
-    {
+    public Iterable<Document> findObjects(@NotNull final String collection, final Document query, final List<String> fields, final Integer numToSkip, final Integer limit,
+            Document sortBy) {
         Validate.notNull(collection);
 
         FindIterable<Document> dbCursor = database.getCollection(collection).find(query).projection(FieldsSet.from(fields)).cursorType(CursorType.NonTailable);
-        if (numToSkip != null)
-        {
+        if (numToSkip != null) {
             dbCursor = dbCursor.skip(numToSkip);
         }
-        if (limit != null)
-        {
+        if (limit != null) {
             dbCursor = dbCursor.limit(limit);
         }
-        if(sortBy != null){
+        if (sortBy != null) {
             dbCursor.sort(sortBy);
         }
         return bug5588WorkaroundDocument(dbCursor);
     }
 
     @Override
-	public Document findOneObject(@NotNull final String collection,
-                                  final Document query,
-                                  final List<String> fields, boolean failOnNotFound)
-    {
+    public Document findOneObject(@NotNull final String collection, final Document query, final List<String> fields, boolean failOnNotFound) {
         Validate.notNull(collection);
         FindIterable<Document> findIterable = database.getCollection(collection).find(query).projection(FieldsSet.from(fields));
-        final Document element = findIterable.first(); 
-        if (element == null && failOnNotFound)
-		{
+        final Document element = findIterable.first();
+        if (element == null && failOnNotFound) {
             throw new MongoException("No object found for query " + query);
-		}
+        }
         return element;
     }
 
     @Override
-	public String insertObject(@NotNull final String collection,
-                               @NotNull final Document document)
-    {
+    public String insertObject(@NotNull final String collection, @NotNull final Document document) {
         Validate.notNull(collection);
         Validate.notNull(document);
         database.getCollection(collection).insertOne(document);
@@ -184,37 +159,28 @@ public class MongoClientImpl implements MongoClient
         final String id;
         final Object rawId = document.get("_id");
 
-    	if (rawId == null)
-    	{
-    		id = null;
-    	}
-    	else if (rawId instanceof ObjectId)
-    	{
-    		id = ((ObjectId) rawId).toHexString();
-    	}
-    	else
-    	{
-    		id = rawId.toString();
-    	}
-    	return id;
+        if (rawId == null) {
+            id = null;
+        } else if (rawId instanceof ObjectId) {
+            id = ((ObjectId) rawId).toHexString();
+        } else {
+            id = rawId.toString();
+        }
+        return id;
     }
 
     @Override
-	public Collection<String> listCollections()
-    {
+    public Collection<String> listCollections() {
         return Lists.newArrayList(database.listCollectionNames());
     }
 
     @Override
-	public Iterable<Document> mapReduceObjects(@NotNull final String collection,
-                                               @NotNull final String mapFunction,
-                                               @NotNull final String reduceFunction,
-                                               final String outputCollection)
-    {
+    public Iterable<Document> mapReduceObjects(@NotNull final String collection, @NotNull final String mapFunction, @NotNull final String reduceFunction,
+            final String outputCollection) {
         Validate.notNull(collection);
         Validate.notEmpty(mapFunction);
         Validate.notEmpty(reduceFunction);
-        
+
         MapReduceIterable<Document> mapReduceIterable = database.getCollection(collection).mapReduce(mapFunction, reduceFunction);
         if (outputCollection != null) {
             mapReduceIterable = mapReduceIterable.collectionName(outputCollection);
@@ -223,17 +189,13 @@ public class MongoClientImpl implements MongoClient
     }
 
     @Override
-	public void removeObjects(@NotNull final String collection,
-                              final Bson query)
-    {
+    public void removeObjects(@NotNull final String collection, final Bson query) {
         Validate.notNull(collection);
         database.getCollection(collection).deleteMany(query);
     }
 
     @Override
-	public void saveObject(@NotNull final String collectionName,
-                           @NotNull final Document document)
-    {
+    public void saveObject(@NotNull final String collectionName, @NotNull final Document document) {
         Validate.notNull(collectionName);
         Validate.notNull(document);
 
@@ -253,11 +215,7 @@ public class MongoClientImpl implements MongoClient
     }
 
     @Override
-	public void updateObjects(@NotNull final String collection,
-                              final Document query,
-                              final Document document,
-                              final boolean multi)
-    {
+    public void updateObjects(@NotNull final String collection, final Document query, final Document document, final boolean multi) {
         Validate.notNull(collection);
         if (!multi)
             database.getCollection(collection).updateOne(query, document);
@@ -267,37 +225,29 @@ public class MongoClientImpl implements MongoClient
     }
 
     @Override
-	public void createIndex(final String collection, final String field, final IndexOrder order)
-    {
+    public void createIndex(final String collection, final String field, final IndexOrder order) {
         database.getCollection(collection).createIndex(new Document(field, order.getValue()));
     }
 
     @Override
-	public void dropIndex(final String collection, final String name)
-    {
+    public void dropIndex(final String collection, final String name) {
         db.getCollection(collection).dropIndex(name);
     }
 
     @Override
-	public Collection<Document> listIndices(final String collection)
-    {
+    public Collection<Document> listIndices(final String collection) {
         // TODO See if we can change API to return an iterable, and prevent materializing the consumed list
         return Lists.newArrayList(database.getCollection(collection).listIndexes());
     }
 
     @Override
-	public DBObject createFile(final InputStream content,
-                               final String filename,
-                               final String contentType,
-                               final DBObject metadata)
-    {
+    public DBObject createFile(final InputStream content, final String filename, final String contentType, final DBObject metadata) {
         Validate.notNull(filename);
         Validate.notNull(content);
         final GridFSInputFile file = getGridFs().createFile(content);
         file.setFilename(filename);
         file.setContentType(contentType);
-        if (metadata != null)
-        {
+        if (metadata != null) {
             file.setMetaData(metadata);
         }
         file.save();
@@ -305,61 +255,51 @@ public class MongoClientImpl implements MongoClient
     }
 
     @Override
-	public Iterable<DBObject> findFiles(final DBObject query)
-    {
+    public Iterable<DBObject> findFiles(final DBObject query) {
         return bug5588Workaround(getGridFs().find(query));
     }
 
     @Override
-	public DBObject findOneFile(final DBObject query)
-    {
+    public DBObject findOneFile(final DBObject query) {
         Validate.notNull(query);
         final GridFSDBFile file = getGridFs().findOne(query);
-        if (file == null)
-        {
+        if (file == null) {
             throw new MongoException("No file found for query " + query);
         }
         return file;
     }
 
     @Override
-	public InputStream getFileContent(final DBObject query)
-    {
+    public InputStream getFileContent(final DBObject query) {
         Validate.notNull(query);
         return ((GridFSDBFile) findOneFile(query)).getInputStream();
     }
 
     @Override
-	public Iterable<DBObject> listFiles(final DBObject query)
-    {
+    public Iterable<DBObject> listFiles(final DBObject query) {
         return bug5588Workaround(getGridFs().getFileList(query));
     }
 
     @Override
-	public void removeFiles(final DBObject query)
-    {
+    public void removeFiles(final DBObject query) {
         getGridFs().remove(query);
     }
 
     @Override
-	public Document executeCommand(final Document command)
-    {
+    public Document executeCommand(final Document command) {
         return database.runCommand(command);
     }
 
-    protected GridFS getGridFs()
-    {
+    protected GridFS getGridFs() {
         return new GridFS(db);
     }
-    
+
     /*
      * see http://www.mulesoft.org/jira/browse/MULE-5588
      */
     @SuppressWarnings("unchecked")
-    private Iterable<DBObject> bug5588Workaround(final Iterable<? extends DBObject> o)
-    {
-        if (o instanceof Collection<?>)
-        {
+    private Iterable<DBObject> bug5588Workaround(final Iterable<? extends DBObject> o) {
+        if (o instanceof Collection<?>) {
             return (Iterable<DBObject>) o;
         }
         return (Iterable<DBObject>) Iterables.consumingIterable(o);
@@ -369,17 +309,14 @@ public class MongoClientImpl implements MongoClient
      * see http://www.mulesoft.org/jira/browse/MULE-5588
      */
     @SuppressWarnings("unchecked")
-    private Iterable<Document> bug5588WorkaroundDocument(final Iterable<? extends Document> o)
-    {
-        if (o instanceof Collection<?>)
-        {
+    private Iterable<Document> bug5588WorkaroundDocument(final Iterable<? extends Document> o) {
+        if (o instanceof Collection<?>) {
             return (Iterable<Document>) o;
         }
         return new MongoCollection(o);
     }
 
-    public DB getDb()
-    {
+    public DB getDb() {
         return db;
     }
 

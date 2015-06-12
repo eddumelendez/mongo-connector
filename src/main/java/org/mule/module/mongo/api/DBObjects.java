@@ -23,151 +23,118 @@ import com.mongodb.DBObject;
 /**
  * Conversions between JSon Strings and Maps into Documents
  */
-public final class DBObjects
-{
+public final class DBObjects {
+
     private static final Pattern OBJECT_ID_PATTERN = Pattern.compile("ObjectId\\((.+)\\)");
 
-    private DBObjects()
-    {
+    private DBObjects() {
     }
 
     /**
-     * Performs a shallow conversion of a map into a Document: values of type Map
-     * will not be converted
+     * Performs a shallow conversion of a map into a Document: values of type Map will not be converted
      */
-    public static Document fromMap(Map<String, Object> map)
-    {
+    public static Document fromMap(Map<String, Object> map) {
         return new Document(map);
     }
-    public static DBObject fromMapToDbObject(Map<String, Object> map)
-    {
+
+    public static DBObject fromMapToDbObject(Map<String, Object> map) {
         return new BasicDBObject(map);
     }
 
     @SuppressWarnings("unchecked")
-    public static Document from(Object o)
-    {
-        if (o == null)
-        {
+    public static Document from(Object o) {
+        if (o == null) {
             return null;
         }
-        if (o instanceof Document)
-        {
+        if (o instanceof Document) {
             return (Document) o;
         }
-        if (o instanceof Map<?, ?>)
-        {
+        if (o instanceof Map<?, ?>) {
             return fromMap((Map<String, Object>) o);
         }
         throw new IllegalArgumentException("Unsupported object type " + o);
     }
-    
-    
+
     @SuppressWarnings("unchecked")
-    public static DBObject fromToDbObject(Object o)
-    {
-        if (o == null)
-        {
+    public static DBObject fromToDbObject(Object o) {
+        if (o == null) {
             return null;
         }
-        if (o instanceof DBObject)
-        {
+        if (o instanceof DBObject) {
             return (DBObject) o;
         }
-        if (o instanceof Map<?, ?>)
-        {
+        if (o instanceof Map<?, ?>) {
             return fromMapToDbObject((Map<String, Object>) o);
         }
         throw new IllegalArgumentException("Unsupported object type " + o);
     }
-    
-    public static Document fromFunction(String function, Document document)
-    {
+
+    public static Document fromFunction(String function, Document document) {
         return new Document(function, document);
     }
-    
-    public static Document fromCommand(String commandName, String commandValue)
-    {
+
+    public static Document fromCommand(String commandName, String commandValue) {
         Document document;
-        if (commandValue == null)
-    	{
+        if (commandValue == null) {
             document = new Document(commandName, 1);
-    	}
-    	else
-    	{
+        } else {
             document = new Document(commandName, commandValue);
-    	}
-    	
+        }
+
         return document;
     }
 
     @SuppressWarnings("unchecked")
-    public static Object adapt(Object o)
-    {
+    public static Object adapt(Object o) {
         Object obj = o;
-        if (obj instanceof Document)
-        {
+        if (obj instanceof Document) {
             adaptObjectId((Document) obj);
             adaptAttributes((Document) obj);
-        }
-        else if (obj instanceof Map<?, ?>)
-        {
+        } else if (obj instanceof Map<?, ?>) {
             obj = adapt(fromMap((Map<String, Object>) o));
-        }
-        else if (obj instanceof List<?>)
-        {
+        } else if (obj instanceof List<?>) {
             adaptElements(obj);
         }
         return obj;
     }
 
-    public static Document adapt(Map<String, Object> o)
-    {
-    	return new Document(o);
+    public static Document adapt(Map<String, Object> o) {
+        return new Document(o);
     }
-    
-    public static DBObject adaptToDbObject(Map<String, Object> o)
-    {
+
+    public static DBObject adaptToDbObject(Map<String, Object> o) {
         return new BasicDBObject(o);
     }
-    
+
     @SuppressWarnings("unchecked")
-    private static void adaptElements(Object o)
-    {
-        for (ListIterator<Object> iter = ((List<Object>) o).listIterator(); iter.hasNext();)
-        {
+    private static void adaptElements(Object o) {
+        for (ListIterator<Object> iter = ((List<Object>) o).listIterator(); iter.hasNext();) {
             iter.set(adapt(iter.next()));
         }
     }
 
-    private static void adaptAttributes(Document o)
-    {
-        for (String key : o.keySet())
-        {
+    private static void adaptAttributes(Document o) {
+        for (String key : o.keySet()) {
             o.put(key, adapt(o.get(key)));
         }
     }
 
-    private static void adaptObjectId(Document o)
-    {
+    private static void adaptObjectId(Document o) {
         Object id = o.get("_id");
 
-        if (id != null && id instanceof String)
-        {
+        if (id != null && id instanceof String) {
             Matcher m = objectIdMatcher((String) id);
-        	
-            if (m.matches())
-        	{
+
+            if (m.matches()) {
                 o.put("_id", new ObjectId(m.group(1)));
-        	}
+            }
         }
     }
 
-    private static Matcher objectIdMatcher(String id)
-    {
+    private static Matcher objectIdMatcher(String id) {
         return OBJECT_ID_PATTERN.matcher(id);
     }
-    
+
     public static DBObject documentToDbObject(Document doc) {
         return new BasicDBObject(doc);
     }

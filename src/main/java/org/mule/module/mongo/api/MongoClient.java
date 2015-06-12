@@ -22,8 +22,8 @@ import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import com.mongodb.WriteResult;
 
-public interface MongoClient extends Closeable
-{
+public interface MongoClient extends Closeable {
+
     Collection<String> listCollections();
 
     DBCollection getCollection(@NotNull String name);
@@ -34,31 +34,19 @@ public interface MongoClient extends Closeable
 
     void createCollection(@NotNull String name, boolean capped, Integer maxObjects, Integer size);
 
-    String insertObject(@NotNull String collection,
-                        @NotNull Document document);
+    String insertObject(@NotNull String collection, @NotNull Document document);
 
-    void updateObjects(@NotNull String collection,
-                       Document query,
-                       Document object,
-                       boolean multi);
+    void updateObjects(@NotNull String collection, Document query, Document object, boolean multi);
 
     void saveObject(@NotNull String collection, @NotNull Document document);
 
     void removeObjects(@NotNull String collection, Bson query);
 
-    Iterable<Document> mapReduceObjects(@NotNull String collection,
-                                        @NotNull String mapFunction,
-                                        @NotNull String reduceFunction,
-                                        String outputCollection);
+    Iterable<Document> mapReduceObjects(@NotNull String collection, @NotNull String mapFunction, @NotNull String reduceFunction, String outputCollection);
 
     long countObjects(@NotNull String collection, Bson query);
 
-    Iterable<Document> findObjects(@NotNull String collection,
-                                   Document query,
-                                   List<String> fields,
-                                   Integer numToSkip,
-                                   Integer limit,
-                                   Document sortBy);
+    Iterable<Document> findObjects(@NotNull String collection, Document query, List<String> fields, Integer numToSkip, Integer limit, Document sortBy);
 
     Document findOneObject(@NotNull String collection, Document query, List<String> fields, boolean failOnNotFound);
 
