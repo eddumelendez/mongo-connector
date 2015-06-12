@@ -19,7 +19,7 @@ import org.junit.Test;
  * <pre>
  * db.addUser(username, password)
  * </pre>
- * 
+ *
  * @author flbulgarelli
  */
 public class MongoAuthenticationTestDriver {

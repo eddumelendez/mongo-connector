@@ -77,7 +77,6 @@ public class DBObjectsUnitTest {
     @Test
     public void fromMapWithObjectId() throws Exception {
         HashMap<String, Object> map = new HashMap<String, Object>() {
-
             {
                 put("name", "John");
                 put("surname", "Doe");
@@ -101,7 +100,6 @@ public class DBObjectsUnitTest {
             }
         });
         Document o = DBObjects.from(new HashMap<String, Object>() {
-
             {
                 put("name", "Jon");
                 put("surname", "Arbuckle");

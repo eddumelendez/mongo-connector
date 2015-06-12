@@ -38,7 +38,7 @@ import com.mongodb.MongoException;
 
 /**
  * Integration test for the Connector
- * 
+ *
  * @author flbulgarelli
  */
 @RunWith(Theories.class)

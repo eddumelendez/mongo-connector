@@ -22,7 +22,6 @@ public class ExistsCollectionTestCases extends AbstractMongoTest {
     public void setUp() {
         // Create collection
         getConnector().createCollection("Arenas", false, 5, 5);
-
     }
 
     @After

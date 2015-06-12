@@ -68,7 +68,6 @@ public class UpdateObjectsByFunctionUsingMapTestCases extends AbstractMongoTest 
     @After
     public void tearDown() throws Exception {
         getConnector().dropCollection("Arenas");
-
     }
 
 }

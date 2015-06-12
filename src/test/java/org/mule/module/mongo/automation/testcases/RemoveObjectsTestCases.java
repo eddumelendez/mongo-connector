@@ -43,7 +43,6 @@ public class RemoveObjectsTestCases extends AbstractMongoTest {
     @After
     public void tearDown() throws Exception {
         getConnector().dropCollection("Arenas");
-
     }
 
 }

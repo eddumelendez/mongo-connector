@@ -83,6 +83,12 @@ public class MongoClientImpl implements MongoClient {
         Validate.notNull(collection);
         final CreateCollectionOptions options = new CreateCollectionOptions();
         options.capped(capped);
+        if (maxObjects != null) {
+            options.maxDocuments(maxObjects);
+        }
+        if (size != null) {
+            options.sizeInBytes(size);
+        }
         database.createCollection(collection, options);
     }
 

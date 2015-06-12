@@ -36,7 +36,7 @@ import com.mongodb.gridfs.GridFSDBFile;
 
 /**
  * Unit test for the {@link MongoClientImpl}
- * 
+ *
  * @author flbulgarelli
  */
 public class MongoTestCase {
@@ -183,7 +183,7 @@ public class MongoTestCase {
 
     /**
      * Test for {@link MongoClient#removeFiles(DBObject)}
-     * 
+     *
      * @throws Exception
      */
     @Test
@@ -195,7 +195,7 @@ public class MongoTestCase {
 
     /**
      * Test for {@link MongoClient#findFiles(DBObject)}
-     * 
+     *
      * @throws Exception
      */
     @Test

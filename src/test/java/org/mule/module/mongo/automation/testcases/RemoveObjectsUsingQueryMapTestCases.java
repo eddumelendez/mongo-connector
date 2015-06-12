@@ -54,7 +54,6 @@ public class RemoveObjectsUsingQueryMapTestCases extends AbstractMongoTest {
     public void tearDown() throws Exception {
         // Drop the collection
         getConnector().dropCollection("Arenas");
-
     }
 
     @Category({ RegressionTests.class })

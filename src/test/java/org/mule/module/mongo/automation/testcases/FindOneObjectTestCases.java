@@ -31,7 +31,7 @@ public class FindOneObjectTestCases extends AbstractMongoTest {
     @Category({ RegressionTests.class })
     @Test
     public void testFindOneObject() {
-        // Get the retrieved DBObject
+        // Get the retrieved Document
         Document payload = getConnector().findOneObject("Arenas", new Document(), null, false);
         assertNotNull(payload);
         assertTrue(payload.keySet().size() == 1);

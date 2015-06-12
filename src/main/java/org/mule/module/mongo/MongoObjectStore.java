@@ -41,7 +41,7 @@ import org.springframework.util.DigestUtils;
 
 /**
  * A PartitionableExpirableObjectStore backed by MongoDB.
- * 
+ *
  * @author MuleSoft Inc.
  */
 public class MongoObjectStore implements PartitionableExpirableObjectStore<Serializable>, MuleContextAware {
@@ -199,7 +199,7 @@ public class MongoObjectStore implements PartitionableExpirableObjectStore<Seria
             mongoClient.createIndex(collection, TIMESTAMP_FIELD, IndexOrder.ASC);
         }
 
-        final byte[] keyAsBytes = SerializationUtils.serialize(key);
+        final byte[] keyAsBytes = org.apache.commons.lang.SerializationUtils.serialize(key);
         final ObjectId objectId = getObjectIdFromKey(keyAsBytes);
         final Document query = getQueryForObjectId(objectId);
         final Document document = new Document();
