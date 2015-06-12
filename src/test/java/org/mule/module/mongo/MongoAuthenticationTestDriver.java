@@ -14,37 +14,33 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
- * Integration test for the Connector when Authenticated. This test is only
- * meaningful when server has being started with --auth argument, and a user has
- * being created:
- * 
+ * Integration test for the Connector when Authenticated. This test is only meaningful when server has being started with --auth argument, and a user has being created:
+ *
  * <pre>
  * db.addUser(username, password)
  * </pre>
- * 
+ *
  * @author flbulgarelli
  */
-public class MongoAuthenticationTestDriver
-{
+public class MongoAuthenticationTestDriver {
+
     private MongoCloudConnector connector;
 
     /**
      * Setups an athenticated connector
      */
     @Before
-    public void setup() throws Exception
-    {
+    public void setup() throws Exception {
         connector = new MongoCloudConnector();
         connector.setHost("127.0.0.1");
         connector.setPort(27017);
-        //connector.connect("foobar", "1234", "mongo-connector-test");
+        // connector.connect("foobar", "1234", "mongo-connector-test");
         connector.connect("admin", "", "test");
-        
+
     }
 
     @Test
-    public void createCollection() throws Exception
-    {
+    public void createCollection() throws Exception {
         assertNotNull(connector.listCollections());
     }
 

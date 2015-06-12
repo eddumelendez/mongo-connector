@@ -21,47 +21,43 @@ import org.mule.modules.tests.ConnectorTestUtils;
 
 public class RemoveFilesTestCases extends MongoTestParent {
 
+    @Before
+    public void setUp() {
+        initializeTestRunMessage("removeFiles");
 
-	@Before
-	public void setUp() {
-		initializeTestRunMessage("removeFiles");
-		
-		createFileFromPayload(getTestRunMessageValue("filename1"));
-		createFileFromPayload(getTestRunMessageValue("filename1"));
-		createFileFromPayload(getTestRunMessageValue("filename2"));
-	}
-	
-	
-	@After
-	public void tearDown() {
-		deleteFilesCreatedByCreateFileFromPayload();
-	}
+        createFileFromPayload(getTestRunMessageValue("filename1"));
+        createFileFromPayload(getTestRunMessageValue("filename1"));
+        createFileFromPayload(getTestRunMessageValue("filename2"));
+    }
 
-	@Category({ RegressionTests.class })
-	@Test
-	public void testRemoveFiles_emptyQuery() {
-		try {
-			runFlowAndGetPayload("remove-files-using-query-map-empty-query");
-			assertEquals("There should be 0 files found after remove-files with an empty query", 0, findFiles());
-		} catch (Exception e) {
-	         fail(ConnectorTestUtils.getStackTrace(e));
-	    }
+    @After
+    public void tearDown() {
+        deleteFilesCreatedByCreateFileFromPayload();
+    }
 
+    @Category({ RegressionTests.class })
+    @Test
+    public void testRemoveFiles_emptyQuery() {
+        try {
+            runFlowAndGetPayload("remove-files-using-query-map-empty-query");
+            assertEquals("There should be 0 files found after remove-files with an empty query", 0, findFiles());
+        } catch (Exception e) {
+            fail(ConnectorTestUtils.getStackTrace(e));
+        }
 
-	}
+    }
 
-	
-	// For some reason, when running all test cases together, this test fails sometimes (not always). When only the RemoveFilesTestCases is executed, both tests pass
-	@Category({ RegressionTests.class })
-	@Test
-	public void testRemoveFiles_nonemptyQuery() {
-		try {
-			runFlowAndGetPayload("remove-files-using-query-map-non-empty-query");
-			assertEquals("There should be 1 files found after remove-files with a non-empty query, which deletes all files of name " + getTestRunMessageValue("value"), 1, findFiles());
-		} catch (Exception e) {
-	         fail(ConnectorTestUtils.getStackTrace(e));
-	    }
+    // For some reason, when running all test cases together, this test fails sometimes (not always). When only the RemoveFilesTestCases is executed, both tests pass
+    @Category({ RegressionTests.class })
+    @Test
+    public void testRemoveFiles_nonemptyQuery() {
+        try {
+            runFlowAndGetPayload("remove-files-using-query-map-non-empty-query");
+            assertEquals("There should be 1 files found after remove-files with a non-empty query, which deletes all files of name " + getTestRunMessageValue("value"), 1,
+                    findFiles());
+        } catch (Exception e) {
+            fail(ConnectorTestUtils.getStackTrace(e));
+        }
 
-
-	}
+    }
 }

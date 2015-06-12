@@ -24,43 +24,41 @@ import com.mongodb.DBObject;
 
 public class FindOneObjectTestCases extends MongoTestParent {
 
-	@Before
-	public void setUp() throws Exception {
-			// create the collection
-			initializeTestRunMessage("findOneObject");
-			runFlowAndGetPayload("create-collection");
-			
-			// create the object
-			// dbObject is modified in the insert-object flow
-			runFlowAndGetPayload("insert-object");
-			
+    @Before
+    public void setUp() throws Exception {
+        // create the collection
+        initializeTestRunMessage("findOneObject");
+        runFlowAndGetPayload("create-collection");
 
-	}
+        // create the object
+        // dbObject is modified in the insert-object flow
+        runFlowAndGetPayload("insert-object");
 
-	@Category({ RegressionTests.class })
-	@Test
-	public void testFindOneObject() {
-		try {
-			DBObject dbObject = (DBObject) getTestRunMessageValue("dbObjectRef");
-			
-			// Get the retrieved DBObject
-			// No MongoException means that it found a match (we are matching using ID)
-			DBObject payload = runFlowAndGetPayload("find-one-object");
-			assertNotNull(payload);
-			assertTrue(payload.equals(dbObject));
-			
-		} catch (Exception e) {
-	         fail(ConnectorTestUtils.getStackTrace(e));
-	    }
+    }
 
-	}
+    @Category({ RegressionTests.class })
+    @Test
+    public void testFindOneObject() {
+        try {
+            DBObject dbObject = (DBObject) getTestRunMessageValue("dbObjectRef");
 
-	@After
-	public void tearDown() throws Exception {
-			// drop the collection
-			runFlowAndGetPayload("drop-collection");
+            // Get the retrieved DBObject
+            // No MongoException means that it found a match (we are matching using ID)
+            DBObject payload = runFlowAndGetPayload("find-one-object");
+            assertNotNull(payload);
+            assertTrue(payload.equals(dbObject));
 
+        } catch (Exception e) {
+            fail(ConnectorTestUtils.getStackTrace(e));
+        }
 
-	}
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        // drop the collection
+        runFlowAndGetPayload("drop-collection");
+
+    }
 
 }

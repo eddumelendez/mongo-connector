@@ -26,57 +26,55 @@ import com.mongodb.DBObject;
 
 public class CountObjectsUsingQueryMapTestCases extends MongoTestParent {
 
+    @Before
+    public void setUp() throws Exception {
+        // Create collection
+        initializeTestRunMessage("countObjectsUsingQueryMap");
+        runFlowAndGetPayload("create-collection");
 
-	@Before
-	public void setUp() throws Exception {
-			// Create collection
-			initializeTestRunMessage("countObjectsUsingQueryMap");
-			runFlowAndGetPayload("create-collection");
+    }
 
-	}
+    @After
+    public void tearDown() throws Exception {
+        // Delete collection
+        runFlowAndGetPayload("drop-collection");
 
-	@After
-	public void tearDown() throws Exception {
-			// Delete collection
-			runFlowAndGetPayload("drop-collection");
+    }
 
-	}
-	
-	@Category({ RegressionTests.class })
-	@Test
-	public void testCountObjectsUsingQueryMap_without_map() {
-		int numObjects = (Integer) getTestRunMessageValue("numObjects");
-		insertObjects(getEmptyDBObjects(numObjects));
-		
-		try {
-			assertEquals(new Long(numObjects), (Long) runFlowAndGetPayload("count-objects-using-query-map-without-query"));
-		} catch (Exception e) {
-	         fail(ConnectorTestUtils.getStackTrace(e));
-	    }	
+    @Category({ RegressionTests.class })
+    @Test
+    public void testCountObjectsUsingQueryMap_without_map() {
+        int numObjects = (Integer) getTestRunMessageValue("numObjects");
+        insertObjects(getEmptyDBObjects(numObjects));
 
+        try {
+            assertEquals(new Long(numObjects), runFlowAndGetPayload("count-objects-using-query-map-without-query"));
+        } catch (Exception e) {
+            fail(ConnectorTestUtils.getStackTrace(e));
+        }
 
-	}
+    }
 
-	@Category({ RegressionTests.class })
-	@Test
-	public void testCountObjectsUsingQueryMap_with_map() {
-		List<DBObject> list = getEmptyDBObjects(2);
+    @Category({ RegressionTests.class })
+    @Test
+    public void testCountObjectsUsingQueryMap_with_map() {
+        List<DBObject> list = getEmptyDBObjects(2);
 
-		String queryAttribKey = getTestRunMessageValue("queryAttribKey").toString();
-		String queryAttribVal = getTestRunMessageValue("queryAttribVal").toString();
-		
-		DBObject dbObj = new BasicDBObject();
-		dbObj.put(queryAttribKey, queryAttribVal);
-		list.add(dbObj);
+        String queryAttribKey = getTestRunMessageValue("queryAttribKey").toString();
+        String queryAttribVal = getTestRunMessageValue("queryAttribVal").toString();
 
-		insertObjects(list);
+        DBObject dbObj = new BasicDBObject();
+        dbObj.put(queryAttribKey, queryAttribVal);
+        list.add(dbObj);
 
-		try {
-			assertEquals(new Long(1), (Long) runFlowAndGetPayload("count-objects-using-query-map-with-query"));
-		} catch (Exception e) {
-	         fail(ConnectorTestUtils.getStackTrace(e));
-	    }
-		
-	}
+        insertObjects(list);
+
+        try {
+            assertEquals(new Long(1), runFlowAndGetPayload("count-objects-using-query-map-with-query"));
+        } catch (Exception e) {
+            fail(ConnectorTestUtils.getStackTrace(e));
+        }
+
+    }
 
 }

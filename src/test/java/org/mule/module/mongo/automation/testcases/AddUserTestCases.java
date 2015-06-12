@@ -20,20 +20,20 @@ import org.mule.modules.tests.ConnectorTestUtils;
 import com.mongodb.WriteResult;
 
 public class AddUserTestCases extends MongoTestParent {
-	
-	@Category({RegressionTests.class})
-	@Test
-	public void testAddUser() {
-		try {
-			initializeTestRunMessage("addUser");
-			
-			WriteResult result = runFlowAndGetPayload("add-user");
-			assertTrue(result.getLastError().ok());
-			assertTrue(result.getError() == null);
-		} catch (Exception e) {
-	         fail(ConnectorTestUtils.getStackTrace(e));
-	    }
-		
-	}
-	
+
+    @Category({ RegressionTests.class })
+    @Test
+    public void testAddUser() {
+        try {
+            initializeTestRunMessage("addUser");
+
+            WriteResult result = runFlowAndGetPayload("add-user");
+            assertTrue(result.getLastError().ok());
+            assertTrue(result.getError() == null);
+        } catch (Exception e) {
+            fail(ConnectorTestUtils.getStackTrace(e));
+        }
+
+    }
+
 }

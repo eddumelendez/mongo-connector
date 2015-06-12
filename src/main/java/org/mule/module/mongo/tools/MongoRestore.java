@@ -6,11 +6,7 @@
  * LICENSE.md file.
  */
 
-
 package org.mule.module.mongo.tools;
-
-
-import org.mule.module.mongo.api.MongoClient;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
@@ -18,23 +14,22 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 import org.apache.commons.lang.Validate;
+import org.mule.module.mongo.api.MongoClient;
 
-public class MongoRestore extends AbstractMongoUtility
-{
+public class MongoRestore extends AbstractMongoUtility {
+
     private MongoClient mongoClient;
     private boolean drop;
     private boolean oplogReplay;
     private String database;
 
-    public MongoRestore(MongoClient mongoClient, String database)
-    {
+    public MongoRestore(MongoClient mongoClient, String database) {
         Validate.notNull(mongoClient);
         this.mongoClient = mongoClient;
         this.database = database;
     }
 
-    public void restore(String inputPath) throws IOException
-    {
+    public void restore(String inputPath) throws IOException {
         Validate.notNull(inputPath);
         ExecutorService executor = Executors.newSingleThreadExecutor();
         MongoRestoreDirectory mongoRestoreDirectory = new MongoRestoreDirectory();
@@ -47,14 +42,11 @@ public class MongoRestore extends AbstractMongoUtility
         propagateException(future);
     }
 
-
-    public void setDrop(boolean drop)
-    {
+    public void setDrop(boolean drop) {
         this.drop = drop;
     }
 
-    public void setOplogReplay(boolean oplogReplay)
-    {
+    public void setOplogReplay(boolean oplogReplay) {
         this.oplogReplay = oplogReplay;
     }
 }

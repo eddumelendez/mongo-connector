@@ -13,22 +13,18 @@ import java.util.List;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 
-public final class FieldsSet
-{
-    private FieldsSet()
-    {
+public final class FieldsSet {
+
+    private FieldsSet() {
     }
 
-    public static DBObject from(List<String> fieldsList)
-    {
-        if (fieldsList == null)
-        {
+    public static DBObject from(List<String> fieldsList) {
+        if (fieldsList == null) {
             return null;
         }
 
         BasicDBObject o = new BasicDBObject();
-        for (String s : fieldsList)
-        {
+        for (String s : fieldsList) {
             o.put(s, 1);
         }
         return o;

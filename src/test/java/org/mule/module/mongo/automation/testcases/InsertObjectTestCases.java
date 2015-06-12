@@ -22,29 +22,30 @@ import org.mule.modules.tests.ConnectorTestUtils;
 
 public class InsertObjectTestCases extends MongoTestParent {
 
+    @Before
+    public void setUp() throws Exception {
+        initializeTestRunMessage("insertObject");
+        runFlowAndGetPayload("create-collection");
+    }
 
-	@Before
-	public void setUp() throws Exception {
-			initializeTestRunMessage("insertObject");
-			runFlowAndGetPayload("create-collection");
-	}
+    @Category({
+            SmokeTests.class,
+            RegressionTests.class })
+    @Test
+    public void testInsertObject() {
+        try {
+            String objectID = runFlowAndGetPayload("insert-object");
 
-	@Category({SmokeTests.class, RegressionTests.class})
-	@Test
-	public void testInsertObject() {
-		try {
-			String objectID = runFlowAndGetPayload("insert-object");
-			
-			assertTrue(objectID != null && !objectID.equals("") && !objectID.trim().equals(""));
-		} catch (Exception e) {
-	         fail(ConnectorTestUtils.getStackTrace(e));
-	    }
+            assertTrue(objectID != null && !objectID.equals("") && !objectID.trim().equals(""));
+        } catch (Exception e) {
+            fail(ConnectorTestUtils.getStackTrace(e));
+        }
 
-	}
-	
-	@After
-	public void tearDown() throws Exception {
-			runFlowAndGetPayload("drop-collection");
-	}
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        runFlowAndGetPayload("drop-collection");
+    }
 
 }

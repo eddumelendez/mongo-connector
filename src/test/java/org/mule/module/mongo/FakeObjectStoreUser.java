@@ -13,19 +13,16 @@ import java.io.Serializable;
 import org.mule.api.store.PartitionableExpirableObjectStore;
 import org.springframework.beans.factory.annotation.Required;
 
-public class FakeObjectStoreUser
-{
+public class FakeObjectStoreUser {
 
     private PartitionableExpirableObjectStore<Serializable> objectStore;
 
-    public PartitionableExpirableObjectStore<Serializable> getObjectStore()
-    {
+    public PartitionableExpirableObjectStore<Serializable> getObjectStore() {
         return objectStore;
     }
 
     @Required
-    public void setObjectStore(final PartitionableExpirableObjectStore<Serializable> objectStore)
-    {
+    public void setObjectStore(final PartitionableExpirableObjectStore<Serializable> objectStore) {
         this.objectStore = objectStore;
     }
 }

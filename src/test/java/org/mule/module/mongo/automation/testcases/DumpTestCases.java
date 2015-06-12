@@ -23,36 +23,34 @@ import org.mule.module.mongo.automation.RegressionTests;
 import org.mule.modules.tests.ConnectorTestUtils;
 
 public class DumpTestCases extends MongoTestParent {
-	
 
-	@Before
-	public void setUp() {
-		initializeTestRunMessage("dump");
-		
-		new File("./" + getTestRunMessageValue("outputDirectory"));
-	}
+    @Before
+    public void setUp() {
+        initializeTestRunMessage("dump");
 
-	@After
-	public void tearDown() throws Exception {
-			File dumpOutputDir = new File("./" + getTestRunMessageValue("outputDirectory"));
-			FileUtils.deleteDirectory(dumpOutputDir);
+        new File("./" + getTestRunMessageValue("outputDirectory"));
+    }
 
-	}
+    @After
+    public void tearDown() throws Exception {
+        File dumpOutputDir = new File("./" + getTestRunMessageValue("outputDirectory"));
+        FileUtils.deleteDirectory(dumpOutputDir);
 
-	@Category({ RegressionTests.class })
-	@Test
-	public void testDump() {
-		File dumpOutputDir;
-		try {
-			runFlowAndGetPayload("dump");
-			dumpOutputDir = new File("./" + getTestRunMessageValue("outputDirectory"));
-			assertTrue("dump directory should exist after test runs", dumpOutputDir.exists());
-			
-		} catch (Exception e) {
-	         fail(ConnectorTestUtils.getStackTrace(e));
-	    }
+    }
 
-		
-	}
+    @Category({ RegressionTests.class })
+    @Test
+    public void testDump() {
+        File dumpOutputDir;
+        try {
+            runFlowAndGetPayload("dump");
+            dumpOutputDir = new File("./" + getTestRunMessageValue("outputDirectory"));
+            assertTrue("dump directory should exist after test runs", dumpOutputDir.exists());
+
+        } catch (Exception e) {
+            fail(ConnectorTestUtils.getStackTrace(e));
+        }
+
+    }
 
 }

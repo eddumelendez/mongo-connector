@@ -25,51 +25,50 @@ import com.mongodb.DBObject;
 
 public class SaveObjectFromMapTestCases extends MongoTestParent {
 
+    @Before
+    public void setUp() throws Exception {
+        initializeTestRunMessage("saveObjectFromMap");
+        runFlowAndGetPayload("create-collection");
 
-	@Before
-	public void setUp() throws Exception {
-			initializeTestRunMessage("saveObjectFromMap");
-			runFlowAndGetPayload("create-collection");
+    }
 
+    @After
+    public void tearDown() throws Exception {
+        runFlowAndGetPayload("drop-collection");
 
-	}
-	
-	@After
-	public void tearDown() throws Exception {
-			runFlowAndGetPayload("drop-collection");
+    }
 
+    @Category({
+            SmokeTests.class,
+            RegressionTests.class })
+    @Test
+    public void testSaveObjectFromMap() {
+        try {
 
-	}
-	
-	@Category({SmokeTests.class, RegressionTests.class})
-	@Test
-	public void testSaveObjectFromMap() {
-		try {
-		
-			String key = getTestRunMessageValue("key").toString();
-			String value = getTestRunMessageValue("value").toString();
-		
-			// Save object to MongoDB
-			runFlowAndGetPayload("save-object-from-map");
-			
-			// Check whether it was saved			
-			DBObject object = (DBObject) runFlowAndGetPayload("find-one-object-using-query-map");
-			assertTrue(object.containsField(key));
-			assertTrue(object.get(key).equals(value));
-			
-			// Modify object and save to MongoDB
-			upsertOnTestRunMessage("value", "differentValue");
-			String differentValue = getTestRunMessageValue("value").toString();
-			runFlowAndGetPayload("save-object-from-map");
-			
-			// Check that modifications were saved
-			object = runFlowAndGetPayload("find-one-object-using-query-map");
-			assertTrue(object.containsField(key));
-			assertFalse(object.get(key).equals(value));
-			assertTrue(object.get(key).equals(differentValue));
-		} catch (Exception e) {
-	         fail(ConnectorTestUtils.getStackTrace(e));
-	    }
+            String key = getTestRunMessageValue("key").toString();
+            String value = getTestRunMessageValue("value").toString();
 
-	}
+            // Save object to MongoDB
+            runFlowAndGetPayload("save-object-from-map");
+
+            // Check whether it was saved
+            DBObject object = (DBObject) runFlowAndGetPayload("find-one-object-using-query-map");
+            assertTrue(object.containsField(key));
+            assertTrue(object.get(key).equals(value));
+
+            // Modify object and save to MongoDB
+            upsertOnTestRunMessage("value", "differentValue");
+            String differentValue = getTestRunMessageValue("value").toString();
+            runFlowAndGetPayload("save-object-from-map");
+
+            // Check that modifications were saved
+            object = runFlowAndGetPayload("find-one-object-using-query-map");
+            assertTrue(object.containsField(key));
+            assertFalse(object.get(key).equals(value));
+            assertTrue(object.get(key).equals(differentValue));
+        } catch (Exception e) {
+            fail(ConnectorTestUtils.getStackTrace(e));
+        }
+
+    }
 }

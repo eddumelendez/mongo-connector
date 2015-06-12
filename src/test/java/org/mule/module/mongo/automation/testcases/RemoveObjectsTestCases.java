@@ -22,33 +22,31 @@ import org.mule.modules.tests.ConnectorTestUtils;
 
 public class RemoveObjectsTestCases extends MongoTestParent {
 
+    @Before
+    public void setUp() throws Exception {
+        initializeTestRunMessage("removeObjects");
+        runFlowAndGetPayload("create-collection");
+        runFlowAndGetPayload("insert-object");
 
-	@Before
-	public void setUp() throws Exception {
-			initializeTestRunMessage("removeObjects");
-			runFlowAndGetPayload("create-collection");
-			runFlowAndGetPayload("insert-object");			
+    }
 
-	}
-	
-	@Category({RegressionTests.class})
-	@Test
-	public void testRemoveObjects() {
-		try {
-			runFlowAndGetPayload("remove-objects");
-			MongoCollection payload = runFlowAndGetPayload("find-objects");
-			assertTrue(payload.isEmpty());			
-		} catch (Exception e) {
-	         fail(ConnectorTestUtils.getStackTrace(e));
-	    }
+    @Category({ RegressionTests.class })
+    @Test
+    public void testRemoveObjects() {
+        try {
+            runFlowAndGetPayload("remove-objects");
+            MongoCollection payload = runFlowAndGetPayload("find-objects");
+            assertTrue(payload.isEmpty());
+        } catch (Exception e) {
+            fail(ConnectorTestUtils.getStackTrace(e));
+        }
 
-	}
-	
-	@After
-	public void tearDown() throws Exception {
-			runFlowAndGetPayload("drop-collection");
+    }
 
+    @After
+    public void tearDown() throws Exception {
+        runFlowAndGetPayload("drop-collection");
 
-	}
-	
+    }
+
 }

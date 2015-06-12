@@ -10,6 +10,6 @@ package org.mule.module.mongo.automation;
 
 public interface RegressionTests {
 
-	/* category marker */ 
+    /* category marker */
 
 }

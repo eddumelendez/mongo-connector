@@ -28,47 +28,47 @@ import com.mongodb.DBObject;
 
 public class DropIndexTestCases extends MongoTestParent {
 
+    @Before
+    public void setUp() throws Exception {
+        // Create the collection
+        initializeTestRunMessage("dropIndex");
+        runFlowAndGetPayload("create-collection");
 
-	@Before
-	public void setUp() throws Exception {
-			// Create the collection
-			initializeTestRunMessage("dropIndex");
-			runFlowAndGetPayload("create-collection");
-			
-			// Create the index
-			runFlowAndGetPayload("create-index");
+        // Create the index
+        runFlowAndGetPayload("create-index");
 
-	}
-	
+    }
 
-	@Category({SmokeTests.class, RegressionTests.class})
-	@Test
-	public void testDropIndexByName() {
-		try {
+    @Category({
+            SmokeTests.class,
+            RegressionTests.class })
+    @Test
+    public void testDropIndexByName() {
+        try {
 
-			String indexKey = getTestRunMessageValue("field").toString();
-			IndexOrder indexOrder = (IndexOrder) getTestRunMessageValue("order");
-			
-			String indexName = indexKey + "_" + indexOrder.getValue();
-			
-			upsertOnTestRunMessage("index", indexName);
-			
-			runFlowAndGetPayload("drop-index");
-			
-			List<DBObject> payload = runFlowAndGetPayload("list-indices");
-						
-			assertFalse(MongoHelper.indexExistsInList(payload, indexName));
-			
-		} catch (Exception e) {
-	         fail(ConnectorTestUtils.getStackTrace(e));
-	    }
+            String indexKey = getTestRunMessageValue("field").toString();
+            IndexOrder indexOrder = (IndexOrder) getTestRunMessageValue("order");
 
-	}
-	
-	@After
-	public void tearDown() throws Exception {
-			runFlowAndGetPayload("drop-collection");
+            String indexName = indexKey + "_" + indexOrder.getValue();
 
-	}
+            upsertOnTestRunMessage("index", indexName);
+
+            runFlowAndGetPayload("drop-index");
+
+            List<DBObject> payload = runFlowAndGetPayload("list-indices");
+
+            assertFalse(MongoHelper.indexExistsInList(payload, indexName));
+
+        } catch (Exception e) {
+            fail(ConnectorTestUtils.getStackTrace(e));
+        }
+
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        runFlowAndGetPayload("drop-collection");
+
+    }
 
 }

@@ -18,25 +18,24 @@ import org.mule.module.mongo.automation.MongoTestParent;
 import org.mule.module.mongo.automation.RegressionTests;
 
 public class FindFilesTestCases extends MongoTestParent {
-	
 
-	@Before
-	public void setUp() {
-		initializeTestRunMessage("findFiles");
-		
-		createFileFromPayload(getTestRunMessageValue("filename1"));
-		createFileFromPayload(getTestRunMessageValue("filename1"));
-	}
-	
-	@After
-	public void tearDown() {
-		deleteFilesCreatedByCreateFileFromPayload();
-	}
+    @Before
+    public void setUp() {
+        initializeTestRunMessage("findFiles");
 
-	@Category({ RegressionTests.class })
-	@Test
-	public void testFindFiles() {
-		assertEquals("There should be 2 files found", 2, findFiles());
-	}
-	
+        createFileFromPayload(getTestRunMessageValue("filename1"));
+        createFileFromPayload(getTestRunMessageValue("filename1"));
+    }
+
+    @After
+    public void tearDown() {
+        deleteFilesCreatedByCreateFileFromPayload();
+    }
+
+    @Category({ RegressionTests.class })
+    @Test
+    public void testFindFiles() {
+        assertEquals("There should be 2 files found", 2, findFiles());
+    }
+
 }

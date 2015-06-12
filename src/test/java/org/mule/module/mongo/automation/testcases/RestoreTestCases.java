@@ -28,61 +28,59 @@ import org.mule.modules.tests.ConnectorTestUtils;
 import com.mongodb.DBObject;
 
 public class RestoreTestCases extends MongoTestParent {
-	
 
-	@Before
-	public void setUp() throws Exception {
-		initializeTestRunMessage("restore");
-		String indexKey = getTestRunMessageValue("field").toString();
-		IndexOrder indexOrder = (IndexOrder) getTestRunMessageValue("order");
-		
-		String indexName = MongoHelper.getIndexName(indexKey, indexOrder);
-		
-		runFlowAndGetPayload("createIndex_Dump");
-		
-		// drop index
-		upsertOnTestRunMessage("index", indexName);
+    @Before
+    public void setUp() throws Exception {
+        initializeTestRunMessage("restore");
+        String indexKey = getTestRunMessageValue("field").toString();
+        IndexOrder indexOrder = (IndexOrder) getTestRunMessageValue("order");
 
-		runFlowAndGetPayload("drop-index-for-drop-restore");
+        String indexName = MongoHelper.getIndexName(indexKey, indexOrder);
 
-	}
-	
-	@After
-	public void tearDown() throws Exception {
-			File dumpOutputDir = new File("./" + getTestRunMessageValue("outputDirectory"));
-			FileUtils.deleteDirectory(dumpOutputDir);
-			
-			String indexKey = getTestRunMessageValue("field").toString();
-			IndexOrder indexOrder = (IndexOrder) getTestRunMessageValue("order");
-			
-			String indexName = MongoHelper.getIndexName(indexKey, indexOrder);
-			
-			// drop index
-			upsertOnTestRunMessage("index", indexName);			
-			runFlowAndGetPayload("drop-index-for-drop-restore");
-			// Need to drop the collection becuase creating the index creates the collection
-			runFlowAndGetPayload("drop-collection-for-drop-restore");
+        runFlowAndGetPayload("createIndex_Dump");
 
-	}
-	
+        // drop index
+        upsertOnTestRunMessage("index", indexName);
 
-	@Category({RegressionTests.class})
-	@Test
-	public void testRestore() {
-		try {
-			runFlowAndGetPayload("restore");
-			
-			String indexKey = getTestRunMessageValue("field").toString();
-			IndexOrder indexOrder = (IndexOrder) getTestRunMessageValue("order");
-			
-			String indexName = MongoHelper.getIndexName(indexKey, indexOrder);
-			
-			List<DBObject> payload = runFlowAndGetPayload("list-indices-for-drop-restore");
-			
-			assertTrue("After restoring the database, the index with index name = " + indexName + " should exist", MongoHelper.indexExistsInList(payload, indexName));
-		} catch (Exception e) {
-	         fail(ConnectorTestUtils.getStackTrace(e));
-	    }
-	}
-	
+        runFlowAndGetPayload("drop-index-for-drop-restore");
+
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        File dumpOutputDir = new File("./" + getTestRunMessageValue("outputDirectory"));
+        FileUtils.deleteDirectory(dumpOutputDir);
+
+        String indexKey = getTestRunMessageValue("field").toString();
+        IndexOrder indexOrder = (IndexOrder) getTestRunMessageValue("order");
+
+        String indexName = MongoHelper.getIndexName(indexKey, indexOrder);
+
+        // drop index
+        upsertOnTestRunMessage("index", indexName);
+        runFlowAndGetPayload("drop-index-for-drop-restore");
+        // Need to drop the collection becuase creating the index creates the collection
+        runFlowAndGetPayload("drop-collection-for-drop-restore");
+
+    }
+
+    @Category({ RegressionTests.class })
+    @Test
+    public void testRestore() {
+        try {
+            runFlowAndGetPayload("restore");
+
+            String indexKey = getTestRunMessageValue("field").toString();
+            IndexOrder indexOrder = (IndexOrder) getTestRunMessageValue("order");
+
+            String indexName = MongoHelper.getIndexName(indexKey, indexOrder);
+
+            List<DBObject> payload = runFlowAndGetPayload("list-indices-for-drop-restore");
+
+            assertTrue("After restoring the database, the index with index name = " + indexName + " should exist", MongoHelper.indexExistsInList(payload, indexName));
+        } catch (Exception e) {
+            fail(ConnectorTestUtils.getStackTrace(e));
+        }
+    }
+
 }

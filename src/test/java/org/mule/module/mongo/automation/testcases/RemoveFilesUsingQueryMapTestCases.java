@@ -21,47 +21,42 @@ import org.mule.modules.tests.ConnectorTestUtils;
 
 public class RemoveFilesUsingQueryMapTestCases extends MongoTestParent {
 
+    @Before
+    public void setUp() {
+        initializeTestRunMessage("removeFilesUsingQueryMap");
 
-	@Before
-	public void setUp() {
-		initializeTestRunMessage("removeFilesUsingQueryMap");
-		
-		createFileFromPayload(getTestRunMessageValue("filename1"));
-		createFileFromPayload(getTestRunMessageValue("filename1"));
-		createFileFromPayload(getTestRunMessageValue("filename2"));
-	}
-	
-	@After
-	public void tearDown() {
-		deleteFilesCreatedByCreateFileFromPayload();
-	}
-	
-	@Category({ RegressionTests.class })
-	@Test
-	public void testRemoveFilesUsingQueryMap_emptyQuery() {
-		try {
-			runFlowAndGetPayload("remove-files-using-query-map-empty-query");
-			assertEquals("There should be 0 files found after remove-files-using-query-map with an empty query", 0,
-					findFiles());
-		} catch (Exception e) {
-	         fail(ConnectorTestUtils.getStackTrace(e));
-	    }
+        createFileFromPayload(getTestRunMessageValue("filename1"));
+        createFileFromPayload(getTestRunMessageValue("filename1"));
+        createFileFromPayload(getTestRunMessageValue("filename2"));
+    }
 
+    @After
+    public void tearDown() {
+        deleteFilesCreatedByCreateFileFromPayload();
+    }
 
-	}
+    @Category({ RegressionTests.class })
+    @Test
+    public void testRemoveFilesUsingQueryMap_emptyQuery() {
+        try {
+            runFlowAndGetPayload("remove-files-using-query-map-empty-query");
+            assertEquals("There should be 0 files found after remove-files-using-query-map with an empty query", 0, findFiles());
+        } catch (Exception e) {
+            fail(ConnectorTestUtils.getStackTrace(e));
+        }
 
-	@Category({ RegressionTests.class })
-	@Test
-	public void testRemoveFilesUsingQueryMap_nonemptyQuery() {
-		try {
-			runFlowAndGetPayload("remove-files-using-query-map-non-empty-query");
-			assertEquals("There should be 1 files found after removing files with a filename of " + getTestRunMessageValue("value"), 1,
-					findFiles());
-		} catch (Exception e) {
-	         fail(ConnectorTestUtils.getStackTrace(e));
-	    }
+    }
 
+    @Category({ RegressionTests.class })
+    @Test
+    public void testRemoveFilesUsingQueryMap_nonemptyQuery() {
+        try {
+            runFlowAndGetPayload("remove-files-using-query-map-non-empty-query");
+            assertEquals("There should be 1 files found after removing files with a filename of " + getTestRunMessageValue("value"), 1, findFiles());
+        } catch (Exception e) {
+            fail(ConnectorTestUtils.getStackTrace(e));
+        }
 
-	}
+    }
 
 }

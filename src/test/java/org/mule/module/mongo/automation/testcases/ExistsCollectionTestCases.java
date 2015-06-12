@@ -22,29 +22,30 @@ import org.mule.modules.tests.ConnectorTestUtils;
 
 public class ExistsCollectionTestCases extends MongoTestParent {
 
+    @Before
+    public void setUp() throws Exception {
+        initializeTestRunMessage("existsCollection");
+        runFlowAndGetPayload("create-collection");
 
-	@Before
-	public void setUp() throws Exception {			
-			initializeTestRunMessage("existsCollection");
-			runFlowAndGetPayload("create-collection");
+    }
 
-	}
+    @After
+    public void tearDown() throws Exception {
+        runFlowAndGetPayload("drop-collection");
 
-	@After
-	public void tearDown() throws Exception {
-			runFlowAndGetPayload("drop-collection");
+    }
 
-	}
+    @Category({
+            SmokeTests.class,
+            RegressionTests.class })
+    @Test
+    public void testExistsCollection() {
+        try {
+            assertTrue((Boolean) runFlowAndGetPayload("exists-collection"));
+        } catch (Exception e) {
+            fail(ConnectorTestUtils.getStackTrace(e));
+        }
 
-	@Category({ SmokeTests.class, RegressionTests.class })
-	@Test
-	public void testExistsCollection() {
-		try {
-			assertTrue((Boolean) runFlowAndGetPayload("exists-collection"));
-		} catch (Exception e) {
-	         fail(ConnectorTestUtils.getStackTrace(e));
-	    }	
-
-	}
+    }
 
 }

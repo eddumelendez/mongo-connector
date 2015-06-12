@@ -23,49 +23,48 @@ import com.mongodb.DBObject;
 
 public class SaveObjectTestCases extends MongoTestParent {
 
+    @Before
+    public void setUp() throws Exception {
+        initializeTestRunMessage("saveObject");
+        runFlowAndGetPayload("create-collection");
 
-	@Before
-	public void setUp() throws Exception {
-			initializeTestRunMessage("saveObject");
-			runFlowAndGetPayload("create-collection");
-				
+    }
 
-	}
-	
-	@Category({SmokeTests.class, RegressionTests.class})
-	@Test
-	public void testSaveObject() {
-		try {
-			runFlowAndGetPayload("save-object");
-			
-			DBObject element = (DBObject) getTestRunMessageValue("elementRef");
-			
-			// Check that object was inserted
-//			MongoCollection dbObjects = getObjects(testObjects);
-//			assertTrue(dbObjects.contains(element));			
-			
-			// Get key and value from payload (defined in bean)
-			String key = getTestRunMessageValue("key").toString();
-			String value = getTestRunMessageValue("value").toString();
-			
-			// Modify object and save
-			element.put(key, value);
-			runFlowAndGetPayload("save-object");
-			
-			// Check that object was changed in MongoDB
-//			dbObjects = getObjects(testObjects);
-//			assertTrue(dbObjects.contains(element));
-		} catch (Exception e) {
-	         fail(ConnectorTestUtils.getStackTrace(e));
-	    }
+    @Category({
+            SmokeTests.class,
+            RegressionTests.class })
+    @Test
+    public void testSaveObject() {
+        try {
+            runFlowAndGetPayload("save-object");
 
-	}
-		
-	@After
-	public void tearDown() throws Exception {
-			runFlowAndGetPayload("drop-collection");
+            DBObject element = (DBObject) getTestRunMessageValue("elementRef");
 
+            // Check that object was inserted
+            // MongoCollection dbObjects = getObjects(testObjects);
+            // assertTrue(dbObjects.contains(element));
 
-	}
-	
+            // Get key and value from payload (defined in bean)
+            String key = getTestRunMessageValue("key").toString();
+            String value = getTestRunMessageValue("value").toString();
+
+            // Modify object and save
+            element.put(key, value);
+            runFlowAndGetPayload("save-object");
+
+            // Check that object was changed in MongoDB
+            // dbObjects = getObjects(testObjects);
+            // assertTrue(dbObjects.contains(element));
+        } catch (Exception e) {
+            fail(ConnectorTestUtils.getStackTrace(e));
+        }
+
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        runFlowAndGetPayload("drop-collection");
+
+    }
+
 }

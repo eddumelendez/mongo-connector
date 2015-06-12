@@ -27,68 +27,61 @@ import com.mongodb.DBObject;
 
 public class ListFilesTestCases extends MongoTestParent {
 
+    @Before
+    public void setUp() {
+        initializeTestRunMessage("listFiles");
 
-	@Before
-	public void setUp() {
-		initializeTestRunMessage("listFiles");
+        createFileFromPayload(getTestRunMessageValue("filename1"));
+        createFileFromPayload(getTestRunMessageValue("filename1"));
+        createFileFromPayload(getTestRunMessageValue("filename2"));
+    }
 
-		createFileFromPayload(getTestRunMessageValue("filename1"));
-		createFileFromPayload(getTestRunMessageValue("filename1"));
-		createFileFromPayload(getTestRunMessageValue("filename2"));
-	}
+    @After
+    public void tearDown() {
+        deleteFilesCreatedByCreateFileFromPayload();
+    }
 
-	@After
-	public void tearDown() {
-		deleteFilesCreatedByCreateFileFromPayload();
-	}
+    @Category({ RegressionTests.class })
+    @Test
+    public void testListFiles_emptyQuery() {
+        MuleMessage response = null;
+        try {
+            response = runFlowAndGetMessage("list-files");
 
+            assertNotNull(response);
+            assertNotNull(response.getPayload());
+            assertTrue(response.getPayload() instanceof Iterable);
 
-	@Category({ RegressionTests.class })
-	@Test
-	public void testListFiles_emptyQuery() {
-		MuleMessage response = null;
-		try {
-			response = runFlowAndGetMessage("list-files");
+            Iterable<DBObject> iterable = (Iterable<DBObject>) response.getPayload();
 
+            assertEquals("An empty DBObject for the query should list all the files", 3, MongoHelper.getIterableSize(iterable));
 
-		assertNotNull(response);
-		assertNotNull(response.getPayload());
-		assertTrue(response.getPayload() instanceof Iterable);
+        } catch (Exception e) {
+            fail(ConnectorTestUtils.getStackTrace(e));
+        }
 
-		Iterable<DBObject> iterable = (Iterable<DBObject>) response.getPayload();
+    }
 
-		assertEquals("An empty DBObject for the query should list all the files", 3, MongoHelper.getIterableSize(iterable));
-	
-		} catch (Exception e) {
-	         fail(ConnectorTestUtils.getStackTrace(e));
-	    }
-		
-	}
+    @Category({ RegressionTests.class })
+    @Test
+    public void testListFiles_nonemptyQuery() {
+        DBObject queryRef = (DBObject) getTestRunMessageValue("queryRef");
+        queryRef.put((String) getTestRunMessageValue("key"), getTestRunMessageValue("value"));
+        MuleMessage response = null;
+        try {
+            response = runFlowAndGetMessage("list-files");
 
+            assertNotNull(response);
+            assertNotNull(response.getPayload());
+            assertTrue(response.getPayload() instanceof Iterable);
 
-	@Category({ RegressionTests.class })
-	@Test
-	public void testListFiles_nonemptyQuery() {
-		DBObject queryRef = (DBObject) getTestRunMessageValue("queryRef");
-		queryRef.put((String) getTestRunMessageValue("key"), getTestRunMessageValue("value"));
-		MuleMessage response = null;
-		try {
-			response = runFlowAndGetMessage("list-files");
+            Iterable<DBObject> iterable = (Iterable<DBObject>) response.getPayload();
 
+            assertEquals("Listing files with a query with key " + getTestRunMessageValue("key") + " and value " + getTestRunMessageValue("value") + " should give 2 results", 2,
+                    MongoHelper.getIterableSize(iterable));
+        } catch (Exception e) {
+            fail(ConnectorTestUtils.getStackTrace(e));
+        }
 
-		assertNotNull(response);
-		assertNotNull(response.getPayload());
-		assertTrue(response.getPayload() instanceof Iterable);
-
-		Iterable<DBObject> iterable = (Iterable<DBObject>) response.getPayload();
-
-		assertEquals(
-				"Listing files with a query with key " + getTestRunMessageValue("key")
-						+ " and value " + getTestRunMessageValue("value")
-						+ " should give 2 results", 2, MongoHelper.getIterableSize(iterable));
-		} catch (Exception e) {
-	         fail(ConnectorTestUtils.getStackTrace(e));
-	    }
-
-	}
+    }
 }

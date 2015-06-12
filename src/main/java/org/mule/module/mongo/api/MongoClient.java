@@ -22,8 +22,8 @@ import com.mongodb.WriteResult;
 /**
  * @author flbulgarelli
  */
-public interface MongoClient extends Closeable
-{
+public interface MongoClient extends Closeable {
+
     Collection<String> listCollections();
 
     DBCollection getCollection(@NotNull String name);
@@ -34,34 +34,19 @@ public interface MongoClient extends Closeable
 
     void createCollection(@NotNull String name, boolean capped, Integer maxObjects, Integer size);
 
-    String insertObject(@NotNull String collection,
-                        @NotNull DBObject object,
-                        @NotNull WriteConcern writeConcern);
+    String insertObject(@NotNull String collection, @NotNull DBObject object, @NotNull WriteConcern writeConcern);
 
-    void updateObjects(@NotNull String collection,
-                       DBObject query,
-                       DBObject object,
-                       boolean upsert,
-                       boolean multi,
-                       @NotNull WriteConcern writeConcern);
+    void updateObjects(@NotNull String collection, DBObject query, DBObject object, boolean upsert, boolean multi, @NotNull WriteConcern writeConcern);
 
     void saveObject(@NotNull String collection, @NotNull DBObject object, @NotNull WriteConcern writeConcern);
 
     void removeObjects(@NotNull String collection, DBObject query, @NotNull WriteConcern writeConcern);
 
-    Iterable<DBObject> mapReduceObjects(@NotNull String collection,
-                                        @NotNull String mapFunction,
-                                        @NotNull String reduceFunction,
-                                        String outputCollection);
+    Iterable<DBObject> mapReduceObjects(@NotNull String collection, @NotNull String mapFunction, @NotNull String reduceFunction, String outputCollection);
 
     long countObjects(@NotNull String collection, DBObject query);
 
-    Iterable<DBObject> findObjects(@NotNull String collection,
-                                   DBObject query,
-                                   List<String> fields,
-                                   Integer numToSkip,
-                                   Integer limit,
-                                   DBObject sortBy);
+    Iterable<DBObject> findObjects(@NotNull String collection, DBObject query, List<String> fields, Integer numToSkip, Integer limit, DBObject sortBy);
 
     DBObject findOneObject(@NotNull String collection, DBObject query, List<String> fields, boolean failOnNotFound);
 

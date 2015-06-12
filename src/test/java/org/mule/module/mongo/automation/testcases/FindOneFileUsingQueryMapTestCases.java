@@ -23,34 +23,33 @@ import com.mongodb.DBObject;
 
 public class FindOneFileUsingQueryMapTestCases extends MongoTestParent {
 
+    @Before
+    public void setUp() {
+        initializeTestRunMessage("findOneFileUsingQueryMap");
 
-	@Before
-	public void setUp() {
-		initializeTestRunMessage("findOneFileUsingQueryMap");
+        createFileFromPayload(getTestRunMessageValue("filename1"));
+        createFileFromPayload(getTestRunMessageValue("filename1"));
+        createFileFromPayload(getTestRunMessageValue("filename2"));
+    }
 
-		createFileFromPayload(getTestRunMessageValue("filename1"));
-		createFileFromPayload(getTestRunMessageValue("filename1"));
-		createFileFromPayload(getTestRunMessageValue("filename2"));
-	}
+    @After
+    public void tearDown() {
+        deleteFilesCreatedByCreateFileFromPayload();
+    }
 
-	@After
-	public void tearDown() {
-		deleteFilesCreatedByCreateFileFromPayload();
-	}
+    @Category({ RegressionTests.class })
+    @Test
+    public void testFindOneFileUsingQueryMap() {
+        try {
+            DBObject dbObj = runFlowAndGetPayload("find-one-file-using-query-map");
 
-	@Category({ RegressionTests.class })
-	@Test
-	public void testFindOneFileUsingQueryMap() {
-		try {
-			DBObject dbObj = runFlowAndGetPayload("find-one-file-using-query-map");
-			
-			assertEquals("The file found should have the name " + getTestRunMessageValue("filename1"), getTestRunMessageValue("filename1"), dbObj.get("filename"));
-			assertEquals("There should be 3 files in total", 3, findFiles());
+            assertEquals("The file found should have the name " + getTestRunMessageValue("filename1"), getTestRunMessageValue("filename1"), dbObj.get("filename"));
+            assertEquals("There should be 3 files in total", 3, findFiles());
 
-		} catch (Exception e) {
-	         fail(ConnectorTestUtils.getStackTrace(e));
-	    }
-		
-	}
+        } catch (Exception e) {
+            fail(ConnectorTestUtils.getStackTrace(e));
+        }
+
+    }
 
 }

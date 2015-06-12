@@ -29,50 +29,49 @@ import com.mongodb.DBObject;
 
 public class FindObjectsTestCases extends MongoTestParent {
 
-	private List<String> objectIDs = new ArrayList<String>();
-	
+    private List<String> objectIDs = new ArrayList<String>();
 
-	@Before
-	public void setUp() throws Exception {
-			// create collection
-			initializeTestRunMessage("findObjects");
-			runFlowAndGetPayload("create-collection");
+    @Before
+    public void setUp() throws Exception {
+        // create collection
+        initializeTestRunMessage("findObjects");
+        runFlowAndGetPayload("create-collection");
 
-			int numberOfObjects = (Integer) getTestRunMessageValue("numberOfObjects");
-			
-			for (int i = 0; i < numberOfObjects; i++) {
-				BasicDBObject dbObject = new BasicDBObject();
-				upsertOnTestRunMessage("dbObjectRef", dbObject);
-				
-				String payload = runFlowAndGetPayload("insert-object");
-				objectIDs.add(payload);
-			}
-			
+        int numberOfObjects = (Integer) getTestRunMessageValue("numberOfObjects");
 
-	}
+        for (int i = 0; i < numberOfObjects; i++) {
+            BasicDBObject dbObject = new BasicDBObject();
+            upsertOnTestRunMessage("dbObjectRef", dbObject);
 
-	@Category({SmokeTests.class, RegressionTests.class})
-	@Test
-	public void testFindObjects() {
-		try {
-			MongoCollection payload = runFlowAndGetPayload("find-objects");
-			
-			assertTrue(objectIDs.size() == payload.size());
-			for (DBObject obj : payload) { 
-				String dbObjectID = obj.get("_id").toString();
-				assertTrue(objectIDs.contains(dbObjectID));
-			}
-		} catch (Exception e) {
-	         fail(ConnectorTestUtils.getStackTrace(e));
-	    }
+            String payload = runFlowAndGetPayload("insert-object");
+            objectIDs.add(payload);
+        }
 
-	}
-	
-	@After
-	public void tearDown() throws Exception {
-			runFlowAndGetPayload("drop-collection");
+    }
 
-	}
-	
-	
+    @Category({
+            SmokeTests.class,
+            RegressionTests.class })
+    @Test
+    public void testFindObjects() {
+        try {
+            MongoCollection payload = runFlowAndGetPayload("find-objects");
+
+            assertTrue(objectIDs.size() == payload.size());
+            for (DBObject obj : payload) {
+                String dbObjectID = obj.get("_id").toString();
+                assertTrue(objectIDs.contains(dbObjectID));
+            }
+        } catch (Exception e) {
+            fail(ConnectorTestUtils.getStackTrace(e));
+        }
+
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        runFlowAndGetPayload("drop-collection");
+
+    }
+
 }

@@ -27,69 +27,59 @@ import com.mongodb.DBObject;
 
 public class ListFilesUsingQueryMapTestCases extends MongoTestParent {
 
+    @Before
+    public void setUp() {
+        initializeTestRunMessage("listFilesUsingQueryMap");
 
-	@Before
-	public void setUp() {
-		initializeTestRunMessage("listFilesUsingQueryMap");
+        createFileFromPayload(getTestRunMessageValue("filename1"));
+        createFileFromPayload(getTestRunMessageValue("filename1"));
+        createFileFromPayload(getTestRunMessageValue("filename2"));
+    }
 
-		createFileFromPayload(getTestRunMessageValue("filename1"));
-		createFileFromPayload(getTestRunMessageValue("filename1"));
-		createFileFromPayload(getTestRunMessageValue("filename2"));
-	}
+    @After
+    public void tearDown() {
+        deleteFilesCreatedByCreateFileFromPayload();
+    }
 
-	@After
-	public void tearDown() {
-		deleteFilesCreatedByCreateFileFromPayload();
-	}
+    @Category({ RegressionTests.class })
+    @Test
+    public void testListFilesUsingQueryMap_emptyQuery() {
+        MuleMessage response = null;
+        try {
+            response = runFlowAndGetMessage("list-files-using-query-map-empty-query");
 
+            assertNotNull(response);
+            assertNotNull(response.getPayload());
+            assertTrue(response.getPayload() instanceof Iterable);
 
-	@Category({ RegressionTests.class })
-	@Test
-	public void testListFilesUsingQueryMap_emptyQuery() {
-		MuleMessage response = null;
-		try {
-			response = runFlowAndGetMessage("list-files-using-query-map-empty-query");
+            Iterable<DBObject> iterable = (Iterable<DBObject>) response.getPayload();
 
+            assertEquals("An empty query map for the query should list all the files", 3, MongoHelper.getIterableSize(iterable));
 
-		assertNotNull(response);
-		assertNotNull(response.getPayload());
-		assertTrue(response.getPayload() instanceof Iterable);
+        } catch (Exception e) {
+            fail(ConnectorTestUtils.getStackTrace(e));
+        }
+    }
 
-		Iterable<DBObject> iterable = (Iterable<DBObject>) response.getPayload();
+    @Category({ RegressionTests.class })
+    @Test
+    public void testListFilesUsingQueryMap_nonemptyQuery() {
+        MuleMessage response = null;
+        try {
+            response = runFlowAndGetMessage("list-files-using-query-map-non-empty-query");
 
-		assertEquals(
-				"An empty query map for the query should list all the files", 3,
-				MongoHelper.getIterableSize(iterable));
+            assertNotNull(response);
+            assertNotNull(response.getPayload());
+            assertTrue(response.getPayload() instanceof Iterable);
 
-		} catch (Exception e) {
-	         fail(ConnectorTestUtils.getStackTrace(e));
-	    }
-	}
+            Iterable<DBObject> iterable = (Iterable<DBObject>) response.getPayload();
 
+            assertEquals("Listing files with a query with key " + getTestRunMessageValue("key") + " and value " + getTestRunMessageValue("value") + " should give 2 results", 2,
+                    MongoHelper.getIterableSize(iterable));
 
-	@Category({ RegressionTests.class })
-	@Test
-	public void testListFilesUsingQueryMap_nonemptyQuery() {
-		MuleMessage response = null;
-		try {
-			response = runFlowAndGetMessage("list-files-using-query-map-non-empty-query");
+        } catch (Exception e) {
+            fail(ConnectorTestUtils.getStackTrace(e));
+        }
 
-
-		assertNotNull(response);
-		assertNotNull(response.getPayload());
-		assertTrue(response.getPayload() instanceof Iterable);
-
-		Iterable<DBObject> iterable = (Iterable<DBObject>) response.getPayload();
-
-		assertEquals(
-				"Listing files with a query with key " + getTestRunMessageValue("key")
-						+ " and value " + getTestRunMessageValue("value")
-						+ " should give 2 results", 2, MongoHelper.getIterableSize(iterable));
-		
-		} catch (Exception e) {
-	         fail(ConnectorTestUtils.getStackTrace(e));
-	    }
-		
-
-	}
+    }
 }

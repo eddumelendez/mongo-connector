@@ -8,19 +8,16 @@
 
 package org.mule.module.mongo.api;
 
-public enum IndexOrder
-{
+public enum IndexOrder {
     ASC(1), DESC(-1);
 
     private final int value;
 
-    IndexOrder(int value)
-    {
+    IndexOrder(int value) {
         this.value = value;
     }
 
-    public int getValue()
-    {
+    public int getValue() {
         return value;
     }
 

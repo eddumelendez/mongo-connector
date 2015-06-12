@@ -28,12 +28,18 @@ import org.mule.module.mongo.automation.testcases.SaveObjectTestCases;
 
 @RunWith(Categories.class)
 @IncludeCategory(SmokeTests.class)
-@SuiteClasses({ CreateCollectionTestCases.class,
-		CreateFileFromPayloadTestCases.class, CreateIndexTestCases.class,
-		DropCollectionTestCases.class, DropIndexTestCases.class,
-		ExistsCollectionTestCases.class, FindObjectsTestCases.class,
-		FindOneObjectUsingQueryMapTestCases.class, ListIndicesTestCases.class,
-		InsertObjectTestCases.class, SaveObjectFromMapTestCases.class,
-		SaveObjectTestCases.class })
+@SuiteClasses({
+        CreateCollectionTestCases.class,
+        CreateFileFromPayloadTestCases.class,
+        CreateIndexTestCases.class,
+        DropCollectionTestCases.class,
+        DropIndexTestCases.class,
+        ExistsCollectionTestCases.class,
+        FindObjectsTestCases.class,
+        FindOneObjectUsingQueryMapTestCases.class,
+        ListIndicesTestCases.class,
+        InsertObjectTestCases.class,
+        SaveObjectFromMapTestCases.class,
+        SaveObjectTestCases.class })
 public class SmokeTestSuite {
 }

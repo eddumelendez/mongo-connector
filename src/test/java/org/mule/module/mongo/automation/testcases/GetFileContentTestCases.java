@@ -25,36 +25,35 @@ import org.mule.modules.tests.ConnectorTestUtils;
 import com.mongodb.DBObject;
 
 public class GetFileContentTestCases extends MongoTestParent {
-	
 
-	@Before
-	public void setUp() {
-		initializeTestRunMessage("getFileContent");
-		
-		createFileFromPayload(getTestRunMessageValue("filename1"));
-		createFileFromPayload(getTestRunMessageValue("filename2"));
-	}
+    @Before
+    public void setUp() {
+        initializeTestRunMessage("getFileContent");
 
-	@After
-	public void tearDown() {
-		deleteFilesCreatedByCreateFileFromPayload();
-	}
+        createFileFromPayload(getTestRunMessageValue("filename1"));
+        createFileFromPayload(getTestRunMessageValue("filename2"));
+    }
 
-	@Category({ RegressionTests.class })
-	@Test
-	public void testGetFileContent() {
-		try {
-			DBObject queryRef = (DBObject) getTestRunMessageValue("queryRef");
-			queryRef.put("filename", getTestRunMessageValue("filename1"));
-			
-			Object response = runFlowAndGetPayload("get-file-content");
-			
-			assertNotNull(response);
-			assertTrue(response instanceof InputStream);
-		} catch (Exception e) {
-	         fail(ConnectorTestUtils.getStackTrace(e));
-	    }
-		
-	}
+    @After
+    public void tearDown() {
+        deleteFilesCreatedByCreateFileFromPayload();
+    }
+
+    @Category({ RegressionTests.class })
+    @Test
+    public void testGetFileContent() {
+        try {
+            DBObject queryRef = (DBObject) getTestRunMessageValue("queryRef");
+            queryRef.put("filename", getTestRunMessageValue("filename1"));
+
+            Object response = runFlowAndGetPayload("get-file-content");
+
+            assertNotNull(response);
+            assertTrue(response instanceof InputStream);
+        } catch (Exception e) {
+            fail(ConnectorTestUtils.getStackTrace(e));
+        }
+
+    }
 
 }

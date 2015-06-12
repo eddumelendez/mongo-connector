@@ -26,16 +26,16 @@ public class PoolingTestCases extends MongoTestParent {
     @SuppressWarnings("unchecked")
     @Before
     public void setUp() throws Exception {
-            // Create collection
-            initializeTestRunMessage("countObjects");
-            runFlowAndGetPayload("create-collection");
+        // Create collection
+        initializeTestRunMessage("countObjects");
+        runFlowAndGetPayload("create-collection");
 
     }
 
     @After
     public void tearDown() throws Exception {
-            // Delete collection
-            runFlowAndGetPayload("drop-collection");
+        // Delete collection
+        runFlowAndGetPayload("drop-collection");
 
     }
 
@@ -48,18 +48,19 @@ public class PoolingTestCases extends MongoTestParent {
         insertObjects(getEmptyDBObjects(numObjects));
 
         Integer startingConnections = Integer.parseInt((String) runFlowAndGetPayload("count-open-connections"));
-        
+
         upsertOnTestRunMessage("queryRef", new BasicDBObject());
 
         for (int i = 0; i < 32; i++) {
             try {
-            	runFlowAndGetPayload("count-objects");
-    		} catch (Exception e) {
-   	         fail(ConnectorTestUtils.getStackTrace(e));
-   	    }
+                runFlowAndGetPayload("count-objects");
+            } catch (Exception e) {
+                fail(ConnectorTestUtils.getStackTrace(e));
+            }
 
         }
 
         int newConnections = Integer.parseInt((String) runFlowAndGetPayload("count-open-connections")) - startingConnections;
         assertTrue("Too many new connections (" + newConnections + ", ", newConnections <= 2);
-    }}
+    }
+}

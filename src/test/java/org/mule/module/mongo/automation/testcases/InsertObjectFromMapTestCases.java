@@ -23,43 +23,40 @@ import com.mongodb.DBObject;
 
 public class InsertObjectFromMapTestCases extends MongoTestParent {
 
+    @Before
+    public void setUp() throws Exception {
+        initializeTestRunMessage("insertObjectFromMap");
+        runFlowAndGetPayload("create-collection");
 
-	@Before
-	public void setUp() throws Exception {
-			initializeTestRunMessage("insertObjectFromMap");
-			runFlowAndGetPayload("create-collection");
+    }
 
+    @Category({ RegressionTests.class })
+    @Test
+    public void testInsertObjectFromMap() {
+        try {
 
-	}
+            String key = getTestRunMessageValue("key").toString();
+            String value = getTestRunMessageValue("value").toString();
 
-	@Category({ RegressionTests.class})
-	@Test
-	public void testInsertObjectFromMap() {
-		try {
+            String objectID = runFlowAndGetPayload("insert-object-from-map");
 
-			String key = getTestRunMessageValue("key").toString();
-			String value = getTestRunMessageValue("value").toString();
-			
-			String objectID = runFlowAndGetPayload("insert-object-from-map");
-			
-			assertTrue(objectID != null && !objectID.equals("") && !objectID.trim().equals(""));
-			
-			DBObject object = runFlowAndGetPayload("find-one-object-using-query-map");
-			assertTrue(object.containsField("_id"));
-			assertTrue(object.containsField(key));
-			
-			assertTrue(object.get("_id").equals(objectID));
-			assertTrue(object.get(key).equals(value));
+            assertTrue(objectID != null && !objectID.equals("") && !objectID.trim().equals(""));
 
-		} catch (Exception e) {
-	         fail(ConnectorTestUtils.getStackTrace(e));
-	    }
-	}
-	
-	@After
-	public void tearDown() throws Exception {
-			runFlowAndGetPayload("drop-collection");
+            DBObject object = runFlowAndGetPayload("find-one-object-using-query-map");
+            assertTrue(object.containsField("_id"));
+            assertTrue(object.containsField(key));
 
+            assertTrue(object.get("_id").equals(objectID));
+            assertTrue(object.get(key).equals(value));
 
-	}
+        } catch (Exception e) {
+            fail(ConnectorTestUtils.getStackTrace(e));
+        }
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        runFlowAndGetPayload("drop-collection");
+
+    }
 }

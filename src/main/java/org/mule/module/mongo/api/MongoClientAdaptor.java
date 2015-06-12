@@ -20,43 +20,34 @@ import org.slf4j.LoggerFactory;
 /**
  * Proxy that adds logging to MongoClients
  */
-public final class MongoClientAdaptor
-{
+public final class MongoClientAdaptor {
+
     private static final Logger logger = LoggerFactory.getLogger(MongoCloudConnector.class);
 
-    private MongoClientAdaptor()
-    {
+    private MongoClientAdaptor() {
     }
 
-    public static MongoClient adapt(final MongoClient receptor)
-    {
-        return (MongoClient) Proxy.newProxyInstance(MongoClient.class.getClassLoader(),
-            new Class[]{MongoClient.class}, new InvocationHandler()
-            {
-                public Object invoke(Object proxy, Method method, Object[] args) throws Throwable
-                {
-                    try
-                    {
-                        if (logger.isDebugEnabled())
-                        {
-                            logger.debug("Entering {} with args {}", method.getName(), args);
-                        }
-                        Object ret = method.invoke(receptor, args);
-                        if (logger.isDebugEnabled())
-                        {
-                            logger.debug("Returning from {} with value {}", method.getName(), ret);
-                        }
-                        return ret;
+    public static MongoClient adapt(final MongoClient receptor) {
+        return (MongoClient) Proxy.newProxyInstance(MongoClient.class.getClassLoader(), new Class[] { MongoClient.class }, new InvocationHandler() {
+
+            @Override
+            public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+                try {
+                    if (logger.isDebugEnabled()) {
+                        logger.debug("Entering {} with args {}", method.getName(), args);
                     }
-                    catch (InvocationTargetException e)
-                    {
-                        if (logger.isWarnEnabled())
-                        {
-                            logger.warn("An exception was thrown while invoking {}: {}", method.getName(),e);
-                        }
-                        throw new RuntimeException(e.getMessage(),e);
+                    Object ret = method.invoke(receptor, args);
+                    if (logger.isDebugEnabled()) {
+                        logger.debug("Returning from {} with value {}", method.getName(), ret);
                     }
+                    return ret;
+                } catch (InvocationTargetException e) {
+                    if (logger.isWarnEnabled()) {
+                        logger.warn("An exception was thrown while invoking {}: {}", method.getName(), e);
+                    }
+                    throw new RuntimeException(e.getMessage(), e);
                 }
-            });
+            }
+        });
     }
 }

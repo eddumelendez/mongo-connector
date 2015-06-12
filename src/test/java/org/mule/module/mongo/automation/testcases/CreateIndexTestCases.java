@@ -28,48 +28,50 @@ import com.mongodb.DBObject;
 
 public class CreateIndexTestCases extends MongoTestParent {
 
-	@Before
-	public void setUp() throws Exception {
-			initializeTestRunMessage("createIndex");
-			runFlowAndGetPayload("create-collection");
+    @Before
+    public void setUp() throws Exception {
+        initializeTestRunMessage("createIndex");
+        runFlowAndGetPayload("create-collection");
 
-	}
-	
-	@Category({SmokeTests.class, RegressionTests.class})
-	@Test
-	public void testCreateIndex() {
-		try {
+    }
 
-			String indexKey = getTestRunMessageValue("field").toString();
-			IndexOrder indexOrder = (IndexOrder) getTestRunMessageValue("order");
-			String indexName = indexKey + "_" + indexOrder.getValue();
-	
-			runFlowAndGetPayload("create-index");
-		
-			List<DBObject> payload = runFlowAndGetPayload("list-indices");
-								
-			assertTrue(MongoHelper.indexExistsInList(payload, indexName));
+    @Category({
+            SmokeTests.class,
+            RegressionTests.class })
+    @Test
+    public void testCreateIndex() {
+        try {
 
-		} catch (Exception e) {
-	         fail(ConnectorTestUtils.getStackTrace(e));
-	    }
-			
-	}
-	
-	@After
-	public void tearDown() throws Exception {
-			// Drop the created index
-			String indexKey = getTestRunMessageValue("field").toString();
-			IndexOrder indexOrder = (IndexOrder) getTestRunMessageValue("order");
-			
-			String indexName = indexKey + "_" + indexOrder.getValue();
-			upsertOnTestRunMessage("index", indexName);
-			
-			runFlowAndGetPayload("drop-index");
-			
-			// Drop the collection
-			runFlowAndGetPayload("drop-collection");
+            String indexKey = getTestRunMessageValue("field").toString();
+            IndexOrder indexOrder = (IndexOrder) getTestRunMessageValue("order");
+            String indexName = indexKey + "_" + indexOrder.getValue();
 
-	}
+            runFlowAndGetPayload("create-index");
+
+            List<DBObject> payload = runFlowAndGetPayload("list-indices");
+
+            assertTrue(MongoHelper.indexExistsInList(payload, indexName));
+
+        } catch (Exception e) {
+            fail(ConnectorTestUtils.getStackTrace(e));
+        }
+
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        // Drop the created index
+        String indexKey = getTestRunMessageValue("field").toString();
+        IndexOrder indexOrder = (IndexOrder) getTestRunMessageValue("order");
+
+        String indexName = indexKey + "_" + indexOrder.getValue();
+        upsertOnTestRunMessage("index", indexName);
+
+        runFlowAndGetPayload("drop-index");
+
+        // Drop the collection
+        runFlowAndGetPayload("drop-collection");
+
+    }
 
 }
