@@ -39,7 +39,6 @@ public class DBObjectsUnitTest {
     @Test
     public void fromMap() throws Exception {
         Document map = DBObjects.from(new HashMap<String, Object>() {
-
             {
                 put("key1", 4);
                 put("key2", Collections.singletonMap("key3", 9));
@@ -47,7 +46,7 @@ public class DBObjectsUnitTest {
         });
         assertEquals(4, map.get("key1"));
         assertThat(map.get("key2"), instanceOf(Map.class));
-        assertThat(map, instanceOf(HashMap.class));
+        assertThat(map, instanceOf(Document.class));
     }
 
     @Category({ RegressionTests.class })
