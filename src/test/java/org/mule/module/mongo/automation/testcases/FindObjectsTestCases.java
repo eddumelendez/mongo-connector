@@ -20,7 +20,6 @@ import org.junit.experimental.categories.Category;
 import org.mule.module.mongo.api.automation.MongoHelper;
 import org.mule.module.mongo.automation.AbstractMongoTest;
 import org.mule.module.mongo.automation.RegressionTests;
-import org.mule.module.mongo.automation.SmokeTests;
 
 public class FindObjectsTestCases extends AbstractMongoTest {
 
@@ -39,9 +38,7 @@ public class FindObjectsTestCases extends AbstractMongoTest {
         }
     }
 
-    @Category({
-            SmokeTests.class,
-            RegressionTests.class })
+    @Category({ RegressionTests.class })
     @Test
     public void testFindObjects() {
         Iterable<Document> payload = getConnector().findObjects("Arenas", null, null, null, null, null);

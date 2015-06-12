@@ -16,7 +16,6 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.mule.module.mongo.automation.AbstractMongoTest;
 import org.mule.module.mongo.automation.RegressionTests;
-import org.mule.module.mongo.automation.SmokeTests;
 
 public class InsertObjectTestCases extends AbstractMongoTest {
 
@@ -25,7 +24,7 @@ public class InsertObjectTestCases extends AbstractMongoTest {
         getConnector().createCollection("Arenas", false, 5, 5);
     }
 
-    @Category({ SmokeTests.class, RegressionTests.class })
+    @Category({ RegressionTests.class })
     @Test
     public void testInsertObject() {
         String objectID = getConnector().insertObject("Arenas", new Document());

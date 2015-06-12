@@ -15,7 +15,6 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.mule.module.mongo.automation.AbstractMongoTest;
 import org.mule.module.mongo.automation.RegressionTests;
-import org.mule.module.mongo.automation.SmokeTests;
 
 public class ExistsCollectionTestCases extends AbstractMongoTest {
 
@@ -32,7 +31,7 @@ public class ExistsCollectionTestCases extends AbstractMongoTest {
 
     }
 
-    @Category({ SmokeTests.class, RegressionTests.class })
+    @Category({ RegressionTests.class })
     @Test
     public void testExistsCollection() {
         assertTrue(getConnector().existsCollection("Arenas"));

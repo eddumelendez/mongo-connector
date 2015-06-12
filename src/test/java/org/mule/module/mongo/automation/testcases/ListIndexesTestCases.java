@@ -20,7 +20,6 @@ import org.mule.module.mongo.api.IndexOrder;
 import org.mule.module.mongo.api.automation.MongoHelper;
 import org.mule.module.mongo.automation.AbstractMongoTest;
 import org.mule.module.mongo.automation.RegressionTests;
-import org.mule.module.mongo.automation.SmokeTests;
 
 public class ListIndexesTestCases extends AbstractMongoTest {
 
@@ -33,7 +32,7 @@ public class ListIndexesTestCases extends AbstractMongoTest {
         indexName = "myField" + "_" + IndexOrder.ASC.getValue();
     }
 
-    @Category({ SmokeTests.class, RegressionTests.class })
+    @Category({ RegressionTests.class })
     @Test
     public void testListIndices() {
         List<Document> payload = (List<Document>) getConnector().listIndices("Arenas");

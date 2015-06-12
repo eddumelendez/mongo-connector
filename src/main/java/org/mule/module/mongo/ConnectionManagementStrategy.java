@@ -47,7 +47,7 @@ import com.mongodb.ServerAddress;
 @ConnectionManagement(friendlyName="ConnectionManagement", configElementName="config")
 public class ConnectionManagementStrategy {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ConnectionManagementStrategy.class);
+    private static final Logger logger = LoggerFactory.getLogger(ConnectionManagementStrategy.class);
 
     /**
      * The host of the Mongo server, it can also be a list of comma separated hosts for replicas
@@ -139,12 +139,12 @@ public class ConnectionManagementStrategy {
 			if (StringUtils.isNotBlank(password))
             {
                 Validate.notNull(username, "Username must not be null if password is set");
-                LOGGER.info("Connecting to MongoDB, authenticating as user '{}'", username);
+                logger.info("Connecting to MongoDB, authenticating as user '{}'", username);
 
                 MongoCredential credential = MongoCredential.createCredential(username, database, password.toCharArray());
 				mongo = new com.mongodb.MongoClient(addresses, Lists.newArrayList(credential), mongoOptions);
             } else {
-				LOGGER.info("Connecting to MongoDB, not using authentication");
+				logger.info("Connecting to MongoDB, not using authentication");
 				mongo = new com.mongodb.MongoClient(addresses, mongoOptions);
             }
 
@@ -230,7 +230,7 @@ public class ConnectionManagementStrategy {
                            final String database) throws ConnectionException
     {
 		System.err.println(String.format("Entering getDatabase: %s, %s, %s", username, password, database));
-		LOGGER.info("In getDatabase: {}, {}, {},{}", mongo, username, password, database);
+		logger.info("In getDatabase: {}, {}, {},{}", mongo, username, password, database);
         final DB db = mongo.getDB(database);
         if (StringUtils.isNotBlank(password))
         {

@@ -30,6 +30,7 @@ public class MongoDumpCollection implements Callable<Void>
         this.collection = collection;
     }
 
+    @Override
     public Void call() throws Exception
     {
     	try (final DBCursor cursor = query != null ? collection.find(query) : collection.find()) {

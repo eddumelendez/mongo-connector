@@ -9,10 +9,6 @@
 
 package org.mule.module.mongo.tools;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBObject;
-import com.mongodb.DefaultDBDecoder;
-
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -23,6 +19,10 @@ import java.util.List;
 import org.bson.BSONDecoder;
 import org.bson.BSONObject;
 import org.bson.BasicBSONObject;
+
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBObject;
+import com.mongodb.DefaultDBDecoder;
 
 public class RestoreFile implements Comparable<RestoreFile>
 {
@@ -68,6 +68,7 @@ public class RestoreFile implements Comparable<RestoreFile>
         return collection;
     }
     
+    @Override
     public int compareTo(RestoreFile restoreFile)
     {
         return collection.compareTo(restoreFile.getCollection());

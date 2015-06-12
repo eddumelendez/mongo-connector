@@ -30,6 +30,7 @@ public class MongoRestoreDirectory implements Callable<Void>
     private String inputPath;
     private String database;
 
+    @Override
     public Void call() throws Exception
     {
         restore();

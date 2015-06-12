@@ -966,8 +966,8 @@ public class MongoCloudConnector
                 for(int i=0; i< basicList.size();i++)
                 {
                     bsonObj = (BSONObject) basicList.get(0);
-                    @SuppressWarnings("rawtypes")
-                    Map entries = bsonObj.toMap();
+                    @SuppressWarnings("unchecked")
+                    Map<String, Object> entries = (Map<String, Object>) bsonObj.toMap();
                     if(i>0)
                     {
                         o.putAll(entries);

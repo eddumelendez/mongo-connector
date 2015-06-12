@@ -43,7 +43,7 @@ import com.mongodb.gridfs.GridFSInputFile;
 
 public class MongoClientImpl implements MongoClient
 {
-    private static final Logger LOGGER = LoggerFactory.getLogger(MongoClientImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(MongoClientImpl.class);
 
     private static final String ID_FIELD_NAME = "_id";
 
@@ -54,7 +54,7 @@ public class MongoClientImpl implements MongoClient
 
     public MongoClientImpl(com.mongodb.MongoClient mongo, final String db)
     {
-    	LOGGER.info("Initializing MongoClientImpl");
+    	logger.info("Initializing MongoClientImpl");
     	Validate.notNull(mongo, "Mongo instance cannot be null");
         Validate.notNull(db, "Database cannot be null");
         this.mongo = mongo;
@@ -65,7 +65,7 @@ public class MongoClientImpl implements MongoClient
     @Override
 	public void close() throws IOException
     {
-    	LOGGER.info("Closing MongoClientImpl");
+    	logger.info("Closing MongoClientImpl");
     	mongo.close();
     }
 

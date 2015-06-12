@@ -11,7 +11,6 @@ package org.mule.module.mongo.automation.testcases;
 import static org.junit.Assert.assertFalse;
 
 import java.util.List;
-import java.util.Map;
 
 import org.bson.Document;
 import org.junit.After;
@@ -21,27 +20,23 @@ import org.mule.module.mongo.api.IndexOrder;
 import org.mule.module.mongo.api.automation.MongoHelper;
 import org.mule.module.mongo.automation.AbstractMongoTest;
 import org.mule.module.mongo.automation.RegressionTests;
-import org.mule.module.mongo.automation.SmokeTests;
-import org.mule.module.mongo.automation.testdata.TestDataBuilder;
 
 public class DropIndexTestCases extends AbstractMongoTest {
 
-    private Map<String, Object> testData;
     private String indexKey = "myField";
     private IndexOrder indexOrder;
 
     @Override
     public void setUp() {
         // Create the collection
-        testData = TestDataBuilder.createIndex();
-        indexOrder = (IndexOrder) testData.get("order");
+        indexOrder = IndexOrder.ASC;
         getConnector().createCollection("Arenas", false, 5, 5);
 
         // Create the index
         getConnector().createIndex("Arenas", indexKey, indexOrder);
     }
 
-    @Category({ SmokeTests.class, RegressionTests.class })
+    @Category({ RegressionTests.class })
     @Test
     public void testDropIndexByName() {
         String indexName = indexKey + "_" + indexOrder.getValue();
