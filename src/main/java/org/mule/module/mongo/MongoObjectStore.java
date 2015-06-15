@@ -191,7 +191,7 @@ public class MongoObjectStore implements PartitionableExpirableObjectStore<Seria
             final String collection = getCollectionName(partitionName);
             return mongoClient.findObjects(collection, query, NO_FIELD_LIST, null, null, null).iterator().hasNext();
         } catch (Exception ex) {
-            throw new ObjectStoreNotAvaliableException(ex.getCause());
+            throw new ObjectStoreNotAvaliableException(MessageFactory.createStaticMessage(ex.getMessage()), ex);
         }
     }
 
@@ -207,7 +207,7 @@ public class MongoObjectStore implements PartitionableExpirableObjectStore<Seria
             }
             return results;
         } catch (Exception ex) {
-            throw new ObjectStoreException(ex.getCause());
+            throw new ObjectStoreNotAvaliableException(MessageFactory.createStaticMessage(ex.getMessage()), ex);
         }
     }
 
@@ -223,7 +223,7 @@ public class MongoObjectStore implements PartitionableExpirableObjectStore<Seria
             }
             return results;
         } catch (Exception ex) {
-            throw new ObjectStoreException(ex.getCause());
+            throw new ObjectStoreNotAvaliableException(MessageFactory.createStaticMessage(ex.getMessage()), ex);
         }
     }
 
@@ -254,7 +254,7 @@ public class MongoObjectStore implements PartitionableExpirableObjectStore<Seria
             dbObject.put(VALUE_FIELD, org.apache.commons.lang.SerializationUtils.serialize(value));
             mongoClient.updateObjects(collection, query, dbObject, true, false, getWriteConcern());
         } catch (Exception ex) {
-            throw new ObjectStoreNotAvaliableException(ex.getCause());
+            throw new ObjectStoreNotAvaliableException(MessageFactory.createStaticMessage(ex.getMessage()), ex);
         }
     }
 
@@ -284,7 +284,7 @@ public class MongoObjectStore implements PartitionableExpirableObjectStore<Seria
         final ObjectId objectId = getObjectIdFromKey(key);
         final DBObject query = getQueryForObjectId(objectId);
         if (!mongoClient.findObjects(collection, query, null, null, null, null).iterator().hasNext()) {
-            throw new ObjectDoesNotExistException();
+            throw new ObjectDoesNotExistException(MessageFactory.createStaticMessage("Couldn't find key '%s' in the ObjectStore", key));
         }
 
         final Serializable result = retrieveSerializedObject(collection, query);
