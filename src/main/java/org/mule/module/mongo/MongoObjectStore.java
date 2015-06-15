@@ -197,27 +197,34 @@ public class MongoObjectStore implements PartitionableExpirableObjectStore<Seria
 
     @Override
     public List<Serializable> allKeys(final String partitionName) throws ObjectStoreException {
-        final String collection = getCollectionName(partitionName);
-        final Iterable<DBObject> keyObjects = mongoClient.findObjects(collection, new BasicDBObject(), Arrays.asList(KEY_FIELD), null, null, null);
+        try {
+            final String collection = getCollectionName(partitionName);
+            final Iterable<DBObject> keyObjects = mongoClient.findObjects(collection, new BasicDBObject(), Arrays.asList(KEY_FIELD), null, null, null);
 
-        final List<Serializable> results = new ArrayList<Serializable>();
-        for (final DBObject keyObject : keyObjects) {
-            results.add((Serializable) org.apache.commons.lang.SerializationUtils.deserialize((byte[]) keyObject.get(KEY_FIELD)));
+            final List<Serializable> results = new ArrayList<Serializable>();
+            for (final DBObject keyObject : keyObjects) {
+                results.add((Serializable) org.apache.commons.lang.SerializationUtils.deserialize((byte[]) keyObject.get(KEY_FIELD)));
+            }
+            return results;
+        } catch (Exception ex) {
+            throw new ObjectStoreException(ex.getCause());
         }
-        return results;
     }
 
     @Override
     public List<String> allPartitions() throws ObjectStoreException {
-        final List<String> results = new ArrayList<String>();
+        try {
+            final List<String> results = new ArrayList<String>();
 
-        for (final String collection : mongoClient.listCollections()) {
-            if (isPartition(collection)) {
-                results.add(getPartitionName(collection));
+            for (final String collection : mongoClient.listCollections()) {
+                if (isPartition(collection)) {
+                    results.add(getPartitionName(collection));
+                }
             }
+            return results;
+        } catch (Exception ex) {
+            throw new ObjectStoreException(ex.getCause());
         }
-
-        return results;
     }
 
     @Override
@@ -287,8 +294,12 @@ public class MongoObjectStore implements PartitionableExpirableObjectStore<Seria
 
     @Override
     public void disposePartition(final String partitionName) throws ObjectStoreException {
-        final String collection = getCollectionName(partitionName);
-        mongoClient.dropCollection(collection);
+        try {
+            final String collection = getCollectionName(partitionName);
+            mongoClient.dropCollection(collection);
+        } catch (Exception ex) {
+            throw new ObjectStoreException(ex.getCause());
+        }
     }
 
     @Override
@@ -303,10 +314,14 @@ public class MongoObjectStore implements PartitionableExpirableObjectStore<Seria
 
     @Override
     public void expire(final int entryTtl, final int ignoredMaxEntries, final String partitionName) throws ObjectStoreException {
-        final String collection = getCollectionName(partitionName);
-        final long expireAt = System.currentTimeMillis() - entryTtl;
-        final DBObject query = QueryBuilder.start(TIMESTAMP_FIELD).lessThan(expireAt).get();
-        mongoClient.removeObjects(collection, query, getWriteConcern());
+        try {
+            final String collection = getCollectionName(partitionName);
+            final long expireAt = System.currentTimeMillis() - entryTtl;
+            final DBObject query = QueryBuilder.start(TIMESTAMP_FIELD).lessThan(expireAt).get();
+            mongoClient.removeObjects(collection, query, getWriteConcern());
+        } catch (Exception ex) {
+            throw new ObjectStoreException(ex.getCause());
+        }
     }
 
     // --------- Java Accessor Festival ---------
