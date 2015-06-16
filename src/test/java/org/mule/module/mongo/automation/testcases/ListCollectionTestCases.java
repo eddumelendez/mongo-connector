@@ -15,6 +15,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.mule.module.mongo.automation.AbstractMongoTest;
@@ -24,7 +25,7 @@ public class ListCollectionTestCases extends AbstractMongoTest {
 
     private List<String> collectionNames = new LinkedList<String>();
 
-    @Override
+    @Before
     public void setUp() {
         collectionNames.add("FirstCollection");
         collectionNames.add("SecondCollection");

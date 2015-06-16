@@ -17,6 +17,7 @@ import java.util.Map;
 
 import org.bson.Document;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.mule.module.mongo.api.WriteConcern;
@@ -29,7 +30,7 @@ public class UpdateObjectsUsingMapTestCases extends AbstractMongoTest {
     private int numberOfObjects = 10;
     Map<String, Object> oldMap = new HashMap<String, Object>();
 
-    @Override
+    @Before
     public void setUp() {
         // Create the collection
         getConnector().createCollection("Arenas", false, 5, 5);
@@ -61,7 +62,7 @@ public class UpdateObjectsUsingMapTestCases extends AbstractMongoTest {
         getConnector().updateObjectsUsingMap("Arenas", oldMap, newMap, false, true, WriteConcern.SAFE);
 
         // Get all objects
-        Iterable<Document> objects = getConnector().findObjects("Arenas", null, null, null, null, null);
+        Iterable<Document> objects = getConnector().findObjects("Arenas", new Document(), null, null, null, null);
         for (Document obj : objects) {
             assertTrue(obj.containsKey(queryKey));
             assertTrue(obj.get(queryKey).equals(elementValue));

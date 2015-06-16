@@ -16,6 +16,7 @@ import java.util.Map;
 
 import org.bson.Document;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.mule.module.mongo.automation.AbstractMongoTest;
@@ -25,7 +26,7 @@ public class CountObjectsUsingQueryMapTestCases extends AbstractMongoTest {
 
     private Integer numObjects = 5;
 
-    @Override
+    @Before
     public void setUp() {
         // Create collection
         getConnector().createCollection("Arenas", false, numObjects, numObjects);

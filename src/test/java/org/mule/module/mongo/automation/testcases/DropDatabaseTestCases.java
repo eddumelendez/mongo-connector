@@ -12,6 +12,7 @@ import static org.junit.Assert.assertFalse;
 
 import org.bson.Document;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.mule.module.mongo.automation.AbstractMongoTest;
@@ -19,7 +20,7 @@ import org.mule.module.mongo.automation.RegressionTests;
 
 public class DropDatabaseTestCases extends AbstractMongoTest {
 
-    @Override
+    @Before
     public void setUp() {
         Document dbObject = new Document();
         dbObject.put("key", "mykey");

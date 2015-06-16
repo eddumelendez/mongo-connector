@@ -16,6 +16,7 @@ import java.util.Map;
 
 import org.bson.Document;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.mule.module.mongo.api.WriteConcern;
@@ -24,7 +25,7 @@ import org.mule.module.mongo.automation.RegressionTests;
 
 public class SaveObjectFromMapTestCases extends AbstractMongoTest {
 
-    @Override
+    @Before
     public void setUp() {
         // initializeTestRunMessage("saveObjectFromMap");
         getConnector().createCollection("Arenas", false, 5, 5);

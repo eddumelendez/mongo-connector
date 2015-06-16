@@ -13,6 +13,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.bson.Document;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.mule.module.mongo.automation.AbstractMongoTest;
@@ -20,7 +21,7 @@ import org.mule.module.mongo.automation.RegressionTests;
 
 public class ExecuteCommandTestCases extends AbstractMongoTest {
 
-    @Override
+    @Before
     public void setUp() {
         // Create a collection
         getConnector().createCollection("Arenas", false, 5, 5);
@@ -36,8 +37,8 @@ public class ExecuteCommandTestCases extends AbstractMongoTest {
     public void testExecuteCommand() {
         // Drop the collection using command
         Document cmdResult = getConnector().executeCommand("drop", "Arenas");
-        assertTrue(cmdResult.containsKey("status"));
-        assertTrue(cmdResult.get("status").equals("ok"));
+        assertTrue(cmdResult.containsKey("ok"));
+        assertTrue(cmdResult.get("ok").equals(1.0));
 
         Boolean exists = getConnector().existsCollection("Arenas");
         assertFalse(exists);

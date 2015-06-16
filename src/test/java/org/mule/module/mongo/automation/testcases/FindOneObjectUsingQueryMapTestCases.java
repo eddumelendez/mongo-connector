@@ -15,6 +15,7 @@ import java.util.Map;
 
 import org.bson.Document;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.mule.module.mongo.api.WriteConcern;
@@ -25,7 +26,7 @@ public class FindOneObjectUsingQueryMapTestCases extends AbstractMongoTest {
 
     private Map<String, Object> elementAttributes = new HashMap<String, Object>();
 
-    @Override
+    @Before
     public void setUp() {
         getConnector().createCollection("Arenas", false, 5, 5);
         elementAttributes.put("myKey", "myValue");

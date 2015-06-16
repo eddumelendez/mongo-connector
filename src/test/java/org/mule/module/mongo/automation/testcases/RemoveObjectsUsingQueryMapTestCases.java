@@ -18,12 +18,14 @@ import java.util.Map;
 
 import org.bson.Document;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.mule.module.mongo.api.WriteConcern;
-import org.mule.module.mongo.api.automation.MongoHelper;
 import org.mule.module.mongo.automation.AbstractMongoTest;
 import org.mule.module.mongo.automation.RegressionTests;
+
+import com.google.common.collect.Iterables;
 
 public class RemoveObjectsUsingQueryMapTestCases extends AbstractMongoTest {
 
@@ -32,7 +34,7 @@ public class RemoveObjectsUsingQueryMapTestCases extends AbstractMongoTest {
     private String key = "someKey";
     private String value = "someValue";
 
-    @Override
+    @Before
     public void setUp() {
         // Create the collection
         getConnector().createCollection("Arenas", false, 5, 5);
@@ -67,13 +69,13 @@ public class RemoveObjectsUsingQueryMapTestCases extends AbstractMongoTest {
 
         // Get all objects
         // Only objects which should be returned are those without the key value pairs
-        Iterable<Document> objects = getConnector().findObjects("Arenas", null, null, null, null, null);
+        Iterable<Document> objects = getConnector().findObjects("Arenas", new Document(), null, null, null, null);
 
         // Check that each returned object does not contain the defined key-value pair
         for (Document dbo : objects) {
             assertTrue(!dbo.containsKey(key));
         }
-        assertTrue(MongoHelper.getIterableSize(objects) == extraObjects);
+        assertTrue(Iterables.size(objects) == extraObjects);
     }
 
     @Category({ RegressionTests.class })
@@ -85,7 +87,7 @@ public class RemoveObjectsUsingQueryMapTestCases extends AbstractMongoTest {
         getConnector().removeObjectsUsingQueryMap("Arenas", query, WriteConcern.SAFE);
 
         // Get all objects
-        Iterable<Document> objects = getConnector().findObjects("Arenas", null, null, null, null, null);
+        Iterable<Document> objects = getConnector().findObjects("Arenas", new Document(), null, null, null, null);
         assertFalse(objects.iterator().hasNext());
 
     }

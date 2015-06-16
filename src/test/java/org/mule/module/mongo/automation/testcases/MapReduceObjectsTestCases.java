@@ -17,6 +17,7 @@ import java.util.List;
 
 import org.bson.Document;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.mule.module.mongo.api.MongoCollection;
@@ -25,7 +26,7 @@ import org.mule.module.mongo.automation.RegressionTests;
 
 public class MapReduceObjectsTestCases extends AbstractMongoTest {
 
-    @Override
+    @Before
     public void setUp() {
         // Create the collection
         getConnector().createCollection("Arenas", false, 5, 5);

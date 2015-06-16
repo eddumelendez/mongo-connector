@@ -14,6 +14,7 @@ import java.util.List;
 
 import org.bson.Document;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.mule.module.mongo.api.IndexOrder;
@@ -25,7 +26,7 @@ public class ListIndexesTestCases extends AbstractMongoTest {
 
     private String indexName;
 
-    @Override
+    @Before
     public void setUp() {
         getConnector().createCollection("Arenas", false, 5, 5);
         getConnector().createIndex("Arenas", "myField", IndexOrder.ASC);

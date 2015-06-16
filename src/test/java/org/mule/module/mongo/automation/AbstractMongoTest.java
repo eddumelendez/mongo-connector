@@ -106,14 +106,10 @@ public abstract class AbstractMongoTest {
         // Connector dispatcher
         connector = context.getConnectorDispatcher().createMockup();
 
-        setUp();
     }
 
     @After
     public void shutdown() throws Exception {
         ConnectorTestContext.shutDown(false);
     }
-
-    protected abstract void setUp();
-
 }

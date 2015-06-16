@@ -11,6 +11,7 @@ package org.mule.module.mongo.automation.testcases;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.mule.module.mongo.automation.AbstractMongoTest;
@@ -20,7 +21,7 @@ import com.mongodb.WriteResult;
 
 public class AddUserTestCases extends AbstractMongoTest {
 
-    @Override
+    @Before
     public void setUp() {
 
     }

@@ -14,6 +14,7 @@ import java.util.List;
 
 import org.bson.Document;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.mule.module.mongo.api.IndexOrder;
@@ -26,7 +27,7 @@ public class DropIndexTestCases extends AbstractMongoTest {
     private String indexKey = "myField";
     private IndexOrder indexOrder;
 
-    @Override
+    @Before
     public void setUp() {
         // Create the collection
         indexOrder = IndexOrder.ASC;

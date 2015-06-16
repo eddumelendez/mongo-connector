@@ -11,6 +11,7 @@ package org.mule.module.mongo.automation.testcases;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.mule.module.mongo.automation.AbstractMongoTest;
@@ -23,7 +24,7 @@ public class FindOneFileTestCases extends AbstractMongoTest {
 
     private DBObject query = new BasicDBObject("filename", "file1");
 
-    @Override
+    @Before
     public void setUp() {
         createFileFromPayload("file1");
         createFileFromPayload("file2");

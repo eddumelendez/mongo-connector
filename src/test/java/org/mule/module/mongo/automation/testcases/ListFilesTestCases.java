@@ -13,12 +13,13 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.mule.module.mongo.api.automation.MongoHelper;
 import org.mule.module.mongo.automation.AbstractMongoTest;
 import org.mule.module.mongo.automation.RegressionTests;
 
+import com.google.common.collect.Iterables;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 
@@ -26,7 +27,7 @@ public class ListFilesTestCases extends AbstractMongoTest {
 
     private DBObject query = new BasicDBObject();
 
-    @Override
+    @Before
     public void setUp() {
         createFileFromPayload("filename1");
         createFileFromPayload("filename2");
@@ -45,7 +46,7 @@ public class ListFilesTestCases extends AbstractMongoTest {
 
         assertNotNull(response);
         assertTrue(response instanceof Iterable);
-        assertEquals("An empty DBObject for the query should list all the files", 3, MongoHelper.getIterableSize(response));
+        assertEquals("An empty DBObject for the query should list all the files", 3, Iterables.size(response));
     }
 
     @Category({ RegressionTests.class })
@@ -58,6 +59,6 @@ public class ListFilesTestCases extends AbstractMongoTest {
         assertNotNull(response);
         assertTrue(response instanceof Iterable);
         assertEquals("Listing files with a query with key " + query.keySet().toString() + " and value " + query.get("filename1") + " should give 2 results", 2,
-                MongoHelper.getIterableSize(response));
+                Iterables.size(response));
     }
 }

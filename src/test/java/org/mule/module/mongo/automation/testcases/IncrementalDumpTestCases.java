@@ -15,6 +15,7 @@ import java.io.IOException;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.mule.module.mongo.automation.AbstractMongoTest;
@@ -22,7 +23,7 @@ import org.mule.module.mongo.automation.RegressionTests;
 
 public class IncrementalDumpTestCases extends AbstractMongoTest {
 
-    @Override
+    @Before
     public void setUp() {
         getConnector().createCollection("Arenas", false, 5, 5);
         insertObjects(getEmptyDocuments(10), "Arenas");

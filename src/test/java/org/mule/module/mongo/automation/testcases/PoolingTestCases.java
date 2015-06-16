@@ -12,6 +12,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.bson.Document;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.mule.module.mongo.automation.AbstractMongoTest;
@@ -21,7 +22,7 @@ import com.mongodb.BasicDBObject;
 
 public class PoolingTestCases extends AbstractMongoTest {
 
-    @Override
+    @Before
     public void setUp() {
         // Create collection
         getConnector().createCollection("Arenas", false, 5, 5);

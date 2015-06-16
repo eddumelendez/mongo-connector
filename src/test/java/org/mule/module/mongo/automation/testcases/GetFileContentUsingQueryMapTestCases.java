@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.mule.module.mongo.automation.AbstractMongoTest;
@@ -25,7 +26,7 @@ public class GetFileContentUsingQueryMapTestCases extends AbstractMongoTest {
 
     private Map<String, Object> queryAttributes = new HashMap<String, Object>();
 
-    @Override
+    @Before
     public void setUp() {
         createFileFromPayload("filename1");
         createFileFromPayload("filename2");

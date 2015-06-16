@@ -12,6 +12,7 @@ import static org.junit.Assert.assertEquals;
 
 import org.bson.Document;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.mule.module.mongo.automation.AbstractMongoTest;
@@ -19,7 +20,7 @@ import org.mule.module.mongo.automation.RegressionTests;
 
 public class SaveObjectTestCases extends AbstractMongoTest {
 
-    @Override
+    @Before
     public void setUp() {
         getConnector().createCollection("Arenas", false, 5, 5);
     }
@@ -39,7 +40,6 @@ public class SaveObjectTestCases extends AbstractMongoTest {
             assertEquals(obj, element);
         }
 
-        // Get key and value from payload (defined in bean)
         String key = "someKey";
         String value = "differentValue";
 

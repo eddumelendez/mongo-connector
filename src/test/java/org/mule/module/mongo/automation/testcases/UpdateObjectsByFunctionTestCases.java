@@ -15,18 +15,20 @@ import java.util.List;
 
 import org.bson.Document;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.mule.module.mongo.api.automation.MongoHelper;
 import org.mule.module.mongo.automation.AbstractMongoTest;
 import org.mule.module.mongo.automation.RegressionTests;
+
+import com.google.common.collect.Iterables;
 
 public class UpdateObjectsByFunctionTestCases extends AbstractMongoTest {
 
     private int numberOfObjects = 10;
     private Document queryDBObj = new Document();
 
-    @Override
+    @Before
     public void setUp() {
         // Create the collection
         getConnector().createCollection("Arenas", false, 5, 5);
@@ -54,12 +56,12 @@ public class UpdateObjectsByFunctionTestCases extends AbstractMongoTest {
         getConnector().updateObjectsByFunction("Arenas", "$set", queryDBObj, elementDbObj, false, true);
 
         // Get all objects
-        Iterable<Document> objects = getConnector().findObjects("Arenas", null, null, null, null, null);
+        Iterable<Document> objects = getConnector().findObjects("Arenas", new Document(), null, null, null, null);
         for (Document obj : objects) {
             assertTrue(obj.containsKey(queryKey));
             assertTrue(obj.get(queryKey).equals(elementDbObj.get(queryKey)));
         }
-        assertTrue(MongoHelper.getIterableSize(objects) == numberOfObjects);
+        assertTrue(Iterables.size(objects) == numberOfObjects);
     }
 
     @After

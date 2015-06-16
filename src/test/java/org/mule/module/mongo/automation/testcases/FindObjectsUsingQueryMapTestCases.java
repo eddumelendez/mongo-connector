@@ -17,11 +17,13 @@ import java.util.Map;
 
 import org.bson.Document;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.mule.module.mongo.api.automation.MongoHelper;
 import org.mule.module.mongo.automation.AbstractMongoTest;
 import org.mule.module.mongo.automation.RegressionTests;
+
+import com.google.common.collect.Iterables;
 
 public class FindObjectsUsingQueryMapTestCases extends AbstractMongoTest {
 
@@ -32,7 +34,7 @@ public class FindObjectsUsingQueryMapTestCases extends AbstractMongoTest {
     private int extraObjects;
     private Map<String, Object> queryAttributes = new HashMap<String, Object>();
 
-    @Override
+    @Before
     public void setUp() {
         // Create collection
         getConnector().createCollection("Arenas", false, 5, 5);
@@ -67,16 +69,16 @@ public class FindObjectsUsingQueryMapTestCases extends AbstractMongoTest {
             assertTrue(obj.containsKey(queryKey));
             assertTrue(obj.get(queryKey).equals(queryValue));
         }
-        assertTrue(MongoHelper.getIterableSize(collection) == numberOfObjects);
+        assertTrue(Iterables.size(collection) == numberOfObjects);
     }
 
     @Category({ RegressionTests.class })
     @Test
     public void testFindObjectsUsingQueryMap_WithoutQuery() {
-        Iterable<Document> collection = getConnector().findObjectsUsingQueryMap("Arenas", null, null, null, null, null);
+        Iterable<Document> collection = getConnector().findObjectsUsingQueryMap("Arenas", new Document(), null, null, null, null);
 
         // Assert that everything was retrieved (empty objects + key-value pair objects)
-        assertTrue(numberOfObjects + extraObjects == MongoHelper.getIterableSize(collection));
+        assertTrue(numberOfObjects + extraObjects == Iterables.size(collection));
     }
 
     @Category({ RegressionTests.class })
@@ -85,7 +87,7 @@ public class FindObjectsUsingQueryMapTestCases extends AbstractMongoTest {
         Iterable<Document> collection = getConnector().findObjectsUsingQueryMap("Arenas", queryAttributes, null, null, limit, null);
 
         // Assert that only "limit" objects were retrieved
-        assertTrue(limit == MongoHelper.getIterableSize(collection));
+        assertTrue(limit == Iterables.size(collection));
     }
 
     @After

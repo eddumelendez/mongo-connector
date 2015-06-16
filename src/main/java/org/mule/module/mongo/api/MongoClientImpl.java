@@ -17,10 +17,6 @@ import java.util.List;
 
 import javax.validation.constraints.NotNull;
 
-import jersey.repackaged.com.google.common.base.Predicates;
-import jersey.repackaged.com.google.common.collect.Iterables;
-import jersey.repackaged.com.google.common.collect.Lists;
-
 import org.apache.commons.lang.Validate;
 import org.bson.Document;
 import org.bson.conversions.Bson;
@@ -28,6 +24,9 @@ import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Predicates;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 import com.mongodb.CursorType;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
@@ -59,7 +58,7 @@ public class MongoClientImpl implements MongoClient {
         Validate.notNull(db, "Database cannot be null");
         this.mongo = mongo;
         this.db = mongo.getDB(db);
-        this.database = mongo.getDatabase(db);
+        database = mongo.getDatabase(db);
     }
 
     @Override
@@ -215,7 +214,7 @@ public class MongoClientImpl implements MongoClient {
             if (!find.iterator().hasNext()) {
                 collection.insertOne(document);
             } else {
-                collection.updateOne(filter, document);
+                collection.findOneAndReplace(find.iterator().next(), document);
             }
         }
     }
@@ -223,9 +222,9 @@ public class MongoClientImpl implements MongoClient {
     @Override
     public void updateObjects(@NotNull final String collection, final Document query, final Document document, final boolean multi) {
         Validate.notNull(collection);
-        if (!multi)
-            database.getCollection(collection).updateOne(query, document);
-        else {
+        if (!multi) {
+            database.getCollection(collection).findOneAndReplace(query, document);
+        } else {
             database.getCollection(collection).updateMany(query, document);
         }
     }
@@ -308,7 +307,7 @@ public class MongoClientImpl implements MongoClient {
         if (o instanceof Collection<?>) {
             return (Iterable<DBObject>) o;
         }
-        return (Iterable<DBObject>) Iterables.consumingIterable(o);
+        return Lists.newArrayList(o);
     }
 
     /*

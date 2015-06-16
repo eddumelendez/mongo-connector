@@ -14,19 +14,20 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.mule.module.mongo.api.automation.MongoHelper;
 import org.mule.module.mongo.automation.AbstractMongoTest;
 import org.mule.module.mongo.automation.RegressionTests;
 
+import com.google.common.collect.Iterables;
 import com.mongodb.DBObject;
 
 public class FindFilesUsingQueryMapTestCases extends AbstractMongoTest {
 
     Map<String, Object> queryAttributes = new HashMap<String, Object>();
 
-    @Override
+    @Before
     public void setUp() {
         createFileFromPayload("file1");
         createFileFromPayload("file2");
@@ -47,7 +48,7 @@ public class FindFilesUsingQueryMapTestCases extends AbstractMongoTest {
         // One such file should be found
 
         Iterable<DBObject> iterable = getConnector().findFilesUsingQueryMap(queryAttributes);
-        int filesFoundUsingQueryMap = MongoHelper.getIterableSize(iterable);
+        int filesFoundUsingQueryMap = Iterables.size(iterable);
 
         assertEquals("There should be 1 file with the name file2", 1, filesFoundUsingQueryMap);
         assertEquals("There should be 2 files in total", 2, findFiles(null));

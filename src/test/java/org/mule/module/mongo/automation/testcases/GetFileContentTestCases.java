@@ -14,6 +14,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.InputStream;
 
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.mule.module.mongo.automation.AbstractMongoTest;
@@ -26,7 +27,7 @@ public class GetFileContentTestCases extends AbstractMongoTest {
 
     private DBObject query = new BasicDBObject("filename", "filename1");
 
-    @Override
+    @Before
     public void setUp() {
         createFileFromPayload("filename1");
         createFileFromPayload("filename2");

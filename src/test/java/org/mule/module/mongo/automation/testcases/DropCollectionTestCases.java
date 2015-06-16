@@ -10,6 +10,7 @@ package org.mule.module.mongo.automation.testcases;
 
 import static org.junit.Assert.assertFalse;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.mule.module.mongo.automation.AbstractMongoTest;
@@ -17,7 +18,7 @@ import org.mule.module.mongo.automation.RegressionTests;
 
 public class DropCollectionTestCases extends AbstractMongoTest {
 
-    @Override
+    @Before
     public void setUp() {
         getConnector().createCollection("Arenas", false, 5, 5);
     }

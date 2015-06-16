@@ -12,6 +12,7 @@ import static org.junit.Assert.assertFalse;
 
 import org.bson.Document;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.mule.module.mongo.automation.AbstractMongoTest;
@@ -19,7 +20,7 @@ import org.mule.module.mongo.automation.RegressionTests;
 
 public class RemoveObjectsTestCases extends AbstractMongoTest {
 
-    @Override
+    @Before
     public void setUp() {
         // initializeTestRunMessage("removeObjects");
         getConnector().createCollection("Arenas", false, 5, 5);
@@ -35,7 +36,7 @@ public class RemoveObjectsTestCases extends AbstractMongoTest {
         // runFlowAndGetPayload("remove-objects");
         getConnector().removeObjects("Arenas", new Document());
         // MongoCollection payload = runFlowAndGetPayload("find-objects");
-        Iterable<Document> resultCollection = getConnector().findObjects("Arenas", null, null, 0, 0, null);
+        Iterable<Document> resultCollection = getConnector().findObjects("Arenas", new Document(), null, 0, 0, null);
         assertFalse(resultCollection.iterator().hasNext());
 
     }

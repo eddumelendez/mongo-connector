@@ -13,7 +13,6 @@ import static org.mule.module.mongo.api.DBObjects.adaptToDbObject;
 import static org.mule.module.mongo.api.DBObjects.from;
 import static org.mule.module.mongo.api.DBObjects.fromCommand;
 import static org.mule.module.mongo.api.DBObjects.fromFunction;
-import static org.mule.module.mongo.api.DBObjects.fromToDbObject;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -277,7 +276,7 @@ public class MongoCloudConnector {
     @ReconnectOn(exceptions = IllegalStateException.class)
     public void updateObjectsUsingQueryMap(final String collection, final Map<String, Object> queryAttributes, final Document element,
             @Default(CAPPED_DEFAULT_VALUE) final boolean upsert, @Default("true") final boolean multi, @Default(WRITE_CONCERN_DEFAULT_VALUE) final WriteConcern writeConcern) {
-        strategy.getClient().updateObjects(collection, (Document) adapt(queryAttributes), element, multi);
+        strategy.getClient().updateObjects(collection, adapt(queryAttributes), element, multi);
     }
 
     /**
@@ -306,7 +305,7 @@ public class MongoCloudConnector {
     public void updateObjectsUsingMap(final String collection, @Placement(group = "Query Attributes") final Map<String, Object> queryAttributes,
             @Placement(group = "Element Attributes") final Map<String, Object> elementAttributes, @Default(CAPPED_DEFAULT_VALUE) final boolean upsert,
             @Default("true") final boolean multi, @Default(WRITE_CONCERN_DEFAULT_VALUE) final WriteConcern writeConcern) {
-        strategy.getClient().updateObjects(collection, (Document) adapt(queryAttributes), (Document) adapt(elementAttributes), multi);
+        strategy.getClient().updateObjects(collection, adapt(queryAttributes), adapt(elementAttributes), multi);
     }
 
     /**
@@ -367,9 +366,9 @@ public class MongoCloudConnector {
     public void updateObjectsByFunctionUsingMap(final String collection, final String function, final Map<String, Object> queryAttributes,
             final Map<String, Object> elementAttributes, @Default(CAPPED_DEFAULT_VALUE) final boolean upsert, @Default(value = "true") final boolean multi,
             @Default(WRITE_CONCERN_DEFAULT_VALUE) final WriteConcern writeConcern) {
-        final Document functionDocument = fromFunction(function, (Document) adapt(elementAttributes));
+        final Document functionDocument = fromFunction(function, adapt(elementAttributes));
 
-        strategy.getClient().updateObjects(collection, (Document) adapt(queryAttributes), functionDocument, multi);
+        strategy.getClient().updateObjects(collection, adapt(queryAttributes), functionDocument, multi);
     }
 
     /**
@@ -408,7 +407,7 @@ public class MongoCloudConnector {
     @ReconnectOn(exceptions = IllegalStateException.class)
     public void saveObjectFromMap(final String collection, @Placement(group = "Element Attributes") final Map<String, Object> elementAttributes,
             @Default(WRITE_CONCERN_DEFAULT_VALUE) final WriteConcern writeConcern) {
-        strategy.getClient().saveObject(collection, (Document) adapt(elementAttributes));
+        strategy.getClient().saveObject(collection, adapt(elementAttributes));
     }
 
     /**
@@ -449,7 +448,7 @@ public class MongoCloudConnector {
     @ReconnectOn(exceptions = IllegalStateException.class)
     public void removeObjectsUsingQueryMap(final String collection, @Placement(group = "Query Attributes") @Optional final Map<String, Object> queryAttributes,
             @Default(WRITE_CONCERN_DEFAULT_VALUE) final WriteConcern writeConcern) {
-        strategy.getClient().removeObjects(collection, (Document) adapt(queryAttributes));
+        strategy.getClient().removeObjects(collection, adapt(queryAttributes));
     }
 
     /**
@@ -574,7 +573,7 @@ public class MongoCloudConnector {
     @ReconnectOn(exceptions = IllegalStateException.class)
     public Iterable<Document> findObjectsUsingQueryMap(final String collection, @Placement(group = "Query Attributes") @Optional final Map<String, Object> queryAttributes,
             @Placement(group = "Fields") @Optional final List<String> fields, @Optional final Integer numToSkip, @Optional final Integer limit, @Optional Document sortBy) {
-        return strategy.getClient().findObjects(collection, (Document) adapt(queryAttributes), fields, numToSkip, limit, sortBy);
+        return strategy.getClient().findObjects(collection, adapt(queryAttributes), fields, numToSkip, limit, sortBy);
     }
 
     /**
@@ -623,7 +622,7 @@ public class MongoCloudConnector {
     @ReconnectOn(exceptions = IllegalStateException.class)
     public Document findOneObjectUsingQueryMap(final String collection, @Placement(group = "Query Attributes") final Map<String, Object> queryAttributes,
             @Placement(group = "Fields") @Optional final List<String> fields, @Default("true") Boolean failOnNotFound) {
-        return strategy.getClient().findOneObject(collection, (Document) adapt(queryAttributes), fields, failOnNotFound);
+        return strategy.getClient().findOneObject(collection, adapt(queryAttributes), fields, failOnNotFound);
 
     }
 
@@ -737,7 +736,7 @@ public class MongoCloudConnector {
     @Processor
     @ReconnectOn(exceptions = IllegalStateException.class)
     public Iterable<DBObject> findFiles(@Default("#[payload]") final DBObject query) {
-        return strategy.getClient().findFiles(fromToDbObject(query));
+        return strategy.getClient().findFiles(query);
     }
 
     /**
@@ -760,7 +759,7 @@ public class MongoCloudConnector {
     /**
      * Answers the first file that matches the given query. If no object matches it, a MongoException is thrown.
      * <p/>
-     * 
+     *
      * <pre>
      * {@sample.xml ../../../doc/mongo-connector.xml.sample mongo:find-one-file}
      * </pre>
@@ -772,13 +771,13 @@ public class MongoCloudConnector {
     @Processor
     @ReconnectOn(exceptions = IllegalStateException.class)
     public DBObject findOneFile(final DBObject query) {
-        return strategy.getClient().findOneFile(fromToDbObject(query));
+        return strategy.getClient().findOneFile(query);
     }
 
     /**
      * Answers the first file that matches the given query. If no object matches it, a MongoException is thrown.
      * <p/>
-     * 
+     *
      * <pre>
      * {@sample.xml ../../../doc/mongo-connector.xml.sample mongo:find-one-file-using-query-map}
      * </pre>
@@ -796,7 +795,7 @@ public class MongoCloudConnector {
     /**
      * Answers an inputstream to the contents of the first file that matches the given query. If no object matches it, a MongoException is thrown.
      * <p/>
-     * 
+     *
      * <pre>
      * {@sample.xml ../../../doc/mongo-connector.xml.sample mongo:get-file-content}
      * </pre>
@@ -808,7 +807,7 @@ public class MongoCloudConnector {
     @Processor
     @ReconnectOn(exceptions = IllegalStateException.class)
     public InputStream getFileContent(@Default("#[payload]") final DBObject query) {
-        return strategy.getClient().getFileContent(fromToDbObject(query));
+        return strategy.getClient().getFileContent(query);
     }
 
     /**
@@ -831,7 +830,7 @@ public class MongoCloudConnector {
     /**
      * Lists all the files that match the given query, sorting them by filename. If no query is specified, all files are listed.
      * <p/>
-     * 
+     *
      * <pre>
      * {@sample.xml ../../../doc/mongo-connector.xml.sample mongo:list-files}
      * </pre>
@@ -843,13 +842,13 @@ public class MongoCloudConnector {
     @Processor
     @ReconnectOn(exceptions = IllegalStateException.class)
     public Iterable<DBObject> listFiles(@Default("#[payload]") final DBObject query) {
-        return strategy.getClient().listFiles(fromToDbObject(query));
+        return strategy.getClient().listFiles(query);
     }
 
     /**
      * Lists all the files that match the given query, sorting them by filename. If no query is specified, all files are listed.
      * <p/>
-     * 
+     *
      * <pre>
      * {@sample.xml ../../../doc/mongo-connector.xml.sample mongo:list-files-using-query-map}
      * </pre>
@@ -867,7 +866,7 @@ public class MongoCloudConnector {
     /**
      * Removes all the files that match the given query. If no query is specified, all files are removed
      * <p/>
-     * 
+     *
      * <pre>
      * {@sample.xml ../../../doc/mongo-connector.xml.sample mongo:remove-files}
      * </pre>
@@ -878,7 +877,7 @@ public class MongoCloudConnector {
     @Processor
     @ReconnectOn(exceptions = IllegalStateException.class)
     public void removeFiles(@Default("#[payload]") final DBObject query) {
-        strategy.getClient().removeFiles(fromToDbObject(query));
+        strategy.getClient().removeFiles(query);
     }
 
     /**
@@ -980,7 +979,7 @@ public class MongoCloudConnector {
     /**
      * Takes the output from the dump and restores it. Indexes will be created on a restore. It only does inserts with the data to restore, if existing data is there, it will not
      * be replaced.
-     * 
+     *
      * <pre>
      * {@sample.xml ../../../doc/mongo-connector.xml.sample mongo:restore}
      * </pre>
@@ -1007,7 +1006,7 @@ public class MongoCloudConnector {
     /**
      * Convert JSON to Document.
      * <p/>
-     * 
+     *
      * <pre>
      * {@sample.xml ../../../doc/mongo-connector.xml.sample mongo:start-consistent-request}
      * </pre>
@@ -1030,7 +1029,7 @@ public class MongoCloudConnector {
                 for (int i = 0; i < basicList.size(); i++) {
                     bsonObj = (BSONObject) basicList.get(0);
                     @SuppressWarnings("unchecked")
-                    Map<String, Object> entries = (Map<String, Object>) bsonObj.toMap();
+                    Map<String, Object> entries = bsonObj.toMap();
                     if (i > 0) {
                         o.putAll(entries);
                     } else {

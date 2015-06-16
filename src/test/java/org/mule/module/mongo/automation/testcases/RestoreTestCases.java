@@ -17,6 +17,7 @@ import java.util.List;
 import org.apache.commons.io.FileUtils;
 import org.bson.Document;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.mule.module.mongo.api.IndexOrder;
@@ -29,7 +30,7 @@ public class RestoreTestCases extends AbstractMongoTest {
     private String indexKey = "myField";
     private IndexOrder indexOrder = IndexOrder.ASC;
 
-    @Override
+    @Before
     public void setUp() {
 
         getConnector().createCollection("Arenas", false, 5, 5);

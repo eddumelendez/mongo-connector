@@ -18,6 +18,7 @@ import java.util.Map;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.mule.module.mongo.api.WriteConcern;
@@ -29,7 +30,7 @@ public class InsertObjectFromMapTestCases extends AbstractMongoTest {
     private Map<String, Object> testData = new HashMap<String, Object>();
     private List<String> list = new LinkedList<String>();
 
-    @Override
+    @Before
     public void setUp() {
         getConnector().createCollection("Arenas", false, 5, 5);
         testData.put("key", "objectKey");

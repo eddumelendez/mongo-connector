@@ -27,7 +27,6 @@ public class CreateFileFromPayloadTestCases extends AbstractMongoTest {
 
     private DBObject dbObj;
 
-    @Override
     @Before
     public void setUp() {
         dbObj = new BasicDBObject();

@@ -15,17 +15,19 @@ import java.util.List;
 
 import org.bson.Document;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.mule.module.mongo.api.automation.MongoHelper;
 import org.mule.module.mongo.automation.AbstractMongoTest;
 import org.mule.module.mongo.automation.RegressionTests;
+
+import com.google.common.collect.Iterables;
 
 public class FindObjectsTestCases extends AbstractMongoTest {
 
     private List<String> objectIDs = new ArrayList<String>();
 
-    @Override
+    @Before
     public void setUp() {
         // create collection
         getConnector().createCollection("Arenas", false, 5, 5);
@@ -41,13 +43,13 @@ public class FindObjectsTestCases extends AbstractMongoTest {
     @Category({ RegressionTests.class })
     @Test
     public void testFindObjects() {
-        Iterable<Document> payload = getConnector().findObjects("Arenas", null, null, null, null, null);
+        Iterable<Document> payload = getConnector().findObjects("Arenas", new Document(), null, null, null, null);
 
         for (Document obj : payload) {
             String dbObjectID = obj.get("_id").toString();
             assertTrue(objectIDs.contains(dbObjectID));
         }
-        assertTrue(objectIDs.size() == MongoHelper.getIterableSize(payload));
+        assertTrue(objectIDs.size() == Iterables.size(payload));
     }
 
     @After

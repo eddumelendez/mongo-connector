@@ -16,19 +16,20 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.mule.module.mongo.api.automation.MongoHelper;
 import org.mule.module.mongo.automation.AbstractMongoTest;
 import org.mule.module.mongo.automation.RegressionTests;
 
+import com.google.common.collect.Iterables;
 import com.mongodb.DBObject;
 
 public class ListFilesUsingQueryMapTestCases extends AbstractMongoTest {
 
     private Map<String, Object> queryAttributes = new HashMap<String, Object>();
 
-    @Override
+    @Before
     public void setUp() {
         createFileFromPayload("filename1");
         createFileFromPayload("filename1");
@@ -48,7 +49,7 @@ public class ListFilesUsingQueryMapTestCases extends AbstractMongoTest {
         assertNotNull(response);
         assertTrue(response instanceof Iterable);
 
-        assertEquals("An empty query map for the query should list all the files", 3, MongoHelper.getIterableSize(response));
+        assertEquals("An empty query map for the query should list all the files", 3, Iterables.size(response));
     }
 
     @Category({ RegressionTests.class })
@@ -60,6 +61,6 @@ public class ListFilesUsingQueryMapTestCases extends AbstractMongoTest {
         assertNotNull(response);
         assertTrue(response instanceof Iterable);
         assertEquals("Listing files with a query with key " + queryAttributes.keySet().toString() + " and value " + queryAttributes.get("filename") + " should give 2 results", 2,
-                MongoHelper.getIterableSize(response));
+                Iterables.size(response));
     }
 }
