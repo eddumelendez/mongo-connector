@@ -24,6 +24,7 @@ import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Function;
 import com.google.common.base.Predicates;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
@@ -46,6 +47,13 @@ public class MongoClientImpl implements MongoClient {
     private static final Logger logger = LoggerFactory.getLogger(MongoClientImpl.class);
 
     private static final String ID_FIELD_NAME = "_id";
+    
+    private static final Function<GridFSDBFile, DBObject> DUMMY_CAST_FUNCTION = new Function<GridFSDBFile, DBObject>() {
+        @Override
+        public DBObject apply(GridFSDBFile input) {
+            return input;
+        }
+    };
 
     @Deprecated
     private final DB db;
@@ -141,7 +149,7 @@ public class MongoClientImpl implements MongoClient {
         if (sortBy != null) {
             dbCursor.sort(sortBy);
         }
-        return bug5588WorkaroundDocument(dbCursor);
+        return bug5588Workaround(dbCursor);
     }
 
     @Override
@@ -190,7 +198,7 @@ public class MongoClientImpl implements MongoClient {
         if (outputCollection != null) {
             mapReduceIterable = mapReduceIterable.collectionName(outputCollection);
         }
-        return bug5588WorkaroundDocument(mapReduceIterable);
+        return bug5588Workaround(mapReduceIterable);
     }
 
     @Override
@@ -261,7 +269,7 @@ public class MongoClientImpl implements MongoClient {
 
     @Override
     public Iterable<DBObject> findFiles(final DBObject query) {
-        return bug5588Workaround(getGridFs().find(query));
+        return Iterables.transform(bug5588Workaround(getGridFs().find(query)), DUMMY_CAST_FUNCTION);
     }
 
     @Override
@@ -299,26 +307,8 @@ public class MongoClientImpl implements MongoClient {
         return new GridFS(db);
     }
 
-    /*
-     * see http://www.mulesoft.org/jira/browse/MULE-5588
-     */
-    @SuppressWarnings("unchecked")
-    private Iterable<DBObject> bug5588Workaround(final Iterable<? extends DBObject> o) {
-        if (o instanceof Collection<?>) {
-            return (Iterable<DBObject>) o;
-        }
-        return Lists.newArrayList(o);
-    }
-
-    /*
-     * see http://www.mulesoft.org/jira/browse/MULE-5588
-     */
-    @SuppressWarnings("unchecked")
-    private Iterable<Document> bug5588WorkaroundDocument(final Iterable<? extends Document> o) {
-        if (o instanceof Collection<?>) {
-            return (Iterable<Document>) o;
-        }
-        return new MongoCollection(o);
+    private <T> Iterable<T> bug5588Workaround(final Iterable<? extends T> o) {
+        return new MongoCollection<T>(o);
     }
 
     public DB getDb() {

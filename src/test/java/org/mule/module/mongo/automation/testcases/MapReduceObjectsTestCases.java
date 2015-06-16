@@ -8,6 +8,7 @@
 
 package org.mule.module.mongo.automation.testcases;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -15,12 +16,13 @@ import static org.junit.Assert.fail;
 import java.util.ArrayList;
 import java.util.List;
 
+import jersey.repackaged.com.google.common.collect.Iterables;
+
 import org.bson.Document;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.mule.module.mongo.api.MongoCollection;
 import org.mule.module.mongo.automation.AbstractMongoTest;
 import org.mule.module.mongo.automation.RegressionTests;
 
@@ -50,10 +52,10 @@ public class MapReduceObjectsTestCases extends AbstractMongoTest {
     @Test
     public void testMapReduceObjects() {
 
-        MongoCollection resultCollection = (MongoCollection) getConnector().mapReduceObjects("Arenas", "function() { emit(this.item, 1); }",
+        Iterable<Document> resultCollection = getConnector().mapReduceObjects("Arenas", "function() { emit(this.item, 1); }",
                 "function(key, values) { var result = 0;    values.forEach(function(value) { result += 1 }); return {count: result}; }", "resultCollection");
         assertTrue(resultCollection != null);
-        assertTrue(resultCollection.size() == 2); // We only have apples and oranges
+        assertEquals(2, Iterables.size(resultCollection)); // We only have apples and oranges
 
         for (Document obj : resultCollection) {
             Document valueObject = (Document) obj.get("value");

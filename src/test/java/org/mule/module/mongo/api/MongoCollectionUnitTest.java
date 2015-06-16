@@ -22,12 +22,12 @@ import org.mule.module.mongo.automation.RegressionTests;
 public class MongoCollectionUnitTest {
 
     private Iterable<? extends Document> o;
-    MongoCollection mo;
+    MongoCollection<Document> mo;
 
     @Category({ RegressionTests.class })
     @Test
     public void collectionToString() {
-        mo = new MongoCollection(o);
+        mo = new MongoCollection<>(o);
         String className = mo.toString();
         className = className.substring(0, className.indexOf("@"));
         assertEquals("This should be class name", "org.mule.module.mongo.api.MongoCollection", className);
@@ -42,7 +42,7 @@ public class MongoCollectionUnitTest {
         o.put("foo", "bar");
         obj.add(o);
         // Create a new instance of MongoCollection
-        mo = new MongoCollection(obj);
+        mo = new MongoCollection<Document>(obj);
         Object test = mo.toArray();
 
         assertTrue(test instanceof Object[]);

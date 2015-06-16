@@ -190,11 +190,11 @@ public class MongoCloudConnector {
      *
      * @param collection
      *            the name of the collection where to insert the given object
-     * @param dbObject
-     *            a {@link DBObject} instance.
+     * @param document
+     *            a {@link Document} instance.
      * @param writeConcern
      *            the optional write concern of insertion
-     * @return the id that was just insterted
+     * @return the id that was just inserted
      */
     @Processor
     @ReconnectOn(exceptions = IllegalStateException.class)
@@ -1091,7 +1091,7 @@ public class MongoCloudConnector {
      */
     @Mime(MimeTypes.JSON)
     @Transformer(sourceTypes = { MongoCollection.class })
-    public static String mongoCollectionToJson(final MongoCollection input) {
+    public static String mongoCollectionToJson(final MongoCollection<?> input) {
         return JSONSerializers.getStrict().serialize(input);
     }
 

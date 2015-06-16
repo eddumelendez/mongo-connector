@@ -10,38 +10,25 @@ package org.mule.module.mongo.api;
 
 import java.util.AbstractCollection;
 import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
 
 import jersey.repackaged.com.google.common.collect.Iterables;
 
-import org.bson.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class MongoCollection extends AbstractCollection<Document> {
+public class MongoCollection<T> extends AbstractCollection<T> {
 
     private static final Logger logger = LoggerFactory.getLogger(MongoCollection.class);
-    private Iterable<? extends Document> o;
+    private Iterable<? extends T> o;
 
-    public MongoCollection(Iterable<? extends Document> o) {
+    public MongoCollection(Iterable<? extends T> o) {
         this.o = o;
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    public Iterator<Document> iterator() {
-        return (Iterator<Document>) o.iterator();
-    }
-
-    @Override
-    public Object[] toArray() {
-        warnEagerMessage("toArray");
-        List<Object> l = new LinkedList<Object>();
-        for (Object o : this) {
-            l.add(o);
-        }
-        return l.toArray();
+    public Iterator<T> iterator() {
+        return (Iterator<T>) o.iterator();
     }
 
     @Override
