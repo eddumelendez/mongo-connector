@@ -40,7 +40,6 @@ import org.mule.api.annotations.param.Optional;
 import org.mule.api.annotations.param.Payload;
 import org.mule.module.mongo.api.IndexOrder;
 import org.mule.module.mongo.api.MongoCollection;
-import org.mule.module.mongo.api.WriteConcern;
 import org.mule.module.mongo.tools.BackupConstants;
 import org.mule.module.mongo.tools.IncrementalMongoDump;
 import org.mule.module.mongo.tools.MongoDump;
@@ -63,7 +62,6 @@ import com.mongodb.util.JSONSerializers;
 public class MongoCloudConnector {
 
     private static final String CAPPED_DEFAULT_VALUE = "false";
-    private static final String WRITE_CONCERN_DEFAULT_VALUE = "DATABASE_DEFAULT";
     private static final String BACKUP_THREADS = "5";
     private static final String DEFAULT_OUTPUT_DIRECTORY = "dump";
 
@@ -192,8 +190,6 @@ public class MongoCloudConnector {
      *            the name of the collection where to insert the given object
      * @param document
      *            a {@link Document} instance.
-     * @param writeConcern
-     *            the optional write concern of insertion
      * @return the id that was just inserted
      */
     @Processor
@@ -215,14 +211,11 @@ public class MongoCloudConnector {
      *            the name of the collection where to insert the given object
      * @param elementAttributes
      *            alternative way of specifying the element as a literal Map inside a Mule Flow
-     * @param writeConcern
-     *            the optional write concern of insertion
      * @return the id that was just insterted
      */
     @Processor
     @ReconnectOn(exceptions = IllegalStateException.class)
-    public String insertObjectFromMap(final String collection, @Placement(group = "Element Attributes") final Map<String, Object> elementAttributes,
-            @Default(WRITE_CONCERN_DEFAULT_VALUE) final WriteConcern writeConcern) {
+    public String insertObjectFromMap(final String collection, @Placement(group = "Element Attributes") final Map<String, Object> elementAttributes) {
         return strategy.getClient().insertObject(collection, adapt(elementAttributes));
     }
 
@@ -269,13 +262,11 @@ public class MongoCloudConnector {
      *            if the database should create the element if it does not exist
      * @param multi
      *            if all or just the first object matching the query will be updated
-     * @param writeConcern
-     *            the write concern used to update
      */
     @Processor
     @ReconnectOn(exceptions = IllegalStateException.class)
     public void updateObjectsUsingQueryMap(final String collection, final Map<String, Object> queryAttributes, final Document element,
-            @Default(CAPPED_DEFAULT_VALUE) final boolean upsert, @Default("true") final boolean multi, @Default(WRITE_CONCERN_DEFAULT_VALUE) final WriteConcern writeConcern) {
+            @Default(CAPPED_DEFAULT_VALUE) final boolean upsert, @Default("true") final boolean multi) {
         strategy.getClient().updateObjects(collection, adapt(queryAttributes), element, multi);
     }
 
@@ -297,14 +288,12 @@ public class MongoCloudConnector {
      *            if the database should create the element if it does not exist
      * @param multi
      *            if all or just the first object matching the query will be updated
-     * @param writeConcern
-     *            the write concern used to update
      */
     @Processor
     @ReconnectOn(exceptions = IllegalStateException.class)
     public void updateObjectsUsingMap(final String collection, @Placement(group = "Query Attributes") final Map<String, Object> queryAttributes,
             @Placement(group = "Element Attributes") final Map<String, Object> elementAttributes, @Default(CAPPED_DEFAULT_VALUE) final boolean upsert,
-            @Default("true") final boolean multi, @Default(WRITE_CONCERN_DEFAULT_VALUE) final WriteConcern writeConcern) {
+            @Default("true") final boolean multi) {
         strategy.getClient().updateObjects(collection, adapt(queryAttributes), adapt(elementAttributes), multi);
     }
 
@@ -358,14 +347,11 @@ public class MongoCloudConnector {
      *            if the database should create the element if it does not exist
      * @param multi
      *            if all or just the first object matching the query will be updated
-     * @param writeConcern
-     *            the write concern used to update
      */
     @Processor
     @ReconnectOn(exceptions = IllegalStateException.class)
     public void updateObjectsByFunctionUsingMap(final String collection, final String function, final Map<String, Object> queryAttributes,
-            final Map<String, Object> elementAttributes, @Default(CAPPED_DEFAULT_VALUE) final boolean upsert, @Default(value = "true") final boolean multi,
-            @Default(WRITE_CONCERN_DEFAULT_VALUE) final WriteConcern writeConcern) {
+            final Map<String, Object> elementAttributes, @Default(CAPPED_DEFAULT_VALUE) final boolean upsert, @Default(value = "true") final boolean multi) {
         final Document functionDocument = fromFunction(function, adapt(elementAttributes));
 
         strategy.getClient().updateObjects(collection, adapt(queryAttributes), functionDocument, multi);
@@ -400,13 +386,10 @@ public class MongoCloudConnector {
      *            the collection where to insert the object
      * @param elementAttributes
      *            the mandatory object to insert.
-     * @param writeConcern
-     *            the write concern used to persist the object
      */
     @Processor
     @ReconnectOn(exceptions = IllegalStateException.class)
-    public void saveObjectFromMap(final String collection, @Placement(group = "Element Attributes") final Map<String, Object> elementAttributes,
-            @Default(WRITE_CONCERN_DEFAULT_VALUE) final WriteConcern writeConcern) {
+    public void saveObjectFromMap(final String collection, @Placement(group = "Element Attributes") final Map<String, Object> elementAttributes) {
         strategy.getClient().saveObject(collection, adapt(elementAttributes));
     }
 
@@ -441,13 +424,10 @@ public class MongoCloudConnector {
      *            the collection whose elements will be removed
      * @param queryAttributes
      *            the query object. Objects that match it will be removed.
-     * @param writeConcern
-     *            the write concern used to remove the object
      */
     @Processor
     @ReconnectOn(exceptions = IllegalStateException.class)
-    public void removeObjectsUsingQueryMap(final String collection, @Placement(group = "Query Attributes") @Optional final Map<String, Object> queryAttributes,
-            @Default(WRITE_CONCERN_DEFAULT_VALUE) final WriteConcern writeConcern) {
+    public void removeObjectsUsingQueryMap(final String collection, @Placement(group = "Query Attributes") @Optional final Map<String, Object> queryAttributes) {
         strategy.getClient().removeObjects(collection, adapt(queryAttributes));
     }
 
@@ -542,8 +522,8 @@ public class MongoCloudConnector {
      */
     @Processor
     @ReconnectOn(exceptions = IllegalStateException.class)
-    public Iterable<Document> findObjects(final String collection, @Default("") final Document query, @Placement(group = "Fields") @Optional final List<String> fields,
-            @Optional final Integer numToSkip, @Optional final Integer limit, @Optional Document sortBy) {
+    public Iterable<Document> findObjects(final String collection, final @Default("#[new org.bson.Document()]") Document query,
+            @Placement(group = "Fields") @Optional final List<String> fields, @Optional final Integer numToSkip, @Optional final Integer limit, @Optional Document sortBy) {
         return strategy.getClient().findObjects(collection, query, fields, numToSkip, limit, sortBy);
     }
 
@@ -1008,7 +988,7 @@ public class MongoCloudConnector {
      * <p/>
      *
      * <pre>
-     * {@sample.xml ../../../doc/mongo-connector.xml.sample mongo:start-consistent-request}
+     * {@sample.xml ../../../doc/mongo-connector.xml.sample mongo:jsonToDocument}
      * </pre>
      *
      * @param input
@@ -1045,10 +1025,10 @@ public class MongoCloudConnector {
     }
 
     /**
-     * Convert DBObject to Json.
+     * Convert Document to Json.
      *
      * <pre>
-     * {@sample.xml ../../../doc/mongo-connector.xml.sample mongo:dbobjectToJson}
+     * {@sample.xml ../../../doc/mongo-connector.xml.sample mongo:documentToJson}
      * </pre>
      *
      * @param input

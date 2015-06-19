@@ -21,7 +21,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.mule.module.mongo.api.WriteConcern;
 import org.mule.module.mongo.automation.AbstractMongoTest;
 import org.mule.module.mongo.automation.RegressionTests;
 
@@ -65,7 +64,7 @@ public class RemoveObjectsUsingQueryMapTestCases extends AbstractMongoTest {
         query.put(key, value);
 
         // Remove all records matching key-value pair
-        getConnector().removeObjectsUsingQueryMap("Arenas", query, WriteConcern.SAFE);
+        getConnector().removeObjectsUsingQueryMap("Arenas", query);
 
         // Get all objects
         // Only objects which should be returned are those without the key value pairs
@@ -84,7 +83,7 @@ public class RemoveObjectsUsingQueryMapTestCases extends AbstractMongoTest {
 
         Map<String, Object> query = new HashMap<String, Object>();
         // Remove all records
-        getConnector().removeObjectsUsingQueryMap("Arenas", query, WriteConcern.SAFE);
+        getConnector().removeObjectsUsingQueryMap("Arenas", query);
 
         // Get all objects
         Iterable<Document> objects = getConnector().findObjects("Arenas", new Document(), null, null, null, null);

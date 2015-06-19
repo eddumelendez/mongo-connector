@@ -18,7 +18,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.mule.module.mongo.api.WriteConcern;
 import org.mule.module.mongo.automation.AbstractMongoTest;
 import org.mule.module.mongo.automation.RegressionTests;
 
@@ -30,7 +29,7 @@ public class FindOneObjectUsingQueryMapTestCases extends AbstractMongoTest {
     public void setUp() {
         getConnector().createCollection("Arenas", false, 5, 5);
         elementAttributes.put("myKey", "myValue");
-        getConnector().saveObjectFromMap("Arenas", elementAttributes, WriteConcern.SAFE);
+        getConnector().saveObjectFromMap("Arenas", elementAttributes);
     }
 
     @After

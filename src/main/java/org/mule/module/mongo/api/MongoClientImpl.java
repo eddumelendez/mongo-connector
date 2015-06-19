@@ -47,8 +47,9 @@ public class MongoClientImpl implements MongoClient {
     private static final Logger logger = LoggerFactory.getLogger(MongoClientImpl.class);
 
     private static final String ID_FIELD_NAME = "_id";
-    
+
     private static final Function<GridFSDBFile, DBObject> DUMMY_CAST_FUNCTION = new Function<GridFSDBFile, DBObject>() {
+
         @Override
         public DBObject apply(GridFSDBFile input) {
             return input;

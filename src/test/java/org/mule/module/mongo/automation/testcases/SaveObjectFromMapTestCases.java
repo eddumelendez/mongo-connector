@@ -19,7 +19,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.mule.module.mongo.api.WriteConcern;
 import org.mule.module.mongo.automation.AbstractMongoTest;
 import org.mule.module.mongo.automation.RegressionTests;
 
@@ -48,7 +47,7 @@ public class SaveObjectFromMapTestCases extends AbstractMongoTest {
         elementAttributes.put(key, value);
 
         // Save object to MongoDB
-        getConnector().saveObjectFromMap("Arenas", elementAttributes, WriteConcern.SAFE);
+        getConnector().saveObjectFromMap("Arenas", elementAttributes);
 
         // Check whether it was saved
         Document object = getConnector().findOneObjectUsingQueryMap("Arenas", elementAttributes, null, true);
@@ -59,7 +58,7 @@ public class SaveObjectFromMapTestCases extends AbstractMongoTest {
         String differentValue = "differentValue";
         elementAttributes.clear();
         elementAttributes.put(key, differentValue);
-        getConnector().saveObjectFromMap("Arenas", elementAttributes, WriteConcern.SAFE);
+        getConnector().saveObjectFromMap("Arenas", elementAttributes);
 
         // Check that modifications were saved
         object = getConnector().findOneObjectUsingQueryMap("Arenas", elementAttributes, null, true);

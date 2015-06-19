@@ -21,7 +21,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.mule.module.mongo.api.WriteConcern;
 import org.mule.module.mongo.automation.AbstractMongoTest;
 import org.mule.module.mongo.automation.RegressionTests;
 
@@ -43,7 +42,7 @@ public class InsertObjectFromMapTestCases extends AbstractMongoTest {
     @Test
     public void testInsertObjectFromMap() {
         Iterable<Document> iterable;
-        String objectID = getConnector().insertObjectFromMap("Arenas", testData, WriteConcern.SAFE);
+        String objectID = getConnector().insertObjectFromMap("Arenas", testData);
 
         assertTrue(objectID != null && !objectID.equals("") && !objectID.trim().equals(""));
 

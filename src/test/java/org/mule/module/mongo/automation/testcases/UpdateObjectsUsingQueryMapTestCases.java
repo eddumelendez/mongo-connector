@@ -20,7 +20,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.mule.module.mongo.api.WriteConcern;
 import org.mule.module.mongo.automation.AbstractMongoTest;
 import org.mule.module.mongo.automation.RegressionTests;
 
@@ -58,7 +57,7 @@ public class UpdateObjectsUsingQueryMapTestCases extends AbstractMongoTest {
         Document elementDBObj = new Document("$set", new Document(queryKey, elementValue));
 
         // Update objects
-        getConnector().updateObjectsUsingQueryMap("Arenas", queryAttributes, elementDBObj, false, true, WriteConcern.DATABASE_DEFAULT);
+        getConnector().updateObjectsUsingQueryMap("Arenas", queryAttributes, elementDBObj, false, true);
 
         // Get all objects
         Iterable<Document> objects = getConnector().findObjects("Arenas", new Document(), null, null, null, null);
