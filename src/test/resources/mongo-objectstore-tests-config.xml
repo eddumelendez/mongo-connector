@@ -1,34 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-
-    Mule Mongo Connector
-
-    Copyright (c) MuleSoft, Inc.  All rights reserved.  http://www.mulesoft.com
-
-    The software in this package is published under the terms of the CPAL v1.0
-    license, a copy of which has been included with this distribution in the
-    LICENSE.txt file.
-
--->
+<!-- Mule Mongo Connector Copyright (c) MuleSoft, Inc. All rights reserved. 
+	http://www.mulesoft.com The software in this package is published under the 
+	terms of the CPAL v1.0 license, a copy of which has been included with this 
+	distribution in the LICENSE.txt file. -->
 
 <mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns:mos="http://www.mulesoft.org/schema/mule/mongo-object-store"
-    xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:script="http://www.mulesoft.org/schema/mule/scripting"
-    xmlns:test="http://www.mulesoft.org/schema/mule/test" xmlns:spring="http://www.springframework.org/schema/beans"
-    xmlns:util="http://www.springframework.org/schema/util" xmlns:p="http://www.springframework.org/schema/p"
-    xsi:schemaLocation="
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:script="http://www.mulesoft.org/schema/mule/scripting"
+	xmlns:test="http://www.mulesoft.org/schema/mule/test" xmlns:spring="http://www.springframework.org/schema/beans"
+	xmlns:util="http://www.springframework.org/schema/util" xmlns:p="http://www.springframework.org/schema/p"
+	xsi:schemaLocation="
           http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
-          http://www.mulesoft.org/schema/mule/mongo-object-store http://www.mulesoft.org/schema/mule/mongo-object-store/current/mule-mongo-object-store.xsd
           http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
           http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd
           http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd
           http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
           http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
 
-    <spring:beans>
-        <spring:bean class="org.mule.module.mongo.FakeObjectStoreUser"
-            p:objectStore-ref="mos" />
-    </spring:beans>
+	<spring:beans>
+		<spring:bean class="org.mule.module.mongo.FakeObjectStoreUser"
+			p:objectStore-ref="mos" />
 
-    <mos:config name="mos" database="mongo-connector-test" />
+		<spring:bean id="mos" class="org.mule.module.mongo.MongoObjectStore"
+			init-method="initialize" scope="singleton">
+			<spring:property name="host" value="localhost" />
+			<spring:property name="port" value="27017" />
+			<spring:property name="database" value="test" />
+			<spring:property name="username" value="" />
+			<spring:property name="password" value="" />
+			<spring:property name="writeConcern" value="DATABASE_DEFAULT" />
+		</spring:bean>
+	</spring:beans>
+
 </mule>
