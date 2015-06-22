@@ -203,7 +203,7 @@ public class MongoObjectStore implements PartitionableExpirableObjectStore<Seria
 
             final List<Serializable> results = new ArrayList<Serializable>();
             for (final DBObject keyObject : keyObjects) {
-                results.add((Serializable) org.apache.commons.lang.SerializationUtils.deserialize((byte[]) keyObject.get(KEY_FIELD)));
+                results.add((Serializable) SerializationUtils.deserialize((byte[]) keyObject.get(KEY_FIELD)));
             }
             return results;
         } catch (Exception ex) {
@@ -230,7 +230,7 @@ public class MongoObjectStore implements PartitionableExpirableObjectStore<Seria
     @Override
     public void store(final Serializable key, final Serializable value, final String partitionName) throws ObjectStoreException {
         if (key == null) {
-            throw new ObjectStoreException(MessageFactory.createStaticMessage("The key is null"));
+            throw new ObjectStoreException(MessageFactory.createStaticMessage("The key to the ObjectStore cannot be null"));
         }
 
         final String collection = getCollectionName(partitionName);
@@ -243,7 +243,7 @@ public class MongoObjectStore implements PartitionableExpirableObjectStore<Seria
         final ObjectId objectId = getObjectIdFromKey(keyAsBytes);
         final DBObject query = getQueryForObjectId(objectId);
         if (mongoClient.findObjects(collection, query, null, null, null, null).iterator().hasNext()) {
-            throw new ObjectAlreadyExistsException();
+            throw new ObjectAlreadyExistsException(MessageFactory.createStaticMessage("Duplicated key %s", key));
         }
 
         try {
@@ -261,7 +261,7 @@ public class MongoObjectStore implements PartitionableExpirableObjectStore<Seria
     @Override
     public Serializable retrieve(final Serializable key, final String partitionName) throws ObjectStoreException {
         if (key == null) {
-            throw new ObjectStoreException(MessageFactory.createStaticMessage("The key is null"));
+            throw new ObjectStoreException(MessageFactory.createStaticMessage("The key to the ObjectStore cannot be null"));
         }
 
         final String collection = getCollectionName(partitionName);
@@ -277,7 +277,7 @@ public class MongoObjectStore implements PartitionableExpirableObjectStore<Seria
     @Override
     public Serializable remove(final Serializable key, final String partitionName) throws ObjectStoreException {
         if (key == null) {
-            throw new ObjectStoreException(MessageFactory.createStaticMessage("The key is null"));
+            throw new ObjectStoreException(MessageFactory.createStaticMessage("The key to the ObjectStore cannot be null"));
         }
 
         final String collection = getCollectionName(partitionName);
