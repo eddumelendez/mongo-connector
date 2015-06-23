@@ -26,17 +26,17 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Function;
 import com.google.common.base.Predicates;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.mongodb.CursorType;
-import com.mongodb.DB;
-import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import com.mongodb.MongoException;
-import com.mongodb.WriteResult;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MapReduceIterable;
+import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.MongoIterable;
 import com.mongodb.client.model.CreateCollectionOptions;
 import com.mongodb.gridfs.GridFS;
 import com.mongodb.gridfs.GridFSDBFile;
@@ -47,7 +47,11 @@ public class MongoClientImpl implements MongoClient {
     private static final Logger logger = LoggerFactory.getLogger(MongoClientImpl.class);
 
     private static final String ID_FIELD_NAME = "_id";
+    
+    private static final String CREATE_USER_COMMAND = "{ \"createUser\" : \"%s\" , \"pwd\" : \"%s\" , \"roles\" : [ { \"role\" : [ \"readWrite\"] , \"db\" : \"%s\"}]}";
 
+    private static final Document PING_COMMAND = new Document("ping", 1);
+    
     private static final Function<GridFSDBFile, DBObject> DUMMY_CAST_FUNCTION = new Function<GridFSDBFile, DBObject>() {
 
         @Override
@@ -55,9 +59,7 @@ public class MongoClientImpl implements MongoClient {
             return input;
         }
     };
-
-    @Deprecated
-    private final DB db;
+ 
     private final MongoDatabase database;
     private final com.mongodb.MongoClient mongo;
 
@@ -66,7 +68,6 @@ public class MongoClientImpl implements MongoClient {
         Validate.notNull(mongo, "Mongo instance cannot be null");
         Validate.notNull(db, "Database cannot be null");
         this.mongo = mongo;
-        this.db = mongo.getDB(db);
         database = mongo.getDatabase(db);
     }
 
@@ -76,6 +77,11 @@ public class MongoClientImpl implements MongoClient {
         mongo.close();
     }
 
+    @Override
+    public MongoDatabase getDatabase(String databaseName) {
+        return mongo.getDatabase(databaseName);
+    }
+    
     @Override
     public long countObjects(@NotNull final String collection, final Bson query) {
         Validate.notNull(collection);
@@ -101,32 +107,43 @@ public class MongoClientImpl implements MongoClient {
     }
 
     @Override
-    public DBCollection getCollection(@NotNull final String collection) {
+    public MongoCollection<Document> getCollection(@NotNull final String collection) {
         Validate.notNull(collection);
-        return db.getCollection(collection);
+        return database.getCollection(collection);
     }
 
     @Override
-    public WriteResult addUser(final String username, final String password) {
+    public Document addUser(final String username, final String password)
+    {
         Validate.notNull(username);
         Validate.notNull(password);
-        final WriteResult writeResult = db.addUser(username, password.toCharArray());
         // if (!writeResult.getLastError().ok())
         // {
         // throw new MongoException(writeResult.getLastError().getErrorMessage());
         // }
-        return writeResult;
+        Document commandArguments = new Document();
+        commandArguments.put("user", username);
+        commandArguments.put("pwd", password);
+        List<String> roles = ImmutableList.of( "readWrite" );
+        commandArguments.put("roles", roles);
+        Document command = new Document("createUser", commandArguments);
+        Document commandResult = database.runCommand(command);
+//        if (!commandResult.ok())
+//        {
+//            throw new MongoException(commandResult.getErrorMessage());
+//        }
+        return commandResult;
     }
 
     @Override
     public void dropDatabase() {
-        db.dropDatabase();
+        database.drop();
     }
 
     @Override
     public void dropCollection(@NotNull final String collection) {
         Validate.notNull(collection);
-        db.getCollection(collection).drop();
+        database.getCollection(collection).drop();
     }
 
     @Override
@@ -150,7 +167,7 @@ public class MongoClientImpl implements MongoClient {
         if (sortBy != null) {
             dbCursor.sort(sortBy);
         }
-        return bug5588Workaround(dbCursor);
+        return dbCursor;
     }
 
     @Override
@@ -184,8 +201,8 @@ public class MongoClientImpl implements MongoClient {
     }
 
     @Override
-    public Collection<String> listCollections() {
-        return Lists.newArrayList(database.listCollectionNames());
+    public MongoIterable<String> listCollections() {
+        return database.listCollectionNames();
     }
 
     @Override
@@ -199,7 +216,7 @@ public class MongoClientImpl implements MongoClient {
         if (outputCollection != null) {
             mapReduceIterable = mapReduceIterable.collectionName(outputCollection);
         }
-        return bug5588Workaround(mapReduceIterable);
+        return mapReduceIterable;
     }
 
     @Override
@@ -245,7 +262,7 @@ public class MongoClientImpl implements MongoClient {
 
     @Override
     public void dropIndex(final String collection, final String name) {
-        db.getCollection(collection).dropIndex(name);
+        database.getCollection(collection).dropIndex(name);
     }
 
     @Override
@@ -270,7 +287,7 @@ public class MongoClientImpl implements MongoClient {
 
     @Override
     public Iterable<DBObject> findFiles(final DBObject query) {
-        return Iterables.transform(bug5588Workaround(getGridFs().find(query)), DUMMY_CAST_FUNCTION);
+        return Iterables.transform(getGridFs().find(query), DUMMY_CAST_FUNCTION);
     }
 
     @Override
@@ -291,7 +308,7 @@ public class MongoClientImpl implements MongoClient {
 
     @Override
     public Iterable<DBObject> listFiles(final DBObject query) {
-        return bug5588Workaround(getGridFs().getFileList(query));
+        return getGridFs().getFileList(query);
     }
 
     @Override
@@ -304,16 +321,13 @@ public class MongoClientImpl implements MongoClient {
         return database.runCommand(command);
     }
 
+    @SuppressWarnings("deprecation")
     protected GridFS getGridFs() {
-        return new GridFS(db);
+        return new GridFS(mongo.getDB(database.getName()));
     }
 
-    private <T> Iterable<T> bug5588Workaround(final Iterable<? extends T> o) {
-        return new MongoCollection<T>(o);
-    }
-
-    public DB getDb() {
-        return db;
+    public MongoDatabase getDb() {
+        return database;
     }
 
 }

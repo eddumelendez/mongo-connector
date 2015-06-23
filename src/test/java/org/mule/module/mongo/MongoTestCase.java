@@ -26,7 +26,9 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import com.mongodb.MongoException;
 import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.MongoIterable;
 import com.mongodb.gridfs.GridFS;
 import com.mongodb.gridfs.GridFSDBFile;
 
@@ -62,19 +64,27 @@ public class MongoTestCase {
     }
 
     /** Test {@link MongoClient#listCollections()} */
+    @SuppressWarnings("rawtypes")
     @Test
     public void listCollections() {
-        // MongoIterable mongoIterable = mock(MongoIterable.class);
-        // Iterable mockIterable = mock(Iterable.class);
-        // Collection col = mock(Collection.class);
-        // when(dbMock.listCollectionNames()).thenReturn(mongoIterable);
+         MongoIterable mongoIterable = mock(MongoIterable.class);
+         when(dbMock.listCollectionNames()).thenReturn(mongoIterable);
         client.listCollections();
         verify(dbMock).listCollectionNames();
     }
 
     /** Test {@link MongoClient#existsCollection(String)} */
+    @SuppressWarnings({
+            "unchecked",
+            "rawtypes" })
     @Test
     public void existsCollection() {
+        MongoIterable<String> iterable = mock(MongoIterable.class);
+        MongoCursor iterator = mock(MongoCursor.class);
+        when(iterable.iterator()).thenReturn(iterator);
+        when(iterator.hasNext()).thenReturn(true, false);
+        when(iterator.next()).thenReturn("Hello");
+        when(dbMock.listCollectionNames()).thenReturn(iterable);
         client.existsCollection(A_COLLECTION);
         verify(dbMock).listCollectionNames();
     }

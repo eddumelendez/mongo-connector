@@ -18,15 +18,16 @@ import javax.validation.constraints.NotNull;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 
-import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
-import com.mongodb.WriteResult;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.MongoIterable;
 
 public interface MongoClient extends Closeable {
 
-    Collection<String> listCollections();
+    MongoIterable<String> listCollections();
 
-    DBCollection getCollection(@NotNull String name);
+    MongoCollection<Document> getCollection(@NotNull String name);
 
     boolean existsCollection(@NotNull String name);
 
@@ -70,8 +71,10 @@ public interface MongoClient extends Closeable {
 
     Document executeCommand(Document command);
 
-    WriteResult addUser(String username, String password);
+    Document addUser(String username, String password);
 
     void dropDatabase();
+
+    MongoDatabase getDatabase(String databaseName);
 
 }

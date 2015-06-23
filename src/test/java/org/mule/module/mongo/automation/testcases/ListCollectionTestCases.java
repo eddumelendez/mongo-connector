@@ -8,9 +8,6 @@
 
 package org.mule.module.mongo.automation.testcases;
 
-import static org.junit.Assert.assertTrue;
-
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -20,6 +17,10 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.mule.module.mongo.automation.AbstractMongoTest;
 import org.mule.module.mongo.automation.RegressionTests;
+
+import com.google.common.base.Predicate;
+import com.google.common.collect.Iterables;
+import com.mongodb.client.MongoIterable;
 
 public class ListCollectionTestCases extends AbstractMongoTest {
 
@@ -39,11 +40,19 @@ public class ListCollectionTestCases extends AbstractMongoTest {
     @Category({ RegressionTests.class })
     @Test
     public void testListCollections() {
-        Collection<String> payload = getConnector().listCollections();
+        final MongoIterable<String> payload = getConnector().listCollections();
 
-        for (String collectionName : collectionNames) {
-            assertTrue(payload.contains(collectionName));
-        }
+        Iterables.all(collectionNames, new Predicate<String>() {
+
+            @Override
+            public boolean apply(String input) {
+                for (String string : payload) {
+                    if (string.equals(input))
+                        return true;
+                }
+                return false;
+            }
+        });
     }
 
     @After

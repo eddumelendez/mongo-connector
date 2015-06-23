@@ -32,6 +32,8 @@ import org.mule.api.lifecycle.InitialisationException;
 import org.mule.module.mongo.api.IndexOrder;
 import org.mule.module.mongo.api.MongoClient;
 
+import com.google.common.base.Predicate;
+import com.google.common.collect.Iterables;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import com.mongodb.MongoException;
@@ -77,11 +79,18 @@ public class MongoTestDriver {
      */
     @Test
     public void createCollection() throws Exception {
-        int originalSize = connector.listCollections().size();
+        int originalSize = Iterables.size(connector.listCollections());
         connector.createCollection(ANOTHER_COLLECTION, false, 100, 1000);
         assertTrue(connector.existsCollection(ANOTHER_COLLECTION));
-        assertTrue(connector.listCollections().contains(ANOTHER_COLLECTION));
-        assertEquals(originalSize + 1, connector.listCollections().size());
+        Iterables.find(connector.listCollections(), new Predicate<String>() {
+
+            @Override
+            public boolean apply(String input) {
+                return ANOTHER_COLLECTION.equals(input);
+            }
+        });
+        //        assertTrue(connector.listCollections().contains(ANOTHER_COLLECTION));
+        assertEquals(originalSize + 1, Iterables.size(connector.listCollections()));
     }
 
     /**
@@ -97,14 +106,21 @@ public class MongoTestDriver {
      */
     @Test
     public void dropCollection() throws Exception {
-        int originalSize = connector.listCollections().size();
+        int originalSize = Iterables.size(connector.listCollections());
 
         connector.dropCollection(MAIN_COLLECTION);
 
         assertFalse(connector.existsCollection(MAIN_COLLECTION));
-        assertFalse(connector.listCollections().contains(MAIN_COLLECTION));
+        
+        Iterables.find(connector.listCollections(), new Predicate<String>() {
 
-        assertEquals(originalSize - 1, connector.listCollections().size());
+            @Override
+            public boolean apply(String input) {
+                return MAIN_COLLECTION.equals(input);
+            }
+        });
+
+        assertEquals(originalSize - 1, Iterables.size(connector.listCollections()));
     }
 
     /**

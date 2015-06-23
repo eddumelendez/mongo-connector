@@ -15,11 +15,11 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import com.mongodb.DB;
+import com.mongodb.client.MongoDatabase;
 
 public class IncrementalMongoDump extends AbstractMongoUtility {
 
-    private Map<String, DB> dbs = new HashMap<String, DB>();
+    private Map<String, MongoDatabase> dbs = new HashMap<>();
     private String incrementalTimestampFile;
 
     public void dump(String outputDirectory, String database) throws IOException {
@@ -33,7 +33,7 @@ public class IncrementalMongoDump extends AbstractMongoUtility {
         propagateException(future);
     }
 
-    public void addDB(DB db) {
+    public void addDB(MongoDatabase db) {
         dbs.put(db.getName(), db);
     }
 

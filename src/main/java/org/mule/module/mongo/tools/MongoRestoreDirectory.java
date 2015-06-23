@@ -19,8 +19,7 @@ import org.apache.commons.lang.Validate;
 import org.bson.Document;
 import org.mule.module.mongo.api.MongoClient;
 
-import com.mongodb.DBCollection;
-import com.mongodb.DBObject;
+import com.mongodb.client.MongoCollection;
 
 public class MongoRestoreDirectory implements Callable<Void> {
 
@@ -39,27 +38,26 @@ public class MongoRestoreDirectory implements Callable<Void> {
     private void restore() throws IOException {
         Validate.notNull(inputPath);
         List<RestoreFile> restoreFiles = getRestoreFiles(inputPath);
-        List<RestoreFile> oplogRestores = new ArrayList<RestoreFile>();
+        List<RestoreFile> oplogRestores = new ArrayList<>();
         for (RestoreFile restoreFile : restoreFiles) {
-            if (!isOplog(restoreFile.getCollection())) {
-                if (drop && !BackupUtils.isSystemCollection(restoreFile.getCollection())) {
-                    mongoClient.dropCollection(restoreFile.getCollection());
+            String collection = restoreFile.getCollection();
+            if (!isOplog(collection)) {
+                if (drop && !BackupUtils.isSystemCollection(collection)) {
+                    mongoClient.dropCollection(collection);
                 }
 
-                DBCollection dbCollection = mongoClient.getCollection(restoreFile.getCollection());
-                List<DBObject> dbObjects = restoreFile.getCollectionObjects();
+                MongoCollection<Document> dbCollection = mongoClient.getCollection(collection);
+                List<Document> dbObjects = restoreFile.getCollectionObjects();
 
-                if (BackupUtils.isUserCollection(restoreFile.getCollection())) {
-                    for (DBObject currentUser : dbCollection.find()) {
-                        if (!dbObjects.contains(currentUser)) {
-                            dbCollection.remove(currentUser);
+                if (BackupUtils.isUserCollection(collection)) {
+                    for (Document currentDocument : dbCollection.find()) {
+                        if (!dbObjects.contains(currentDocument)) {
+                            dbCollection.findOneAndDelete(currentDocument);
                         }
                     }
                 }
 
-                for (DBObject dbObject : dbObjects) {
-                    dbCollection.save(dbObject);
-                }
+                dbCollection.insertMany(dbObjects);
             } else {
                 oplogRestores.add(restoreFile);
             }
@@ -71,11 +69,11 @@ public class MongoRestoreDirectory implements Callable<Void> {
         }
     }
 
-    private List<DBObject> filterOplogForDatabase(RestoreFile oplogFile) throws IOException {
-        List<DBObject> oplogEntries = oplogFile.getCollectionObjects();
-        List<DBObject> dbOplogEntries = new ArrayList<DBObject>();
+    private List<Document> filterOplogForDatabase(RestoreFile oplogFile) throws IOException {
+        List<Document> oplogEntries = oplogFile.getCollectionObjects();
+        List<Document> dbOplogEntries = new ArrayList<>();
 
-        for (DBObject oplogEntry : oplogEntries) {
+        for (Document oplogEntry : oplogEntries) {
             if (((String) oplogEntry.get(BackupConstants.NAMESPACE_FIELD)).startsWith(database + ".")) {
                 dbOplogEntries.add(oplogEntry);
             }

@@ -39,7 +39,6 @@ import org.mule.api.annotations.param.Default;
 import org.mule.api.annotations.param.Optional;
 import org.mule.api.annotations.param.Payload;
 import org.mule.module.mongo.api.IndexOrder;
-import org.mule.module.mongo.api.MongoCollection;
 import org.mule.module.mongo.tools.BackupConstants;
 import org.mule.module.mongo.tools.IncrementalMongoDump;
 import org.mule.module.mongo.tools.MongoDump;
@@ -49,7 +48,8 @@ import org.mule.transformer.types.MimeTypes;
 import com.mongodb.BasicDBList;
 import com.mongodb.DBObject;
 import com.mongodb.MongoException;
-import com.mongodb.WriteResult;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoIterable;
 import com.mongodb.util.JSON;
 import com.mongodb.util.JSONSerializers;
 
@@ -91,7 +91,7 @@ public class MongoCloudConnector {
      */
     @Processor
     @ReconnectOn(exceptions = IllegalStateException.class)
-    public WriteResult addUser(final String newUsername, final String newPassword) {
+    public Document addUser(final String newUsername, final String newPassword) {
         return strategy.getClient().addUser(newUsername, newPassword);
     }
 
@@ -120,7 +120,7 @@ public class MongoCloudConnector {
      */
     @Processor
     @ReconnectOn(exceptions = IllegalStateException.class)
-    public Collection<String> listCollections() {
+    public MongoIterable<String> listCollections() {
         return strategy.getClient().listCollections();
     }
 
@@ -522,7 +522,7 @@ public class MongoCloudConnector {
      */
     @Processor
     @ReconnectOn(exceptions = IllegalStateException.class)
-    public Iterable<Document> findObjects(final String collection, final @Default("#[new org.bson.Document()]") Document query,
+    public Iterable<Document> findObjects(final String collection, @Default("#[new org.bson.Document()]") final Document query,
             @Placement(group = "Fields") @Optional final List<String> fields, @Optional final Integer numToSkip, @Optional final Integer limit, @Optional Document sortBy) {
         return strategy.getClient().findObjects(collection, query, fields, numToSkip, limit, sortBy);
     }
@@ -925,8 +925,8 @@ public class MongoCloudConnector {
         mongoDump.setZip(zip);
         if (oplog) {
             mongoDump.setOplog(oplog);
-            mongoDump.addDB(strategy.getMongo().getDB(BackupConstants.ADMIN_DB));
-            mongoDump.addDB(strategy.getMongo().getDB(BackupConstants.LOCAL_DB));
+            mongoDump.addDB(strategy.getClient().getDatabase(BackupConstants.ADMIN_DB));
+            mongoDump.addDB(strategy.getClient().getDatabase(BackupConstants.LOCAL_DB));
         }
         mongoDump.dump(outputDirectory, strategy.getDatabase(), outputName != null ? outputName : strategy.getDatabase(), threads);
     }
@@ -950,8 +950,8 @@ public class MongoCloudConnector {
     @ReconnectOn(exceptions = IllegalStateException.class)
     public void incrementalDump(@Default(DEFAULT_OUTPUT_DIRECTORY) final String outputDirectory, @Optional final String incrementalTimestampFile) throws IOException {
         final IncrementalMongoDump incrementalMongoDump = new IncrementalMongoDump();
-        incrementalMongoDump.addDB(strategy.getMongo().getDB(BackupConstants.ADMIN_DB));
-        incrementalMongoDump.addDB(strategy.getMongo().getDB(BackupConstants.LOCAL_DB));
+        incrementalMongoDump.addDB(strategy.getClient().getDatabase(BackupConstants.ADMIN_DB));
+        incrementalMongoDump.addDB(strategy.getClient().getDatabase(BackupConstants.LOCAL_DB));
         incrementalMongoDump.setIncrementalTimestampFile(incrementalTimestampFile);
         incrementalMongoDump.dump(outputDirectory, strategy.getDatabase());
     }
