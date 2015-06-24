@@ -320,7 +320,7 @@ public class MongoObjectStore implements PartitionableExpirableObjectStore<Seria
             final DBObject query = QueryBuilder.start(TIMESTAMP_FIELD).lessThan(expireAt).get();
             mongoClient.removeObjects(collection, query, getWriteConcern());
         } catch (Exception ex) {
-            throw new ObjectStoreException(ex.getCause());
+            throw new ObjectStoreException(ex);
         }
     }
 
