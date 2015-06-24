@@ -33,7 +33,6 @@ import org.mule.api.store.PartitionableExpirableObjectStore;
 import org.mule.module.mongo.api.IndexOrder;
 import org.mule.module.mongo.api.MongoClient;
 import org.mule.module.mongo.api.MongoClientImpl;
-import org.mule.module.mongo.api.WriteConcern;
 import org.mule.util.SerializationUtils;
 import org.springframework.util.DigestUtils;
 
@@ -79,11 +78,6 @@ public class MongoObjectStore implements PartitionableExpirableObjectStore<Seria
      * The password used to connect to the Mongo server
      */
     private String password;
-
-    /**
-     * The default concern to use to when writing to Mongo
-     */
-    private WriteConcern writeConcern;
 
     private MongoClient mongoClient;
 
@@ -293,14 +287,6 @@ public class MongoObjectStore implements PartitionableExpirableObjectStore<Seria
 
     public void setPassword(final String password) {
         this.password = password;
-    }
-
-    public WriteConcern getWriteConcern() {
-        return writeConcern;
-    }
-
-    public void setWriteConcern(final WriteConcern writeConcern) {
-        this.writeConcern = writeConcern;
     }
 
     // --------- Support Methods ---------

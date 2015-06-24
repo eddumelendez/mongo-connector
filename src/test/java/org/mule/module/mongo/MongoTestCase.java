@@ -46,6 +46,7 @@ public class MongoTestCase {
     private MongoDatabase dbMock;
     private GridFS gridFsMock;
 
+    @SuppressWarnings("unchecked")
     @Before
     public void setup() {
         mongo = mock(com.mongodb.MongoClient.class);
@@ -64,11 +65,11 @@ public class MongoTestCase {
     }
 
     /** Test {@link MongoClient#listCollections()} */
-    @SuppressWarnings("rawtypes")
+    @SuppressWarnings("unchecked")
     @Test
     public void listCollections() {
-         MongoIterable mongoIterable = mock(MongoIterable.class);
-         when(dbMock.listCollectionNames()).thenReturn(mongoIterable);
+        MongoIterable<String> mongoIterable = mock(MongoIterable.class);
+        when(dbMock.listCollectionNames()).thenReturn(mongoIterable);
         client.listCollections();
         verify(dbMock).listCollectionNames();
     }

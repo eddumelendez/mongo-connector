@@ -36,7 +36,6 @@ import org.mule.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.mongodb.DB;
 import com.mongodb.Mongo;
 import com.mongodb.MongoClientOptions;
 import com.mongodb.MongoCredential;
@@ -44,6 +43,7 @@ import com.mongodb.MongoSecurityException;
 import com.mongodb.MongoTimeoutException;
 import com.mongodb.MongoWaitQueueFullException;
 import com.mongodb.ServerAddress;
+import com.mongodb.client.MongoDatabase;
 
 @ConnectionManagement(friendlyName = "ConnectionManagement", configElementName = "config")
 public class ConnectionManagementStrategy {
@@ -147,10 +147,11 @@ public class ConnectionManagementStrategy {
             }
 
             this.client = new MongoClientImpl(mongo, database);
-            System.err.println("Databases: " + Lists.newArrayList(mongo.listDatabaseNames()));
-            DB db = mongo.getDB(database);
-            System.err.println("DB: " + db.getName());
-            db.getStats();
+            MongoDatabase db = mongo.getDatabase(database);
+            
+            // We perform a dummy, cheap operation to valid user has access to the DB
+            db.listCollectionNames();
+
         } catch (final IllegalArgumentException e) {
             throw new ConnectionException(ConnectionExceptionCode.CANNOT_REACH, e.getLocalizedMessage(), e.getMessage(), e.getCause());
         } catch (MongoSecurityException e) {
@@ -203,17 +204,6 @@ public class ConnectionManagementStrategy {
     @ConnectionIdentifier
     public String connectionId() {
         return mongo == null ? "n/a" : mongo.toString();
-    }
-
-    private DB getDatabase(final Mongo mongo, final String username, final String password, final String database) throws ConnectionException {
-        System.err.println(String.format("Entering getDatabase: %s, %s, %s", username, password, database));
-        logger.info("In getDatabase: {}, {}, {},{}", mongo, username, password, database);
-        final DB db = mongo.getDB(database);
-        if (StringUtils.isNotBlank(password)) {
-            Validate.notNull(username, "Username must not be null if password is set");
-        }
-        System.err.println("Exiting getDatabase");
-        return db;
     }
 
     protected MongoClient adaptClient(final MongoClient client) {

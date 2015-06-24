@@ -11,7 +11,6 @@ package org.mule.module.mongo;
 import static org.mule.module.mongo.api.DBObjects.adapt;
 import static org.mule.module.mongo.api.DBObjects.adaptToDbObject;
 import static org.mule.module.mongo.api.DBObjects.from;
-import static org.mule.module.mongo.api.DBObjects.fromCommand;
 import static org.mule.module.mongo.api.DBObjects.fromFunction;
 
 import java.io.ByteArrayInputStream;
@@ -45,6 +44,7 @@ import org.mule.module.mongo.tools.MongoDump;
 import org.mule.module.mongo.tools.MongoRestore;
 import org.mule.transformer.types.MimeTypes;
 
+import com.google.common.base.MoreObjects;
 import com.mongodb.BasicDBList;
 import com.mongodb.DBObject;
 import com.mongodb.MongoException;
@@ -893,7 +893,7 @@ public class MongoCloudConnector {
     @Processor
     @ReconnectOn(exceptions = IllegalStateException.class)
     public Document executeCommand(final String commandName, @Optional final String commandValue) {
-        final Document document = fromCommand(commandName, commandValue);
+        final Document document = new Document(commandName, MoreObjects.firstNonNull(commandValue, 1));
         return strategy.getClient().executeCommand(document);
     }
 

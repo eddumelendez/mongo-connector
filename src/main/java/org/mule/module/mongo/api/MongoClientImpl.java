@@ -48,10 +48,6 @@ public class MongoClientImpl implements MongoClient {
 
     private static final String ID_FIELD_NAME = "_id";
     
-    private static final String CREATE_USER_COMMAND = "{ \"createUser\" : \"%s\" , \"pwd\" : \"%s\" , \"roles\" : [ { \"role\" : [ \"readWrite\"] , \"db\" : \"%s\"}]}";
-
-    private static final Document PING_COMMAND = new Document("ping", 1);
-    
     private static final Function<GridFSDBFile, DBObject> DUMMY_CAST_FUNCTION = new Function<GridFSDBFile, DBObject>() {
 
         @Override
@@ -63,12 +59,12 @@ public class MongoClientImpl implements MongoClient {
     private final MongoDatabase database;
     private final com.mongodb.MongoClient mongo;
 
-    public MongoClientImpl(com.mongodb.MongoClient mongo, final String db) {
+    public MongoClientImpl(com.mongodb.MongoClient mongo, final String database) {
         logger.info("Initializing MongoClientImpl");
         Validate.notNull(mongo, "Mongo instance cannot be null");
-        Validate.notNull(db, "Database cannot be null");
+        Validate.notNull(database, "Database cannot be null");
         this.mongo = mongo;
-        database = mongo.getDatabase(db);
+        this.database = mongo.getDatabase(database);
     }
 
     @Override
