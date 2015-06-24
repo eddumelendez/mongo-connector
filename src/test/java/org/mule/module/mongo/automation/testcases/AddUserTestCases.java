@@ -8,7 +8,11 @@
 
 package org.mule.module.mongo.automation.testcases;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import org.bson.Document;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -19,7 +23,6 @@ public class AddUserTestCases extends AbstractMongoTest {
 
     @Before
     public void setUp() {
-
     }
 
     @Category({ RegressionTests.class })
@@ -27,7 +30,12 @@ public class AddUserTestCases extends AbstractMongoTest {
     public void testAddUser() {
         Document result = getConnector().addUser("newUsername", "newPassword");
 
-//        assertTrue(result.wasAcknowledged());
-//        assertNotNull(result.getN());
+        assertNotNull(result);
+        assertEquals(result.get("ok"), 1.0);
+    }
+
+    @After
+    public void tearDown() {
+        getConnector().executeCommand("dropUser", "newUsername");
     }
 }

@@ -47,7 +47,7 @@ public class MongoClientImpl implements MongoClient {
     private static final Logger logger = LoggerFactory.getLogger(MongoClientImpl.class);
 
     private static final String ID_FIELD_NAME = "_id";
-    
+
     private static final Function<GridFSDBFile, DBObject> DUMMY_CAST_FUNCTION = new Function<GridFSDBFile, DBObject>() {
 
         @Override
@@ -55,7 +55,7 @@ public class MongoClientImpl implements MongoClient {
             return input;
         }
     };
- 
+
     private final MongoDatabase database;
     private final com.mongodb.MongoClient mongo;
 
@@ -77,7 +77,7 @@ public class MongoClientImpl implements MongoClient {
     public MongoDatabase getDatabase(String databaseName) {
         return mongo.getDatabase(databaseName);
     }
-    
+
     @Override
     public long countObjects(@NotNull final String collection, final Bson query) {
         Validate.notNull(collection);
@@ -109,24 +109,16 @@ public class MongoClientImpl implements MongoClient {
     }
 
     @Override
-    public Document addUser(final String username, final String password)
-    {
+    public Document addUser(final String username, final String password) {
         Validate.notNull(username);
         Validate.notNull(password);
-        // if (!writeResult.getLastError().ok())
-        // {
-        // throw new MongoException(writeResult.getLastError().getErrorMessage());
-        // }
+
         Document commandArguments = new Document();
-        commandArguments.put("user", username);
+        commandArguments.put("createUser", username);
         commandArguments.put("pwd", password);
-        commandArguments.put("roles", ImmutableList.of( "readWrite" ));
-        Document command = new Document("createUser", commandArguments);
-        Document commandResult = database.runCommand(command);
-//        if (!commandResult.ok())
-//        {
-//            throw new MongoException(commandResult.getErrorMessage());
-//        }
+        commandArguments.put("roles", ImmutableList.of("readWrite"));
+        Document commandResult = database.runCommand(commandArguments);
+
         return commandResult;
     }
 
