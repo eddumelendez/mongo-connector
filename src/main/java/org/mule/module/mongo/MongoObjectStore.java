@@ -27,9 +27,12 @@ import org.mule.api.annotations.Configurable;
 import org.mule.api.annotations.param.Default;
 import org.mule.api.annotations.param.Optional;
 import org.mule.api.context.MuleContextAware;
+import org.mule.api.store.ObjectAlreadyExistsException;
 import org.mule.api.store.ObjectDoesNotExistException;
 import org.mule.api.store.ObjectStoreException;
+import org.mule.api.store.ObjectStoreNotAvaliableException;
 import org.mule.api.store.PartitionableExpirableObjectStore;
+import org.mule.config.i18n.MessageFactory;
 import org.mule.module.mongo.api.IndexOrder;
 import org.mule.module.mongo.api.MongoClient;
 import org.mule.module.mongo.api.MongoClientImpl;
@@ -178,39 +181,58 @@ public class MongoObjectStore implements PartitionableExpirableObjectStore<Seria
 
     @Override
     public boolean contains(final Serializable key, final String partitionName) throws ObjectStoreException {
-        final ObjectId objectId = getObjectIdFromKey(key);
-        final DBObject query = getQueryForObjectId(objectId);
-        final String collection = getCollectionName(partitionName);
-        return mongoClient.findObjects(collection, query, NO_FIELD_LIST, null, null, null).iterator().hasNext();
+        if (key == null) {
+            throw new ObjectStoreException(MessageFactory.createStaticMessage("The key is null"));
+        }
+
+        try {
+            final ObjectId objectId = getObjectIdFromKey(key);
+            final DBObject query = getQueryForObjectId(objectId);
+            final String collection = getCollectionName(partitionName);
+            return mongoClient.findObjects(collection, query, NO_FIELD_LIST, null, null, null).iterator().hasNext();
+        } catch (Exception ex) {
+            throw new ObjectStoreNotAvaliableException(MessageFactory.createStaticMessage(ex.getMessage()), ex);
+        }
     }
 
     @Override
     public List<Serializable> allKeys(final String partitionName) throws ObjectStoreException {
-        final String collection = getCollectionName(partitionName);
-        final Iterable<DBObject> keyObjects = mongoClient.findObjects(collection, new BasicDBObject(), Arrays.asList(KEY_FIELD), null, null, null);
+        try {
+            final String collection = getCollectionName(partitionName);
+            final Iterable<DBObject> keyObjects = mongoClient.findObjects(collection, new BasicDBObject(), Arrays.asList(KEY_FIELD), null, null, null);
 
-        final List<Serializable> results = new ArrayList<Serializable>();
-        for (final DBObject keyObject : keyObjects) {
-            results.add((Serializable) org.apache.commons.lang.SerializationUtils.deserialize((byte[]) keyObject.get(KEY_FIELD)));
+            final List<Serializable> results = new ArrayList<Serializable>();
+            for (final DBObject keyObject : keyObjects) {
+                results.add((Serializable) SerializationUtils.deserialize((byte[]) keyObject.get(KEY_FIELD)));
+            }
+            return results;
+        } catch (Exception ex) {
+            throw new ObjectStoreNotAvaliableException(MessageFactory.createStaticMessage(ex.getMessage()), ex);
         }
-        return results;
     }
 
     @Override
     public List<String> allPartitions() throws ObjectStoreException {
-        final List<String> results = new ArrayList<String>();
+        try {
+            final List<String> results = new ArrayList<String>();
 
-        for (final String collection : mongoClient.listCollections()) {
-            if (isPartition(collection)) {
-                results.add(getPartitionName(collection));
+            for (final String collection : mongoClient.listCollections()) {
+                if (isPartition(collection)) {
+                    results.add(getPartitionName(collection));
+                }
             }
+            return results;
+        } catch (Exception ex) {
+            throw new ObjectStoreNotAvaliableException(MessageFactory.createStaticMessage(ex.getMessage()), ex);
         }
-
-        return results;
     }
 
     @Override
     public void store(final Serializable key, final Serializable value, final String partitionName) throws ObjectStoreException {
+        if (key == null) {
+            throw new ObjectStoreException(MessageFactory.createStaticMessage("The key to the ObjectStore cannot be null"));
+        }
+
         final String collection = getCollectionName(partitionName);
         if (!mongoClient.existsCollection(collection)) {
             mongoClient.createCollection(collection, false, null, null);
@@ -220,27 +242,50 @@ public class MongoObjectStore implements PartitionableExpirableObjectStore<Seria
         final byte[] keyAsBytes = org.apache.commons.lang.SerializationUtils.serialize(key);
         final ObjectId objectId = getObjectIdFromKey(keyAsBytes);
         final DBObject query = getQueryForObjectId(objectId);
-        final DBObject dbObject = new BasicDBObject();
-        dbObject.put(ID_FIELD, objectId);
-        dbObject.put(TIMESTAMP_FIELD, System.currentTimeMillis());
-        dbObject.put(KEY_FIELD, keyAsBytes);
-        dbObject.put(VALUE_FIELD, org.apache.commons.lang.SerializationUtils.serialize(value));
-        mongoClient.updateObjects(collection, query, dbObject, true, false, getWriteConcern());
+        if (mongoClient.findObjects(collection, query, null, null, null, null).iterator().hasNext()) {
+            throw new ObjectAlreadyExistsException(MessageFactory.createStaticMessage("Duplicated key %s", key));
+        }
+
+        try {
+            final DBObject dbObject = new BasicDBObject();
+            dbObject.put(ID_FIELD, objectId);
+            dbObject.put(TIMESTAMP_FIELD, System.currentTimeMillis());
+            dbObject.put(KEY_FIELD, keyAsBytes);
+            dbObject.put(VALUE_FIELD, org.apache.commons.lang.SerializationUtils.serialize(value));
+            mongoClient.updateObjects(collection, query, dbObject, true, false, getWriteConcern());
+        } catch (Exception ex) {
+            throw new ObjectStoreNotAvaliableException(MessageFactory.createStaticMessage(ex.getMessage()), ex);
+        }
     }
 
     @Override
     public Serializable retrieve(final Serializable key, final String partitionName) throws ObjectStoreException {
+        if (key == null) {
+            throw new ObjectStoreException(MessageFactory.createStaticMessage("The key to the ObjectStore cannot be null"));
+        }
+
         final String collection = getCollectionName(partitionName);
         final ObjectId objectId = getObjectIdFromKey(key);
         final DBObject query = getQueryForObjectId(objectId);
+        if (!mongoClient.findObjects(collection, query, null, null, null, null).iterator().hasNext()) {
+            throw new ObjectDoesNotExistException(MessageFactory.createStaticMessage("Couldn't find key '%s' in the ObjectStore", key));
+        }
+
         return retrieveSerializedObject(collection, query);
     }
 
     @Override
     public Serializable remove(final Serializable key, final String partitionName) throws ObjectStoreException {
+        if (key == null) {
+            throw new ObjectStoreException(MessageFactory.createStaticMessage("The key to the ObjectStore cannot be null"));
+        }
+
         final String collection = getCollectionName(partitionName);
         final ObjectId objectId = getObjectIdFromKey(key);
         final DBObject query = getQueryForObjectId(objectId);
+        if (!mongoClient.findObjects(collection, query, null, null, null, null).iterator().hasNext()) {
+            throw new ObjectDoesNotExistException(MessageFactory.createStaticMessage("Couldn't find key '%s' in the ObjectStore", key));
+        }
 
         final Serializable result = retrieveSerializedObject(collection, query);
         mongoClient.removeObjects(collection, query, getWriteConcern());
@@ -249,8 +294,12 @@ public class MongoObjectStore implements PartitionableExpirableObjectStore<Seria
 
     @Override
     public void disposePartition(final String partitionName) throws ObjectStoreException {
-        final String collection = getCollectionName(partitionName);
-        mongoClient.dropCollection(collection);
+        try {
+            final String collection = getCollectionName(partitionName);
+            mongoClient.dropCollection(collection);
+        } catch (Exception ex) {
+            throw new ObjectStoreException(ex);
+        }
     }
 
     @Override
@@ -265,10 +314,14 @@ public class MongoObjectStore implements PartitionableExpirableObjectStore<Seria
 
     @Override
     public void expire(final int entryTtl, final int ignoredMaxEntries, final String partitionName) throws ObjectStoreException {
-        final String collection = getCollectionName(partitionName);
-        final long expireAt = System.currentTimeMillis() - entryTtl;
-        final DBObject query = QueryBuilder.start(TIMESTAMP_FIELD).lessThan(expireAt).get();
-        mongoClient.removeObjects(collection, query, getWriteConcern());
+        try {
+            final String collection = getCollectionName(partitionName);
+            final long expireAt = System.currentTimeMillis() - entryTtl;
+            final DBObject query = QueryBuilder.start(TIMESTAMP_FIELD).lessThan(expireAt).get();
+            mongoClient.removeObjects(collection, query, getWriteConcern());
+        } catch (Exception ex) {
+            throw new ObjectStoreException(ex);
+        }
     }
 
     // --------- Java Accessor Festival ---------
