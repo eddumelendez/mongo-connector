@@ -125,8 +125,9 @@ public class MongoTestCase {
     @Test
     public void removeObjects() throws Exception {
         when(dbMock.getWriteConcern()).thenReturn(com.mongodb.WriteConcern.FSYNC_SAFE);
-        client.removeObjects(A_COLLECTION, null);
-        verify(collectionMock).deleteMany(refEq(new Document()));
+        Document query = new Document();
+        client.removeObjects(A_COLLECTION, query);
+        verify(collectionMock).deleteMany(query);
     }
 
     /** Test {@link MongoClient#countObjects(String, org.bson.Document)} */
@@ -152,7 +153,7 @@ public class MongoTestCase {
         Document query = new Document();
         Document document = new Document();
         client.updateObjects(A_COLLECTION, query, document, false);
-        verify(collectionMock).updateOne(query, document);
+        verify(collectionMock).findOneAndReplace(query, document);
     }
 
     /**

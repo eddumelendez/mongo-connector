@@ -124,8 +124,7 @@ public class MongoClientImpl implements MongoClient {
         Document commandArguments = new Document();
         commandArguments.put("user", username);
         commandArguments.put("pwd", password);
-        List<String> roles = ImmutableList.of( "readWrite" );
-        commandArguments.put("roles", roles);
+        commandArguments.put("roles", ImmutableList.of( "readWrite" ));
         Document command = new Document("createUser", commandArguments);
         Document commandResult = database.runCommand(command);
 //        if (!commandResult.ok())
