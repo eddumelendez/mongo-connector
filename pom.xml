@@ -63,13 +63,6 @@
 		    <version>${connector.testing.version}</version>
 		    <scope>test</scope>
 		</dependency>
-		<!-- Connector Testing Framework required project -->
-         <dependency>
-            <groupId>org.mule.tools.devkit</groupId>
-            <artifactId>connector-testing-framework-serializers</artifactId>
-            <version>${connector.testing.version}</version>
-            <scope>test</scope>
-        </dependency>
 	</dependencies>
 
 	<repositories>
