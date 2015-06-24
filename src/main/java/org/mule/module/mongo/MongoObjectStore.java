@@ -268,7 +268,7 @@ public class MongoObjectStore implements PartitionableExpirableObjectStore<Seria
         final ObjectId objectId = getObjectIdFromKey(key);
         final DBObject query = getQueryForObjectId(objectId);
         if (!mongoClient.findObjects(collection, query, null, null, null, null).iterator().hasNext()) {
-            throw new ObjectDoesNotExistException();
+            throw new ObjectDoesNotExistException(MessageFactory.createStaticMessage("Couldn't find key '%s' in the ObjectStore", key));
         }
 
         return retrieveSerializedObject(collection, query);
@@ -298,7 +298,7 @@ public class MongoObjectStore implements PartitionableExpirableObjectStore<Seria
             final String collection = getCollectionName(partitionName);
             mongoClient.dropCollection(collection);
         } catch (Exception ex) {
-            throw new ObjectStoreException(ex.getCause());
+            throw new ObjectStoreException(ex);
         }
     }
 

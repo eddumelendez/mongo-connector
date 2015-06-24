@@ -70,12 +70,11 @@ public class MongoObjectStoreTestCase extends FunctionalTestCase {
         assertFalse(objectStore.allKeys().contains(testKey));
     }
 
-    @Test(expected = ObjectStoreException.class)
+    @Test(expected = ObjectDoesNotExistException.class)
     public void invalidRetrieve() throws ObjectStoreException {
         final String testKey = RandomStringUtils.randomAlphanumeric(20);
 
         objectStore.retrieve(testKey);
-        fail("should have got an ObjectDoesNotExistException");
     }
 
     @Test
