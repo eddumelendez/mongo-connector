@@ -12,6 +12,7 @@ import org.junit.experimental.categories.Categories;
 import org.junit.experimental.categories.Categories.IncludeCategory;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite.SuiteClasses;
+import org.mule.module.mongo.MongoObjectStoreTestCases;
 import org.mule.module.mongo.api.DBObjectsUnitTest;
 import org.mule.module.mongo.api.FieldsSetUnitTest;
 import org.mule.module.mongo.api.MongoCollectionUnitTest;
@@ -95,6 +96,7 @@ import org.mule.module.mongo.automation.testcases.UpdateObjectsUsingQueryMapTest
         ListFilesUsingQueryMapTestCases.class,
         ListIndicesTestCases.class,
         MapReduceObjectsTestCases.class,
+        MongoObjectStoreTestCases.class,
         MongoCollectionUnitTest.class,
         PoolingTestCases.class,
         RemoveFilesTestCases.class,

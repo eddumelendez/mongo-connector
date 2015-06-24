@@ -24,7 +24,7 @@ import org.mule.api.store.ObjectStoreException;
 import org.mule.api.store.PartitionableExpirableObjectStore;
 import org.mule.tck.junit4.FunctionalTestCase;
 
-public class MongoObjectStoreTestCase extends FunctionalTestCase {
+public class MongoObjectStoreTestCases extends FunctionalTestCase {
 
     private PartitionableExpirableObjectStore<Serializable> objectStore;
 
