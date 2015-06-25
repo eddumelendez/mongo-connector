@@ -58,7 +58,6 @@ public class SaveObjectTestCases extends AbstractMongoTest {
     @After
     public void tearDown() {
         getConnector().dropCollection("Arenas");
-
     }
 
 }

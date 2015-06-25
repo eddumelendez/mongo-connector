@@ -15,6 +15,7 @@ import org.junit.experimental.categories.Categories.IncludeCategory;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite.SuiteClasses;
 import org.mule.module.mongo.MongoCloudConnector;
+import org.mule.module.mongo.MongoObjectStoreTestCases;
 import org.mule.module.mongo.api.DBObjectsUnitTest;
 import org.mule.module.mongo.api.FieldsSetUnitTest;
 import org.mule.module.mongo.automation.RegressionTests;
@@ -98,6 +99,7 @@ import org.mule.tools.devkit.ctf.mockup.ConnectorTestContext;
         ListFilesUsingQueryMapTestCases.class,
         ListIndexesTestCases.class,
         MapReduceObjectsTestCases.class,
+        MongoObjectStoreTestCases.class,
         PoolingTestCases.class,
         RemoveFilesTestCases.class,
         RemoveFilesUsingQueryMapTestCases.class,

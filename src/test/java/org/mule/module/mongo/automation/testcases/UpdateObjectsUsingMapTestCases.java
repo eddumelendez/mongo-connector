@@ -75,5 +75,4 @@ public class UpdateObjectsUsingMapTestCases extends AbstractMongoTest {
         getConnector().dropCollection("Arenas");
 
     }
-
 }

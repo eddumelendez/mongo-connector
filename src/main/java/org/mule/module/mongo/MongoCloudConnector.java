@@ -211,7 +211,7 @@ public class MongoCloudConnector {
      *            the name of the collection where to insert the given object
      * @param elementAttributes
      *            alternative way of specifying the element as a literal Map inside a Mule Flow
-     * @return the id that was just insterted
+     * @return the id that was just inserted
      */
     @Processor
     @ReconnectOn(exceptions = IllegalStateException.class)
@@ -578,7 +578,6 @@ public class MongoCloudConnector {
     public Document findOneObject(final String collection, @Default("#[payload]") final Document query, @Placement(group = "Fields") @Optional final List<String> fields,
             @Default("true") Boolean failOnNotFound) {
         return strategy.getClient().findOneObject(collection, query, fields, failOnNotFound);
-
     }
 
     /**
@@ -738,7 +737,6 @@ public class MongoCloudConnector {
 
     /**
      * Answers the first file that matches the given query. If no object matches it, a MongoException is thrown.
-     * <p/>
      *
      * <pre>
      * {@sample.xml ../../../doc/mongo-connector.xml.sample mongo:find-one-file}
@@ -756,7 +754,6 @@ public class MongoCloudConnector {
 
     /**
      * Answers the first file that matches the given query. If no object matches it, a MongoException is thrown.
-     * <p/>
      *
      * <pre>
      * {@sample.xml ../../../doc/mongo-connector.xml.sample mongo:find-one-file-using-query-map}
@@ -774,7 +771,6 @@ public class MongoCloudConnector {
 
     /**
      * Answers an inputstream to the contents of the first file that matches the given query. If no object matches it, a MongoException is thrown.
-     * <p/>
      *
      * <pre>
      * {@sample.xml ../../../doc/mongo-connector.xml.sample mongo:get-file-content}
@@ -809,7 +805,6 @@ public class MongoCloudConnector {
 
     /**
      * Lists all the files that match the given query, sorting them by filename. If no query is specified, all files are listed.
-     * <p/>
      *
      * <pre>
      * {@sample.xml ../../../doc/mongo-connector.xml.sample mongo:list-files}
@@ -827,7 +822,6 @@ public class MongoCloudConnector {
 
     /**
      * Lists all the files that match the given query, sorting them by filename. If no query is specified, all files are listed.
-     * <p/>
      *
      * <pre>
      * {@sample.xml ../../../doc/mongo-connector.xml.sample mongo:list-files-using-query-map}
@@ -985,7 +979,6 @@ public class MongoCloudConnector {
 
     /**
      * Convert JSON to Document.
-     * <p/>
      *
      * <pre>
      * {@sample.xml ../../../doc/mongo-connector.xml.sample mongo:jsonToDocument}

@@ -93,6 +93,7 @@ import org.mule.module.mongo.automation.testcases.UpdateObjectsUsingQueryMapTest
         ListFilesUsingQueryMapTestCases.class,
         ListIndexesTestCases.class,
         MapReduceObjectsTestCases.class,
+        MapReduceObjectsTestCases.class,
         RemoveFilesTestCases.class,
         RemoveFilesUsingQueryMapTestCases.class,
         RemoveObjectsTestCases.class,

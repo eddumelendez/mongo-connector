@@ -40,7 +40,6 @@ public class BsonDumpWriter extends DumpWriter {
 
     @Override
     public void writeObject(String collection, Document document) throws IOException {
-        ;
         File outputFile = new File(getFilePath(collection));
         if (!outputFile.getParentFile().mkdirs()) {
             logger.info("Couldn't create dir: " + outputFile.getParentFile());

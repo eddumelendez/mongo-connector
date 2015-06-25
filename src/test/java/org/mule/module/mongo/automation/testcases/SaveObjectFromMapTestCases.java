@@ -28,7 +28,6 @@ public class SaveObjectFromMapTestCases extends AbstractMongoTest {
     public void setUp() {
         // initializeTestRunMessage("saveObjectFromMap");
         getConnector().createCollection("Arenas", false, 5, 5);
-
     }
 
     @After
@@ -65,6 +64,5 @@ public class SaveObjectFromMapTestCases extends AbstractMongoTest {
         assertTrue(object.containsKey(key));
         assertFalse(object.get(key).equals(value));
         assertTrue(object.get(key).equals(differentValue));
-
     }
 }

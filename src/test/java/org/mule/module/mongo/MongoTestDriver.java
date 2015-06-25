@@ -211,7 +211,6 @@ public class MongoTestDriver {
     @SuppressWarnings("serial")
     public void mapReduce(String outputCollection) throws Exception {
         insertInTestDb(new Document() {
-
             {
                 put("city", "City1");
                 put("candidate", "John");
