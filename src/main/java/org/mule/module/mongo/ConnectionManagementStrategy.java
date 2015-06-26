@@ -8,6 +8,7 @@
 
 package org.mule.module.mongo;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import jersey.repackaged.com.google.common.base.Function;
@@ -47,6 +48,19 @@ import com.mongodb.ServerAddress;
 public class ConnectionManagementStrategy {
 
     private static final Logger logger = LoggerFactory.getLogger(ConnectionManagementStrategy.class);
+
+    protected static List<ServerAddress> getAddresses(final String commaSeparatedHosts, final int port) {
+        ArrayList<String> list = Lists.newArrayList(commaSeparatedHosts.split(",\\s?"));
+        final List<ServerAddress> addresses = Lists.transform(list, new Function<String, ServerAddress>() {
+
+            @Override
+            public ServerAddress apply(String input) {
+                return new ServerAddress(input, port);
+            }
+        });
+
+        return addresses;
+    }
 
     /**
      * The host of the Mongo server, it can also be a list of comma separated hosts for replicas
@@ -122,14 +136,8 @@ public class ConnectionManagementStrategy {
     @TestConnectivity
     public void connect(@ConnectionKey final String username, @Optional @Password final String password, @ConnectionKey final String database) throws ConnectionException {
         try {
-            final List<ServerAddress> addresses = Lists.transform(Lists.newArrayList(host.split(",\\s?")), new Function<String, ServerAddress>() {
 
-                @Override
-                public ServerAddress apply(String input) {
-                    return new ServerAddress(input, getPort());
-                }
-            });
-
+            final List<ServerAddress> addresses = getAddresses(host, port);
             MongoClientOptions mongoOptions = getMongoOptions(database);
             com.mongodb.MongoClient mongo;
             if (StringUtils.isNotBlank(password)) {
@@ -146,7 +154,7 @@ public class ConnectionManagementStrategy {
             client = new MongoClientImpl(mongo, database);
 
             // We perform a dummy, cheap operation to valid user has access to the DB
-            if (! client.isAlive())
+            if (!client.isAlive())
                 throw new ConnectionException(ConnectionExceptionCode.UNKNOWN, "N/A", "Could not connect to MongoDB");
 
         } catch (final IllegalArgumentException e) {
