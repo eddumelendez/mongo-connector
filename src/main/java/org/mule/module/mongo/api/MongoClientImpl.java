@@ -113,11 +113,11 @@ public class MongoClientImpl implements MongoClient {
         Validate.notNull(username);
         Validate.notNull(password);
 
-        Document commandArguments = new Document();
-        commandArguments.put("createUser", username);
-        commandArguments.put("pwd", password);
-        commandArguments.put("roles", ImmutableList.of("readWrite"));
-        Document commandResult = database.runCommand(commandArguments);
+        Document command = new Document();
+        command.put("createUser", username);
+        command.put("pwd", password);
+        command.put("roles", ImmutableList.of("readWrite"));
+        Document commandResult = database.runCommand(command);
 
         return commandResult;
     }
@@ -136,7 +136,7 @@ public class MongoClientImpl implements MongoClient {
     @Override
     public boolean existsCollection(@NotNull final String collection) {
         Validate.notNull(collection);
-        return Iterables.find(database.listCollectionNames(), Predicates.equalTo(collection), null) != null;
+        return Iterables.tryFind(database.listCollectionNames(), Predicates.equalTo(collection)).isPresent();
     }
 
     @Override

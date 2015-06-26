@@ -39,24 +39,28 @@ public final class DBObjects {
         return new Document(map);
     }
 
+    /**
+     * Inspect a {@link Document} produced as a result of a command execution and say if it was successful or not
+     * 
+     * @param document
+     *            the result of a command execution
+     * @return whether the document contains {ok: 1.0} (meaning it was successful) or not.
+     */
     public static boolean isCommandResultOk(Document document) {
         return document.containsKey(OK_KEY) && document.getDouble(OK_KEY) == 1.0d;
     }
-    
+
     @SuppressWarnings("unchecked")
     public static Document from(Object o) {
         if (o == null) {
             return null;
-        }
-        if (o instanceof Document) {
+        } else if (o instanceof Document) {
             return (Document) o;
-        }
-        if (o instanceof Map<?, ?>) {
+        } else if (o instanceof Map<?, ?>) {
             return fromMap((Map<String, Object>) o);
         }
         throw new IllegalArgumentException("Unsupported object type " + o);
     }
-
 
     public static Document fromFunction(String function, Document document) {
         return new Document(function, document);
