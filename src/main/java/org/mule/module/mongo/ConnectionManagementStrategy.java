@@ -101,8 +101,6 @@ public class ConnectionManagementStrategy {
 
     private String database;
 
-    private com.mongodb.MongoClient mongo;
-
     private MongoClient client;
 
     public MongoClient getClient() {
@@ -133,6 +131,7 @@ public class ConnectionManagementStrategy {
             });
 
             MongoClientOptions mongoOptions = getMongoOptions(database);
+            com.mongodb.MongoClient mongo;
             if (StringUtils.isNotBlank(password)) {
                 Validate.notNull(username, "Username must not be null if password is set");
                 logger.info("Connecting to MongoDB, authenticating as user '{}'", username);
@@ -196,12 +195,12 @@ public class ConnectionManagementStrategy {
 
     @ValidateConnection
     public boolean isConnected() {
-        return client != null && client.isAlive(); // && mongo.getConnector().isOpen();
+        return client != null && client.isAlive();
     }
 
     @ConnectionIdentifier
     public String connectionId() {
-        return mongo == null ? "n/a" : mongo.toString();
+        return client.getConnectionId();
     }
 
     protected MongoClient adaptClient(final MongoClient client) {

@@ -79,4 +79,6 @@ public interface MongoClient extends Closeable {
 
     boolean isAlive();
 
+    String getConnectionId();
+
 }

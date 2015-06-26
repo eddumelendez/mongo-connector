@@ -323,4 +323,9 @@ public class MongoClientImpl implements MongoClient {
         return DBObjects.isCommandResultOk(executeCommand);
     }
 
+    @Override
+    public String getConnectionId() {
+        return mongo == null ? "n/a" : mongo.toString();
+    }
+
 }
