@@ -12,6 +12,7 @@ import java.util.Iterator;
 import java.util.concurrent.Callable;
 
 import org.bson.Document;
+import org.mule.module.mongo.api.IndexOrder;
 
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
@@ -22,6 +23,7 @@ public class MongoDumpCollection implements Callable<Void> {
     private DumpWriter dumpWriter;
     private Document query;
     private String name;
+    private boolean oplogReplay;
 
     public MongoDumpCollection(final MongoCollection<Document> collection) {
         this.collection = collection;
@@ -30,8 +32,8 @@ public class MongoDumpCollection implements Callable<Void> {
     @Override
     public Void call() throws Exception {
         final FindIterable<Document> cursor = query != null ? collection.find(query) : collection.find();
-        cursor.sort(new Document("_id", 1));
-        cursor.oplogReplay(true);
+        cursor.sort(new Document("_id", IndexOrder.ASC.getValue()));
+        cursor.oplogReplay(oplogReplay);
         Iterator<Document> iterator = cursor.iterator();
         while (iterator.hasNext()) {
             final Document document = iterator.next();
@@ -50,6 +52,10 @@ public class MongoDumpCollection implements Callable<Void> {
 
     public void setName(final String name) {
         this.name = name;
+    }
+
+    public void setOplogReplay(boolean oplogReplay) {
+        this.oplogReplay = oplogReplay;
     }
 
 }

@@ -81,6 +81,7 @@ public class MongoDump extends AbstractMongoUtility {
                     final ExecutorService singleExecutor = Executors.newSingleThreadExecutor();
                     final MongoDumpCollection dumpCollection = new MongoDumpCollection(oplogCollection);
                     dumpCollection.setName(BackupConstants.OPLOG);
+                    dumpCollection.setOplogReplay(true);
                     final Document query = new Document();
                     query.put(BackupConstants.TIMESTAMP_FIELD, new BasicDBObject("$gt", oplogStart));
                     // Filter only oplogs for given database
