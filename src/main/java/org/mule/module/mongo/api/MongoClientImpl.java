@@ -317,4 +317,10 @@ public class MongoClientImpl implements MongoClient {
         return database;
     }
 
+    @Override
+    public boolean isAlive() {
+        Document executeCommand = executeCommand(new Document("ping", 1));
+        return DBObjects.isCommandResultOk(executeCommand);
+    }
+
 }

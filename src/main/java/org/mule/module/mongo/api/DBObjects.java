@@ -27,6 +27,8 @@ public final class DBObjects {
 
     private static final Pattern OBJECT_ID_PATTERN = Pattern.compile("ObjectId\\((.+)\\)");
 
+    private static final String OK_KEY = "ok";
+
     private DBObjects() {
     }
 
@@ -37,6 +39,10 @@ public final class DBObjects {
         return new Document(map);
     }
 
+    public static boolean isCommandResultOk(Document document) {
+        return document.containsKey(OK_KEY) && document.getDouble(OK_KEY) == 1.0d;
+    }
+    
     @SuppressWarnings("unchecked")
     public static Document from(Object o) {
         if (o == null) {

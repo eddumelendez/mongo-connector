@@ -36,14 +36,12 @@ import org.mule.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.mongodb.Mongo;
 import com.mongodb.MongoClientOptions;
 import com.mongodb.MongoCredential;
 import com.mongodb.MongoSecurityException;
 import com.mongodb.MongoTimeoutException;
 import com.mongodb.MongoWaitQueueFullException;
 import com.mongodb.ServerAddress;
-import com.mongodb.client.MongoDatabase;
 
 @ConnectionManagement(friendlyName = "ConnectionManagement", configElementName = "config")
 public class ConnectionManagementStrategy {
@@ -146,11 +144,11 @@ public class ConnectionManagementStrategy {
                 mongo = new com.mongodb.MongoClient(addresses, mongoOptions);
             }
 
-            this.client = new MongoClientImpl(mongo, database);
-            MongoDatabase db = mongo.getDatabase(database);
-            
+            client = new MongoClientImpl(mongo, database);
+
             // We perform a dummy, cheap operation to valid user has access to the DB
-            db.listCollectionNames();
+            if (! client.isAlive())
+                throw new ConnectionException(ConnectionExceptionCode.UNKNOWN, "N/A", "Could not connect to MongoDB");
 
         } catch (final IllegalArgumentException e) {
             throw new ConnectionException(ConnectionExceptionCode.CANNOT_REACH, e.getLocalizedMessage(), e.getMessage(), e.getCause());
@@ -193,12 +191,12 @@ public class ConnectionManagementStrategy {
     @Disconnect
     public void disconnect() {
         IOUtils.closeQuietly(client);
-        IOUtils.closeQuietly(mongo);
+        client = null;
     }
 
     @ValidateConnection
     public boolean isConnected() {
-        return this.client != null && this.mongo != null; // && mongo.getConnector().isOpen();
+        return client != null && client.isAlive(); // && mongo.getConnector().isOpen();
     }
 
     @ConnectionIdentifier
@@ -208,10 +206,6 @@ public class ConnectionManagementStrategy {
 
     protected MongoClient adaptClient(final MongoClient client) {
         return MongoClientAdaptor.adapt(client);
-    }
-
-    public Mongo getMongo() {
-        return mongo;
     }
 
     public String getHost() {

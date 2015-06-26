@@ -77,4 +77,6 @@ public interface MongoClient extends Closeable {
 
     MongoDatabase getDatabase(String databaseName);
 
+    boolean isAlive();
+
 }
