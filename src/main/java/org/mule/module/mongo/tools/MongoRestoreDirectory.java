@@ -8,6 +8,8 @@
 
 package org.mule.module.mongo.tools;
 
+import static com.mongodb.client.model.Filters.eq;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -17,11 +19,15 @@ import java.util.concurrent.Callable;
 
 import org.apache.commons.lang.Validate;
 import org.bson.Document;
+import org.bson.conversions.Bson;
 import org.mule.module.mongo.api.MongoClient;
 
 import com.mongodb.client.MongoCollection;
+import com.mongodb.client.model.UpdateOptions;
 
 public class MongoRestoreDirectory implements Callable<Void> {
+
+    private static final UpdateOptions UPDATE_OPTIONS = new UpdateOptions().upsert(true);
 
     private MongoClient mongoClient;
     private boolean drop;
@@ -40,24 +46,31 @@ public class MongoRestoreDirectory implements Callable<Void> {
         List<RestoreFile> restoreFiles = getRestoreFiles(inputPath);
         List<RestoreFile> oplogRestores = new ArrayList<>();
         for (RestoreFile restoreFile : restoreFiles) {
-            String collection = restoreFile.getCollection();
-            if (!isOplog(collection)) {
-                if (drop && !BackupUtils.isSystemCollection(collection)) {
-                    mongoClient.dropCollection(collection);
+            String collectionName = restoreFile.getCollection();
+            if (!isOplog(collectionName)) {
+                if (drop && !BackupUtils.isSystemCollection(collectionName)) {
+                    mongoClient.dropCollection(collectionName);
                 }
 
-                MongoCollection<Document> dbCollection = mongoClient.getCollection(collection);
+                MongoCollection<Document> collection = mongoClient.getCollection(collectionName);
                 List<Document> dbObjects = restoreFile.getCollectionObjects();
 
-                if (BackupUtils.isUserCollection(collection)) {
-                    for (Document currentDocument : dbCollection.find()) {
+                if (BackupUtils.isUserCollection(collectionName)) {
+                    for (Document currentDocument : collection.find()) {
                         if (!dbObjects.contains(currentDocument)) {
-                            dbCollection.findOneAndDelete(currentDocument);
+                            collection.findOneAndDelete(currentDocument);
                         }
                     }
                 }
 
-                dbCollection.insertMany(dbObjects);
+                for (Document document : dbObjects) {
+                    Object id = document.get("_id");
+                    if (id == null) {
+                        collection.insertOne(document);
+                    } else {
+                        collection.updateOne(eq("_id", id), document, UPDATE_OPTIONS);
+                    }
+                }
             } else {
                 oplogRestores.add(restoreFile);
             }
