@@ -33,41 +33,33 @@ public class RestoreTestCases extends AbstractMongoTest {
     @Before
     public void setUp() {
 
-        getConnector().createCollection("Arenas", false, 5, 5);
-
         String indexName = MongoHelper.getIndexName(indexKey, indexOrder);
-
         getConnector().createIndex("Arenas", indexKey, indexOrder);
+
         try {
-            getConnector().dump("dump", "Test", false, false, 5);
+            getConnector().dump("./dump", "Test", false, false, 5);
         } catch (IOException io) {
             throw new RuntimeException(io.getMessage(), io);
         }
 
         // drop index
         getConnector().dropIndex("Arenas", indexName);
-
     }
 
     @After
     public void tearDown() throws Exception {
         File dumpOutputDir = new File("./dump");
         FileUtils.deleteDirectory(dumpOutputDir);
-        String indexName = MongoHelper.getIndexName(indexKey, indexOrder);
 
-        // drop index
-        getConnector().dropIndex("Arenas", indexName);
-
-        // Need to drop the collection becuase creating the index creates the collection
+        // Need to drop the collection because creating the index creates the collection
         getConnector().dropCollection("Arenas");
-
     }
 
     @Category({ RegressionTests.class })
     @Test
     public void testRestore() throws IOException {
 
-        getConnector().restore("dump", false, false);
+        getConnector().restore("./dump", false, false);
 
         String indexName = MongoHelper.getIndexName(indexKey, indexOrder);
 

@@ -26,7 +26,6 @@ public class DumpTestCases extends AbstractMongoTest {
     @Before
     public void setUp() {
         getConnector().createCollection("Arenas", false, 5, 5);
-        insertObjects(getEmptyDocuments(10), "Arenas");
     }
 
     @After
