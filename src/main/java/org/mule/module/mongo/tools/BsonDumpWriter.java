@@ -41,8 +41,9 @@ public class BsonDumpWriter extends DumpWriter {
     @Override
     public void writeObject(String collection, Document document) throws IOException {
         File outputFile = new File(getFilePath(collection));
-        if (!outputFile.getParentFile().mkdirs()) {
-            logger.info("Couldn't create dir: " + outputFile.getParentFile());
+        File folder = outputFile.getParentFile();
+        if (!folder.exists() && !folder.mkdirs()) {
+            logger.warn("Couldn't create dir: " + folder);
         }
         try (FileOutputStream outputStream = new FileOutputStream(outputFile, true)) {
             BSONObject doc = new BasicDBObject(document);
