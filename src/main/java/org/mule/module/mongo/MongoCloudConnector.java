@@ -37,6 +37,7 @@ import org.mule.api.annotations.display.Placement;
 import org.mule.api.annotations.param.Default;
 import org.mule.api.annotations.param.Optional;
 import org.mule.api.annotations.param.Payload;
+import org.mule.api.annotations.param.RefOnly;
 import org.mule.module.mongo.api.IndexOrder;
 import org.mule.module.mongo.tools.BackupConstants;
 import org.mule.module.mongo.tools.IncrementalMongoDump;
@@ -239,7 +240,7 @@ public class MongoCloudConnector {
      */
     @Processor
     @ReconnectOn(exceptions = IllegalStateException.class)
-    public void updateObjects(final String collection, final Document query, @Default("#[payload]") final Document element, @Default("true") final boolean multi) {
+    public void updateObjects(final String collection, @RefOnly final Document query, @Default("#[payload]") final Document element, @Default("true") final boolean multi) {
         strategy.getClient().updateObjects(collection, query, element, multi);
     }
 

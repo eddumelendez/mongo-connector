@@ -8,7 +8,6 @@
 
 package org.mule.module.mongo;
 
-import static com.mongodb.client.model.Filters.eq;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.refEq;
 import static org.mockito.Mockito.mock;
@@ -16,6 +15,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import org.bson.Document;
+import org.bson.conversions.Bson;
 import org.junit.Before;
 import org.junit.Test;
 import org.mule.module.mongo.api.IndexOrder;
@@ -25,6 +25,8 @@ import org.mule.module.mongo.api.MongoClientImpl;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import com.mongodb.MongoException;
+import com.mongodb.client.FindIterable;
+import com.mongodb.client.ListIndexesIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
@@ -106,11 +108,36 @@ public class MongoTestCase {
     }
 
     /** Test {@link MongoClient#saveObject(String, Document)} */
+    @SuppressWarnings("unchecked")
     @Test
-    public void saveExistingObject() throws Exception {
+    public void saveNewObjectWithId() throws Exception {
+        Bson filter = com.mongodb.client.model.Filters.eq("_id", "someId");
+        FindIterable<Document> findIterable = mock(FindIterable.class);
+        MongoCursor<Document> mongoCursor = mock(MongoCursor.class);
+        when(collectionMock.find(refEq(filter))).thenReturn(findIterable);
+        when(findIterable.iterator()).thenReturn(mongoCursor);
+        when(mongoCursor.hasNext()).thenReturn(false);
+
         Document document = new Document("_id", "someId");
         client.saveObject(A_COLLECTION, document);
-        verify(collectionMock).updateOne(eq("_id", "someId"), document);
+        verify(collectionMock).insertOne(document);
+    }
+
+    /** Test {@link MongoClient#saveObject(String, Document)} */
+    @SuppressWarnings("unchecked")
+    @Test
+    public void saveExistingObject() throws Exception {
+        Bson filter = com.mongodb.client.model.Filters.eq("_id", "someId");
+        FindIterable<Document> findIterable = mock(FindIterable.class);
+        MongoCursor<Document> mongoCursor = mock(MongoCursor.class);
+        when(collectionMock.find(refEq(filter))).thenReturn(findIterable);
+        when(findIterable.iterator()).thenReturn(mongoCursor);
+        when(mongoCursor.hasNext()).thenReturn(true);
+        Document document = new Document("_id", "someId");
+        when(mongoCursor.next()).thenReturn(document);
+
+        client.saveObject(A_COLLECTION, document);
+        verify(collectionMock).findOneAndReplace(document, document);
     }
 
     /**
@@ -185,6 +212,12 @@ public class MongoTestCase {
     /** Tests {@link MongoClient#listIndices(String)} */
     @Test
     public void listIndices() throws Exception {
+        ListIndexesIterable<Document> listIndexesIterable = mock(ListIndexesIterable.class);
+        MongoCursor<Document> mongoCursor = mock(MongoCursor.class);
+        when(collectionMock.listIndexes()).thenReturn(listIndexesIterable);
+        when(listIndexesIterable.iterator()).thenReturn(mongoCursor);
+        when(mongoCursor.hasNext()).thenReturn(false);
+
         client.listIndices(A_COLLECTION);
         verify(collectionMock).listIndexes();
     }
@@ -227,15 +260,14 @@ public class MongoTestCase {
 
     /**
      * Test for {@link MongoClient#getFileContent(Document)}
-     * 
-     * @throws Exception
      */
     @Test
-    public void getFileContent() throws Exception {
+    public void getFileContent() {
         DBObject q = new BasicDBObject("foo", "bar");
-        when(gridFsMock.findOne(eq(q))).thenReturn(new GridFSDBFile());
+        GridFSDBFile gridFSDBFile = mock(GridFSDBFile.class);
+        when(gridFsMock.findOne(eq(q))).thenReturn(gridFSDBFile);
         client.getFileContent(q);
-        verify(gridFsMock).find(q);
+        verify(gridFsMock).findOne(eq(q));
     }
 
 }

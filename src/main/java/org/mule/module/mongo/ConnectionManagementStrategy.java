@@ -8,6 +8,7 @@
 
 package org.mule.module.mongo;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -153,9 +154,12 @@ public class ConnectionManagementStrategy {
 
             // We perform a dummy, cheap operation to valid user has access to the DB
             if (!client.isAlive()) {
+                client.close();
                 throw new ConnectionException(ConnectionExceptionCode.UNKNOWN, "N/A", "Could not connect to MongoDB");
             }
 
+        } catch (final IOException e) {
+            throw new ConnectionException(ConnectionExceptionCode.CANNOT_REACH, e.getLocalizedMessage(), e.getMessage(), e.getCause());
         } catch (final IllegalArgumentException e) {
             throw new ConnectionException(ConnectionExceptionCode.CANNOT_REACH, e.getLocalizedMessage(), e.getMessage(), e.getCause());
         } catch (MongoSecurityException e) {
