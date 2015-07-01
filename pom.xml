@@ -21,8 +21,8 @@
 		<category>Community</category>
 		<licensePath>LICENSE.md</licensePath>
 		<devkit.studio.package.skip>false</devkit.studio.package.skip>
-        <connector.testing.version>0.9.2-SNAPSHOT</connector.testing.version>
-        <jdk.version>1.7</jdk.version>
+		<connector.testing.version>0.9.2-SNAPSHOT</connector.testing.version>
+		<jdk.version>1.7</jdk.version>
 	</properties>
 
 	<dependencies>
@@ -58,11 +58,11 @@
 			<artifactId>commons-cli</artifactId>
 			<version>1.1</version>
 		</dependency>
-        <dependency>
-		    <groupId>org.mule.tools.devkit</groupId>
-		    <artifactId>connector-testing-framework</artifactId>
-		    <version>${connector.testing.version}</version>
-		    <scope>test</scope>
+		<dependency>
+			<groupId>org.mule.tools.devkit</groupId>
+			<artifactId>connector-testing-framework</artifactId>
+			<version>${connector.testing.version}</version>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 
@@ -80,6 +80,22 @@
 			<layout>default</layout>
 		</repository>
 	</repositories>
+
+	<distributionManagement>
+		<downloadUrl>http://www.mulesoft.com</downloadUrl>
+		<repository>
+			<id>mulesoft-releases</id>
+			<name>MuleSoft Repository</name>
+			<url>http://repository-master.mulesoft.org/releases/</url>
+		</repository>
+
+		<snapshotRepository>
+			<id>mulesoft-snapshots</id>
+			<name>MuleSoft Snapshot Repository</name>
+			<url>http://repository-master.mulesoft.org/snapshots/</url>
+			<uniqueVersion>false</uniqueVersion>
+		</snapshotRepository>
+	</distributionManagement>
 
 	<scm>
 		<connection>scm:git:git://github.com:mulesoft/mongo-connector.git</connection>
