@@ -19,7 +19,6 @@ import java.util.concurrent.Callable;
 
 import org.apache.commons.lang.Validate;
 import org.bson.Document;
-import org.bson.conversions.Bson;
 import org.mule.module.mongo.api.MongoClient;
 
 import com.mongodb.client.MongoCollection;

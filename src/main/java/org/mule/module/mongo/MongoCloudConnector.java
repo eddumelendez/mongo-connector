@@ -475,7 +475,7 @@ public class MongoCloudConnector {
      */
     @Processor
     @ReconnectOn(exceptions = IllegalStateException.class)
-    public long countObjects(final String collection, @Default("#[payload]") final Bson query) {
+    public long countObjects(final String collection, @Default("#[new org.bson.Document()]") final Bson query) {
         return strategy.getClient().countObjects(collection, query);
     }
 
@@ -494,7 +494,8 @@ public class MongoCloudConnector {
      */
     @Processor
     @ReconnectOn(exceptions = IllegalStateException.class)
-    public long countObjectsUsingQueryMap(final String collection, @Placement(group = "Query Attributes") @Optional final Map<String, Object> queryAttributes) {
+    public long countObjectsUsingQueryMap(final String collection,
+            @Placement(group = "Query Attributes") @Default("#[new org.bson.Document()]") final Map<String, Object> queryAttributes) {
         return strategy.getClient().countObjects(collection, adapt(queryAttributes));
     }
 
@@ -551,7 +552,8 @@ public class MongoCloudConnector {
      */
     @Processor
     @ReconnectOn(exceptions = IllegalStateException.class)
-    public Iterable<Document> findObjectsUsingQueryMap(final String collection, @Placement(group = "Query Attributes") @Optional final Map<String, Object> queryAttributes,
+    public Iterable<Document> findObjectsUsingQueryMap(final String collection,
+            @Placement(group = "Query Attributes") @Default("#[new org.bson.Document()]") final Map<String, Object> queryAttributes,
             @Placement(group = "Fields") @Optional final List<String> fields, @Optional final Integer numToSkip, @Optional final Integer limit, @Optional Document sortBy) {
         return strategy.getClient().findObjects(collection, adapt(queryAttributes), fields, numToSkip, limit, sortBy);
     }
@@ -816,7 +818,7 @@ public class MongoCloudConnector {
      */
     @Processor
     @ReconnectOn(exceptions = IllegalStateException.class)
-    public Iterable<DBObject> listFiles(@Default("#[payload]") final DBObject query) {
+    public Iterable<DBObject> listFiles(@Default("#[new com.mongodb.BasicDBObject()]") final DBObject query) {
         return strategy.getClient().listFiles(query);
     }
 
@@ -833,7 +835,7 @@ public class MongoCloudConnector {
      */
     @Processor
     @ReconnectOn(exceptions = IllegalStateException.class)
-    public Iterable<DBObject> listFilesUsingQueryMap(@Placement(group = "Query Attributes") @Optional final Map<String, Object> queryAttributes) {
+    public Iterable<DBObject> listFilesUsingQueryMap(@Placement(group = "Query Attributes") @Default("#[new org.bson.Document()]") final Map<String, Object> queryAttributes) {
         return strategy.getClient().listFiles(adaptToDbObject(queryAttributes));
     }
 
@@ -850,7 +852,7 @@ public class MongoCloudConnector {
      */
     @Processor
     @ReconnectOn(exceptions = IllegalStateException.class)
-    public void removeFiles(@Default("#[payload]") final DBObject query) {
+    public void removeFiles(@Default("#[new com.mongodb.BasicDBObject()]") final DBObject query) {
         strategy.getClient().removeFiles(query);
     }
 
@@ -866,7 +868,7 @@ public class MongoCloudConnector {
      */
     @Processor
     @ReconnectOn(exceptions = IllegalStateException.class)
-    public void removeFilesUsingQueryMap(@Placement(group = "Query Attributes") @Optional final Map<String, Object> queryAttributes) {
+    public void removeFilesUsingQueryMap(@Placement(group = "Query Attributes") @Default("#[new org.bson.Document()]") final Map<String, Object> queryAttributes) {
         strategy.getClient().removeFiles(adaptToDbObject(queryAttributes));
     }
 

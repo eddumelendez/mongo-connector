@@ -73,7 +73,6 @@ public class ConnectionManagementStrategy {
      * The port of the Mongo server
      */
     @Configurable
-    @Optional
     @Default("27017")
     private int port;
 
@@ -102,7 +101,6 @@ public class ConnectionManagementStrategy {
      * The connection timeout in milliseconds; this is for establishing the socket connections (open). 0 is default and infinite.
      */
     @Configurable
-    @Optional
     @Default("30000")
     private Integer connectTimeout;
 
@@ -123,7 +121,7 @@ public class ConnectionManagementStrategy {
 
     /**
      * Method invoked when a Mongo session needs to be created.
-     * 
+     *
      * @param username
      *            the username to use for authentication.
      * @param password
@@ -154,8 +152,9 @@ public class ConnectionManagementStrategy {
             client = new MongoClientImpl(mongo, database);
 
             // We perform a dummy, cheap operation to valid user has access to the DB
-            if (!client.isAlive())
+            if (!client.isAlive()) {
                 throw new ConnectionException(ConnectionExceptionCode.UNKNOWN, "N/A", "Could not connect to MongoDB");
+            }
 
         } catch (final IllegalArgumentException e) {
             throw new ConnectionException(ConnectionExceptionCode.CANNOT_REACH, e.getLocalizedMessage(), e.getMessage(), e.getCause());
