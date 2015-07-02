@@ -8,6 +8,8 @@
 
 package org.mule.module.mongo.tools;
 
+import static com.mongodb.client.model.Filters.eq;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -16,13 +18,15 @@ import java.util.List;
 import java.util.concurrent.Callable;
 
 import org.apache.commons.lang.Validate;
+import org.bson.Document;
 import org.mule.module.mongo.api.MongoClient;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBCollection;
-import com.mongodb.DBObject;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.model.UpdateOptions;
 
 public class MongoRestoreDirectory implements Callable<Void> {
+
+    private static final UpdateOptions UPDATE_OPTIONS = new UpdateOptions().upsert(true);
 
     private MongoClient mongoClient;
     private boolean drop;
@@ -39,26 +43,32 @@ public class MongoRestoreDirectory implements Callable<Void> {
     private void restore() throws IOException {
         Validate.notNull(inputPath);
         List<RestoreFile> restoreFiles = getRestoreFiles(inputPath);
-        List<RestoreFile> oplogRestores = new ArrayList<RestoreFile>();
+        List<RestoreFile> oplogRestores = new ArrayList<>();
         for (RestoreFile restoreFile : restoreFiles) {
-            if (!isOplog(restoreFile.getCollection())) {
-                if (drop && !BackupUtils.isSystemCollection(restoreFile.getCollection())) {
-                    mongoClient.dropCollection(restoreFile.getCollection());
+            String collectionName = restoreFile.getCollection();
+            if (!isOplog(collectionName)) {
+                if (drop && !BackupUtils.isSystemCollection(collectionName)) {
+                    mongoClient.dropCollection(collectionName);
                 }
 
-                DBCollection dbCollection = mongoClient.getCollection(restoreFile.getCollection());
-                List<DBObject> dbObjects = restoreFile.getCollectionObjects();
+                MongoCollection<Document> collection = mongoClient.getCollection(collectionName);
+                List<Document> dbObjects = restoreFile.getCollectionObjects();
 
-                if (BackupUtils.isUserCollection(restoreFile.getCollection())) {
-                    for (DBObject currentUser : dbCollection.find()) {
-                        if (!dbObjects.contains(currentUser)) {
-                            dbCollection.remove(currentUser);
+                if (BackupUtils.isUserCollection(collectionName)) {
+                    for (Document currentDocument : collection.find()) {
+                        if (!dbObjects.contains(currentDocument)) {
+                            collection.findOneAndDelete(currentDocument);
                         }
                     }
                 }
 
-                for (DBObject dbObject : dbObjects) {
-                    dbCollection.save(dbObject);
+                for (Document document : dbObjects) {
+                    Object id = document.get("_id");
+                    if (id == null) {
+                        collection.insertOne(document);
+                    } else {
+                        collection.updateOne(eq("_id", id), document, UPDATE_OPTIONS);
+                    }
                 }
             } else {
                 oplogRestores.add(restoreFile);
@@ -66,16 +76,16 @@ public class MongoRestoreDirectory implements Callable<Void> {
         }
         if (oplogReplay && !oplogRestores.isEmpty()) {
             for (RestoreFile oplogRestore : oplogRestores) {
-                mongoClient.executeComamnd(new BasicDBObject("applyOps", filterOplogForDatabase(oplogRestore).toArray()));
+                mongoClient.executeCommand(new Document("applyOps", filterOplogForDatabase(oplogRestore).toArray()));
             }
         }
     }
 
-    private List<DBObject> filterOplogForDatabase(RestoreFile oplogFile) throws IOException {
-        List<DBObject> oplogEntries = oplogFile.getCollectionObjects();
-        List<DBObject> dbOplogEntries = new ArrayList<DBObject>();
+    private List<Document> filterOplogForDatabase(RestoreFile oplogFile) throws IOException {
+        List<Document> oplogEntries = oplogFile.getCollectionObjects();
+        List<Document> dbOplogEntries = new ArrayList<>();
 
-        for (DBObject oplogEntry : oplogEntries) {
+        for (Document oplogEntry : oplogEntries) {
             if (((String) oplogEntry.get(BackupConstants.NAMESPACE_FIELD)).startsWith(database + ".")) {
                 dbOplogEntries.add(oplogEntry);
             }

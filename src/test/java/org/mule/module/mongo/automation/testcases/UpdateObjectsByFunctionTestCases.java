@@ -9,74 +9,64 @@
 package org.mule.module.mongo.automation.testcases;
 
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bson.Document;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.mule.module.mongo.api.MongoCollection;
-import org.mule.module.mongo.automation.MongoTestParent;
+import org.mule.module.mongo.automation.AbstractMongoTest;
 import org.mule.module.mongo.automation.RegressionTests;
-import org.mule.modules.tests.ConnectorTestUtils;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBObject;
+import com.google.common.collect.Iterables;
 
-public class UpdateObjectsByFunctionTestCases extends MongoTestParent {
+public class UpdateObjectsByFunctionTestCases extends AbstractMongoTest {
+
+    private int numberOfObjects = 10;
+    private Document queryDBObj = new Document();
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         // Create the collection
-        initializeTestRunMessage("updateObjectsByFunction");
-        runFlowAndGetPayload("create-collection");
+        getConnector().createCollection("Arenas", false, 5, 5);
 
-        DBObject queryDbObj = (DBObject) getTestRunMessageValue("queryRef");
-        int numberOfObjects = (Integer) getTestRunMessageValue("numberOfObjects");
+        queryDBObj.put("key", "oldvalue");
 
         // Create the objects with the key-value pair
-        List<DBObject> objects = new ArrayList<DBObject>();
+        List<Document> objects = new ArrayList<>();
         for (int i = 0; i < numberOfObjects; i++) {
-            objects.add(new BasicDBObject(queryDbObj.toMap()));
+            objects.add(new Document(queryDBObj));
         }
 
         // Insert the objects
-        insertObjects(objects);
+        insertObjects(objects, "Arenas");
 
     }
 
     @Category({ RegressionTests.class })
     @Test
     public void testUpdateObjectsByFunction() {
-        try {
-            String queryKey = (String) getTestRunMessageValue("queryKey");
-            DBObject elementDbObj = (DBObject) getTestRunMessageValue("elementRef");
-            int numberOfObjects = (Integer) getTestRunMessageValue("numberOfObjects");
+        String queryKey = "key";
+        Document elementDbObj = new Document("key", "newValue");
 
-            // Update objects
-            runFlowAndGetPayload("update-objects-by-function");
+        // Update objects
+        getConnector().updateObjectsByFunction("Arenas", "$set", queryDBObj, elementDbObj, false, true);
 
-            // Get all objects
-            MongoCollection objects = runFlowAndGetPayload("find-objects");
-            for (DBObject obj : objects) {
-                assertTrue(obj.containsField(queryKey));
-                assertTrue(obj.get(queryKey).equals(elementDbObj.get(queryKey)));
-            }
-            assertTrue(objects.size() == numberOfObjects);
-
-        } catch (Exception e) {
-            fail(ConnectorTestUtils.getStackTrace(e));
+        // Get all objects
+        Iterable<Document> objects = getConnector().findObjects("Arenas", new Document(), null, null, null, null);
+        for (Document obj : objects) {
+            assertTrue(obj.containsKey(queryKey));
+            assertTrue(obj.get(queryKey).equals(elementDbObj.get(queryKey)));
         }
-
+        assertTrue(Iterables.size(objects) == numberOfObjects);
     }
 
     @After
     public void tearDown() throws Exception {
-        runFlowAndGetPayload("drop-collection");
-
+        getConnector().dropCollection("Arenas");
     }
 
 }

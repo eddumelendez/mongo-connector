@@ -8,6 +8,8 @@
 
 package org.mule.module.mongo;
 
+import static com.mongodb.client.model.Filters.lt;
+
 import java.io.Serializable;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -18,14 +20,15 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 
+import jersey.repackaged.com.google.common.collect.Lists;
+
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
+import org.bson.Document;
+import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 import org.mule.api.MuleContext;
-import org.mule.api.annotations.Configurable;
-import org.mule.api.annotations.param.Default;
-import org.mule.api.annotations.param.Optional;
 import org.mule.api.context.MuleContextAware;
 import org.mule.api.store.ObjectAlreadyExistsException;
 import org.mule.api.store.ObjectDoesNotExistException;
@@ -36,14 +39,13 @@ import org.mule.config.i18n.MessageFactory;
 import org.mule.module.mongo.api.IndexOrder;
 import org.mule.module.mongo.api.MongoClient;
 import org.mule.module.mongo.api.MongoClientImpl;
-import org.mule.module.mongo.api.WriteConcern;
 import org.mule.util.SerializationUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.DigestUtils;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DB;
-import com.mongodb.DBObject;
-import com.mongodb.QueryBuilder;
+import com.mongodb.MongoCredential;
+import com.mongodb.ServerAddress;
 
 /**
  * A PartitionableExpirableObjectStore backed by MongoDB.
@@ -51,6 +53,8 @@ import com.mongodb.QueryBuilder;
  * @author MuleSoft Inc.
  */
 public class MongoObjectStore implements PartitionableExpirableObjectStore<Serializable>, MuleContextAware {
+
+    private static final Logger logger = LoggerFactory.getLogger(MongoObjectStore.class);
 
     private static final String OBJECTSTORE_COLLECTION_PREFIX = "mule.objectstore.";
     private static final String OBJECTSTORE_DEFAULT_PARTITION_NAME = "_default";
@@ -64,64 +68,56 @@ public class MongoObjectStore implements PartitionableExpirableObjectStore<Seria
     /**
      * The host of the Mongo server
      */
-    @Configurable
-    @Optional
-    @Default("localhost")
     private String host;
 
     /**
      * The port of the Mongo server
      */
-    @Configurable
-    @Optional
-    @Default("27017")
     private int port;
 
     /**
      * The database name of the Mongo server
      */
-    @Configurable
-    @Optional
-    @Default("test")
     private String database;
 
     /**
      * The username used to connect to the Mongo server
      */
-    @Configurable
-    @Optional
-    @Default("")
     private String username;
 
     /**
      * The password used to connect to the Mongo server
      */
-    @Configurable
-    @Optional
-    @Default("")
     private String password;
-
-    /**
-     * The default concern to use to when writing to Mongo
-     */
-    @Configurable
-    @Optional
-    @Default("DATABASE_DEFAULT")
-    private WriteConcern writeConcern;
 
     private MongoClient mongoClient;
 
     private MuleContext context;
 
     @PostConstruct
-    public void initialize() throws UnknownHostException {
-        final DB db = new com.mongodb.MongoClient(host, port).getDB(database);
-        if (StringUtils.isNotEmpty(password)) {
-            Validate.notEmpty(username, "Username must not be empty if password is set");
-            db.authenticate(username, password.toCharArray());
-        }
+    public void initialize() throws UnknownHostException, ObjectStoreNotAvaliableException {
 
-        mongoClient = new MongoClientImpl(db);
+        final List<ServerAddress> addresses = ConnectionManagementStrategy.getAddresses(host, port);
+
+        com.mongodb.MongoClient mongo;
+        if (StringUtils.isNotBlank(password)) {
+            Validate.notNull(username, "Username must not be null if password is set");
+            logger.info("Connecting to MongoDB, authenticating as user '{}'", username);
+
+            MongoCredential credential = MongoCredential.createCredential(username, database, password.toCharArray());
+            mongo = new com.mongodb.MongoClient(addresses, Lists.newArrayList(credential));
+        } else {
+            logger.info("Connecting to MongoDB, not using authentication");
+            mongo = new com.mongodb.MongoClient(addresses);
+        }
+        mongoClient = new MongoClientImpl(mongo, database);
+
+        // Verify it could connect
+        if (mongoClient.isAlive())
+            throw new ObjectStoreNotAvaliableException(MessageFactory.createStaticMessage("Cannot access MongoDB"));
+
+        // Verify it can actually read from the database
+        mongoClient.listCollections();
     }
 
     @Override
@@ -184,10 +180,9 @@ public class MongoObjectStore implements PartitionableExpirableObjectStore<Seria
         if (key == null) {
             throw new ObjectStoreException(MessageFactory.createStaticMessage("The key is null"));
         }
-
         try {
             final ObjectId objectId = getObjectIdFromKey(key);
-            final DBObject query = getQueryForObjectId(objectId);
+            final Document query = getQueryForObjectId(objectId);
             final String collection = getCollectionName(partitionName);
             return mongoClient.findObjects(collection, query, NO_FIELD_LIST, null, null, null).iterator().hasNext();
         } catch (Exception ex) {
@@ -199,10 +194,10 @@ public class MongoObjectStore implements PartitionableExpirableObjectStore<Seria
     public List<Serializable> allKeys(final String partitionName) throws ObjectStoreException {
         try {
             final String collection = getCollectionName(partitionName);
-            final Iterable<DBObject> keyObjects = mongoClient.findObjects(collection, new BasicDBObject(), Arrays.asList(KEY_FIELD), null, null, null);
+            final Iterable<Document> keyObjects = mongoClient.findObjects(collection, new Document(), Arrays.asList(KEY_FIELD), null, null, null);
 
-            final List<Serializable> results = new ArrayList<Serializable>();
-            for (final DBObject keyObject : keyObjects) {
+            final List<Serializable> results = new ArrayList<>();
+            for (final Document keyObject : keyObjects) {
                 results.add((Serializable) SerializationUtils.deserialize((byte[]) keyObject.get(KEY_FIELD)));
             }
             return results;
@@ -241,18 +236,18 @@ public class MongoObjectStore implements PartitionableExpirableObjectStore<Seria
 
         final byte[] keyAsBytes = org.apache.commons.lang.SerializationUtils.serialize(key);
         final ObjectId objectId = getObjectIdFromKey(keyAsBytes);
-        final DBObject query = getQueryForObjectId(objectId);
+        final Document query = getQueryForObjectId(objectId);
         if (mongoClient.findObjects(collection, query, null, null, null, null).iterator().hasNext()) {
             throw new ObjectAlreadyExistsException(MessageFactory.createStaticMessage("Duplicated key %s", key));
         }
 
         try {
-            final DBObject dbObject = new BasicDBObject();
-            dbObject.put(ID_FIELD, objectId);
-            dbObject.put(TIMESTAMP_FIELD, System.currentTimeMillis());
-            dbObject.put(KEY_FIELD, keyAsBytes);
-            dbObject.put(VALUE_FIELD, org.apache.commons.lang.SerializationUtils.serialize(value));
-            mongoClient.updateObjects(collection, query, dbObject, true, false, getWriteConcern());
+            final Document document = new Document();
+            document.put(ID_FIELD, objectId);
+            document.put(TIMESTAMP_FIELD, System.currentTimeMillis());
+            document.put(KEY_FIELD, keyAsBytes);
+            document.put(VALUE_FIELD, SerializationUtils.serialize(value));
+            mongoClient.updateObjects(collection, query, document, false);
         } catch (Exception ex) {
             throw new ObjectStoreNotAvaliableException(MessageFactory.createStaticMessage(ex.getMessage()), ex);
         }
@@ -266,11 +261,10 @@ public class MongoObjectStore implements PartitionableExpirableObjectStore<Seria
 
         final String collection = getCollectionName(partitionName);
         final ObjectId objectId = getObjectIdFromKey(key);
-        final DBObject query = getQueryForObjectId(objectId);
+        final Document query = getQueryForObjectId(objectId);
         if (!mongoClient.findObjects(collection, query, null, null, null, null).iterator().hasNext()) {
             throw new ObjectDoesNotExistException(MessageFactory.createStaticMessage("Couldn't find key '%s' in the ObjectStore", key));
         }
-
         return retrieveSerializedObject(collection, query);
     }
 
@@ -282,13 +276,13 @@ public class MongoObjectStore implements PartitionableExpirableObjectStore<Seria
 
         final String collection = getCollectionName(partitionName);
         final ObjectId objectId = getObjectIdFromKey(key);
-        final DBObject query = getQueryForObjectId(objectId);
+        final Document query = getQueryForObjectId(objectId);
         if (!mongoClient.findObjects(collection, query, null, null, null, null).iterator().hasNext()) {
             throw new ObjectDoesNotExistException(MessageFactory.createStaticMessage("Couldn't find key '%s' in the ObjectStore", key));
         }
 
         final Serializable result = retrieveSerializedObject(collection, query);
-        mongoClient.removeObjects(collection, query, getWriteConcern());
+        mongoClient.removeObjects(collection, query);
         return result;
     }
 
@@ -317,8 +311,8 @@ public class MongoObjectStore implements PartitionableExpirableObjectStore<Seria
         try {
             final String collection = getCollectionName(partitionName);
             final long expireAt = System.currentTimeMillis() - entryTtl;
-            final DBObject query = QueryBuilder.start(TIMESTAMP_FIELD).lessThan(expireAt).get();
-            mongoClient.removeObjects(collection, query, getWriteConcern());
+            final Bson query = lt(TIMESTAMP_FIELD, expireAt);
+            mongoClient.removeObjects(collection, query);
         } catch (Exception ex) {
             throw new ObjectStoreException(ex);
         }
@@ -366,14 +360,6 @@ public class MongoObjectStore implements PartitionableExpirableObjectStore<Seria
         this.password = password;
     }
 
-    public WriteConcern getWriteConcern() {
-        return writeConcern;
-    }
-
-    public void setWriteConcern(final WriteConcern writeConcern) {
-        this.writeConcern = writeConcern;
-    }
-
     // --------- Support Methods ---------
 
     private String getCollectionName(final String partitionName) {
@@ -389,7 +375,7 @@ public class MongoObjectStore implements PartitionableExpirableObjectStore<Seria
     }
 
     private ObjectId getObjectIdFromKey(final Serializable key) {
-        final byte[] keyAsBytes = org.apache.commons.lang.SerializationUtils.serialize(key);
+        final byte[] keyAsBytes = SerializationUtils.serialize(key);
         return getObjectIdFromKey(keyAsBytes);
     }
 
@@ -405,20 +391,20 @@ public class MongoObjectStore implements PartitionableExpirableObjectStore<Seria
         return objectId;
     }
 
-    private DBObject getQueryForObjectId(final ObjectId objectId) {
-        return new BasicDBObject(ID_FIELD, objectId);
+    private Document getQueryForObjectId(final ObjectId objectId) {
+        return new Document(ID_FIELD, objectId);
     }
 
-    private Serializable retrieveSerializedObject(final String collection, final DBObject query) throws ObjectDoesNotExistException {
-        final Iterator<DBObject> iterator = mongoClient.findObjects(collection, query, Arrays.asList(VALUE_FIELD), null, null, null).iterator();
+    private Serializable retrieveSerializedObject(final String collection, final Document query) throws ObjectDoesNotExistException {
+        final Iterator<Document> iterator = mongoClient.findObjects(collection, query, Arrays.asList(VALUE_FIELD), null, null, null).iterator();
 
         if (!iterator.hasNext()) {
             throw new ObjectDoesNotExistException();
         }
 
-        final DBObject dbObject = iterator.next();
+        final Document document = iterator.next();
 
-        return (Serializable) SerializationUtils.deserialize((byte[]) dbObject.get(VALUE_FIELD), context);
+        return (Serializable) SerializationUtils.deserialize((byte[]) document.get(VALUE_FIELD), context);
     }
 
     @Override

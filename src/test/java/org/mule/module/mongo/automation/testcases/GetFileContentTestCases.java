@@ -10,7 +10,6 @@ package org.mule.module.mongo.automation.testcases;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.io.InputStream;
 
@@ -18,20 +17,20 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.mule.module.mongo.automation.MongoTestParent;
+import org.mule.module.mongo.automation.AbstractMongoTest;
 import org.mule.module.mongo.automation.RegressionTests;
-import org.mule.modules.tests.ConnectorTestUtils;
 
+import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 
-public class GetFileContentTestCases extends MongoTestParent {
+public class GetFileContentTestCases extends AbstractMongoTest {
+
+    private DBObject query = new BasicDBObject("filename", "filename1");
 
     @Before
     public void setUp() {
-        initializeTestRunMessage("getFileContent");
-
-        createFileFromPayload(getTestRunMessageValue("filename1"));
-        createFileFromPayload(getTestRunMessageValue("filename2"));
+        createFileFromPayload("filename1");
+        createFileFromPayload("filename2");
     }
 
     @After
@@ -42,18 +41,9 @@ public class GetFileContentTestCases extends MongoTestParent {
     @Category({ RegressionTests.class })
     @Test
     public void testGetFileContent() {
-        try {
-            DBObject queryRef = (DBObject) getTestRunMessageValue("queryRef");
-            queryRef.put("filename", getTestRunMessageValue("filename1"));
+        Object response = getConnector().getFileContent(query);
 
-            Object response = runFlowAndGetPayload("get-file-content");
-
-            assertNotNull(response);
-            assertTrue(response instanceof InputStream);
-        } catch (Exception e) {
-            fail(ConnectorTestUtils.getStackTrace(e));
-        }
-
+        assertNotNull(response);
+        assertTrue(response instanceof InputStream);
     }
-
 }

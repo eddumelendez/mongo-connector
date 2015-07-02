@@ -11,7 +11,7 @@ package org.mule.module.mongo.tools;
 import java.io.File;
 import java.io.IOException;
 
-import com.mongodb.DBObject;
+import org.bson.Document;
 
 public abstract class DumpWriter {
 
@@ -41,6 +41,6 @@ public abstract class DumpWriter {
 
     public abstract String getExtension();
 
-    public abstract void writeObject(String collection, DBObject dbObject) throws IOException;
+    public abstract void writeObject(String collection, Document document) throws IOException;
 
 }

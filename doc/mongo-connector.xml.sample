@@ -1,25 +1,27 @@
 <!-- BEGIN_INCLUDE(mongo:create-collection) -->
-        <mongo:create-collection collection="aCollection" capped="true"/>
+        <mongo:create-collection config-ref="Mongo_DB__ConnectionManagement" collection="aCollection" capped="true"/>
 <!-- END_INCLUDE(mongo:create-collection) -->
 
 <!-- BEGIN_INCLUDE(mongo:list-collections) -->
-        <mongo:list-collections/>
+        <mongo:list-collections config-ref="Mongo_DB__ConnectionManagement"/>
 <!-- END_INCLUDE(mongo:list-collections) -->
 
 <!-- BEGIN_INCLUDE(mongo:exists-collection) -->
-        <mongo:exists-collection collection="aColllection"/>
+        <mongo:exists-collection config-ref="Mongo_DB__ConnectionManagement" collection="aColllection"/>
 <!-- END_INCLUDE(mongo:exists-collection) -->
 
 <!-- BEGIN_INCLUDE(mongo:drop-collection) -->
-        <mongo:drop-collection collection="aCollection"/>
+        <mongo:drop-collection config-ref="Mongo_DB__ConnectionManagement" collection="aCollection"/>
 <!-- END_INCLUDE(mongo:drop-collection) -->
 
 <!-- BEGIN_INCLUDE(mongo:insert-object) -->
-        <mongo:insert-object collection="Employees" dbObject-ref="dbObject" writeConcern="SAFE"/>
+		<mongo:insert-object config-ref="Mongo_DB__ConnectionManagement" collection="Employees">
+            <mongo:document ref="#[payload]"/>
+        </mongo:insert-object>
 <!-- END_INCLUDE(mongo:insert-object) -->
 
 <!-- BEGIN_INCLUDE(mongo:insert-object-from-map) -->
-        <mongo:insert-object-from-map collection="Employees" writeConcern="SAFE">
+        <mongo:insert-object-from-map config-ref="Mongo_DB__ConnectionManagement" collection="Employees">
             <mongo:element-attributes>
                 <mongo:element-attribute key="foo">bar</mongo:element-attribute>
                 <mongo:element-attribute key="foobar">baz</mongo:element-attribute>
@@ -28,35 +30,41 @@
 <!-- END_INCLUDE(mongo:insert-object-from-map) -->
 
 <!-- BEGIN_INCLUDE(mongo:create-index) -->
-        <mongo:create-index collection="myCollection" field="myField" order="DESC"/>
+        <mongo:create-index config-ref="Mongo_DB__ConnectionManagement" collection="myCollection" field="myField" order="DESC"/>
 <!-- END_INCLUDE(mongo:create-index) -->
 
 <!-- BEGIN_INCLUDE(mongo:add-user) -->
-        <mongo:add-user newUsername="myUser" newPassword="myPassword"/>
+        <mongo:add-user config-ref="Mongo_DB__ConnectionManagement" newUsername="myUser" newPassword="myPassword"/>
 <!-- END_INCLUDE(mongo:add-user) -->
 
 <!-- BEGIN_INCLUDE(mongo:drop-database) -->
-        <mongo:drop-database/>
+        <mongo:drop-database config-ref="Mongo_DB__ConnectionManagement"/>
 <!-- END_INCLUDE(mongo:drop-database) -->
 
 <!-- BEGIN_INCLUDE(mongo:drop-index) -->
-        <mongo:drop-index collection="myCollection" index="myIndex"/>
+        <mongo:drop-index config-ref="Mongo_DB__ConnectionManagement" collection="myCollection" index="myIndex"/>
 <!-- END_INCLUDE(mongo:drop-index) -->
 
 <!-- BEGIN_INCLUDE(mongo:list-indices) -->
-        <mongo:list-indices collection="myCollection"/>
+        <mongo:list-indices config-ref="Mongo_DB__ConnectionManagement" collection="myCollection"/>
 <!-- END_INCLUDE(mongo:list-indices) -->
 
 <!-- BEGIN_INCLUDE(mongo:update-objects) -->
-        <mongo:update-objects collection="myCollection" query-ref="dbObject" element-ref="dbObject" upsert="true"/>
+        <mongo:update-objects config-ref="Mongo_DB__ConnectionManagement" collection="myCollection">
+        	<mongo:query ref="#[payload]"/>
+        	<mongo:element ref="#[payload]"/>
+        </mongo:update-objects>
+        
 <!-- END_INCLUDE(mongo:update-objects) -->
 
 <!-- BEGIN_INCLUDE(mongo:save-object) -->
-        <mongo:save-object collection="myCollection" element-ref="dbObject"/>
+        <mongo:save-object config-ref="Mongo_DB__ConnectionManagement" collection="myCollection">
+            <mongo:document ref="#[payload]"/>
+        </mongo:save-object>
 <!-- END_INCLUDE(mongo:save-object) -->
 
 <!-- BEGIN_INCLUDE(mongo:save-object-from-map) -->
-        <mongo:save-object-from-map collection="myCollection">
+        <mongo:save-object-from-map config-ref="Mongo_DB__ConnectionManagement" collection="myCollection">
             <mongo:element-attributes>
                 <mongo:element-attribute key="foo">bar</mongo:element-attribute>
                 <mongo:element-attribute key="foobar">baz</mongo:element-attribute>
@@ -65,11 +73,13 @@
 <!-- END_INCLUDE(mongo:save-object-from-map) -->
 
 <!-- BEGIN_INCLUDE(mongo:remove-objects) -->
-        <mongo:remove-objects collection="myCollection" query-ref="dbObject"/>
+        <mongo:remove-objects config-ref="Mongo_DB__ConnectionManagement" collection="myCollection">
+            <mongo:query ref="#[payload]"/>
+        </mongo:remove-objects>
 <!-- END_INCLUDE(mongo:remove-objects) -->
 
 <!-- BEGIN_INCLUDE(mongo:remove-objects-using-query-map) -->
-        <mongo:remove-objects-using-query-map collection="myCollection">
+        <mongo:remove-objects-using-query-map config-ref="Mongo_DB__ConnectionManagement" collection="myCollection">
             <mongo:query-attributes>
                 <mongo:query-attribute key="foo">bar</mongo:query-attribute>
                 <mongo:query-attribute key="foobar">baz</mongo:query-attribute>
@@ -78,15 +88,15 @@
 <!-- END_INCLUDE(mongo:remove-objects-using-query-map) -->
 
 <!-- BEGIN_INCLUDE(mongo:map-reduce-objects) -->
-        <mongo:map-reduce-objects collection="myCollection" mapFunction="myMapFunction" reduceFunction="myReduceFunction"/>
+        <mongo:map-reduce-objects config-ref="Mongo_DB__ConnectionManagement" collection="myCollection" mapFunction="myMapFunction" reduceFunction="myReduceFunction"/>
 <!-- END_INCLUDE(mongo:map-reduce-objects) -->
 
 <!-- BEGIN_INCLUDE(mongo:count-objects) -->
-        <mongo:count-objects collection="myCollection" query-ref="dbObject"/>
+        <mongo:count-objects config-ref="Mongo_DB__ConnectionManagement" collection="myCollection" query-ref="dbObject"/>
 <!-- END_INCLUDE(mongo:count-objects) -->
 
 <!-- BEGIN_INCLUDE(mongo:count-objects-using-query-map) -->
-        <mongo:count-objects-using-query-map collection="myCollection">
+        <mongo:count-objects-using-query-map config-ref="Mongo_DB__ConnectionManagement" collection="myCollection">
             <mongo:query-attributes>
                 <mongo:query-attribute key="foo">bar</mongo:query-attribute>
                 <mongo:query-attribute key="foo">bar</mongo:query-attribute>
@@ -95,7 +105,8 @@
 <!-- END_INCLUDE(mongo:count-objects-using-query-map) -->
 
 <!-- BEGIN_INCLUDE(mongo:find-objects) -->
-        <mongo:find-objects collection="myCollection" query-ref="dbObject" limit="5" numToSkip="10">
+        <mongo:find-objects config-ref="Mongo_DB__ConnectionManagement" collection="myCollection" limit="5" numToSkip="10">
+            <mongo:query ref="#[payload.query]"/>
             <mongo:fields>
                 <mongo:field>field1</mongo:field>
                 <mongo:field>field2</mongo:field>
@@ -104,7 +115,7 @@
 <!-- END_INCLUDE(mongo:find-objects) -->
 
 <!-- BEGIN_INCLUDE(mongo:find-objects-using-query-map) -->
-       <mongo:find-objects-using-query-map collection="myCollection" limit="5" numToSkip="10">
+       <mongo:find-objects-using-query-map config-ref="Mongo_DB__ConnectionManagement" collection="myCollection" limit="5" numToSkip="10">
             <mongo:fields>
                 <mongo:field>field1</mongo:field>
                 <mongo:field>field2</mongo:field>
@@ -113,7 +124,8 @@
 <!-- END_INCLUDE(mongo:find-objects-using-query-map) -->
 
 <!-- BEGIN_INCLUDE(mongo:find-one-object) -->
-        <mongo:find-one-object collection="myCollection" query-ref="dbObject">
+        <mongo:find-one-object config-ref="Mongo_DB__ConnectionManagement" collection="myCollection">
+            <mongo:query ref="#[payload.query]"/>
             <mongo:fields>
                 <mongo:field>field1</mongo:field>
                 <mongo:field>field2</mongo:field>
@@ -122,7 +134,7 @@
 <!-- END_INCLUDE(mongo:find-one-object) -->
 
 <!-- BEGIN_INCLUDE(mongo:find-one-object-using-query-map) -->
-        <mongo:find-one-object-using-query-map collection="myCollection">
+        <mongo:find-one-object-using-query-map config-ref="Mongo_DB__ConnectionManagement" collection="myCollection">
             <mongo:query-attributes>
                 <mongo:query-attribute key="foo">bar</mongo:query-attribute>
                 <mongo:query-attribute key="foo">bar</mongo:query-attribute>
@@ -131,16 +143,17 @@
 <!-- END_INCLUDE(mongo:find-one-object-using-query-map) -->
 
 <!-- BEGIN_INCLUDE(mongo:update-objects-using-query-map) -->
-        <mongo:update-objects-using-query-map collection="myCollection" upsert="true" element-ref="dbObject">
+        <mongo:update-objects-using-query-map config-ref="Mongo_DB__ConnectionManagement" collection="myCollection" upsert="true">
             <mongo:query-attributes>
                 <mongo:query-attribute key="foo">bar</mongo:query-attribute>
                 <mongo:query-attribute key="foo">bar</mongo:query-attribute>
             </mongo:query-attributes>
+            <mongo:element ref="#[payload.element]"/>
         </mongo:update-objects-using-query-map>
 <!-- END_INCLUDE(mongo:update-objects-using-query-map) -->
 
 <!-- BEGIN_INCLUDE(mongo:update-objects-using-map) -->
-        <mongo:update-objects-using-map collection="myCollection" upsert="true">
+        <mongo:update-objects-using-map config-ref="Mongo_DB__ConnectionManagement" collection="myCollection" upsert="true">
             <mongo:query-attributes>
                 <mongo:query-attribute key="foo">bar</mongo:query-attribute>
                 <mongo:query-attribute key="foo">bar</mongo:query-attribute>
@@ -153,12 +166,14 @@
 <!-- END_INCLUDE(mongo:update-objects-using-map) -->
 
 <!-- BEGIN_INCLUDE(mongo:update-objects-by-function) -->
-        <mongo:update-objects-by-function collection="myCollection" upsert="true" element-ref="elementObject" query-ref="queryObject" function="$set">
+        <mongo:update-objects-by-function config-ref="Mongo_DB__ConnectionManagement" collection="myCollection" upsert="true" function="$set">
+        	<mongo:query ref="#[payload]"/>
+        	<mongo:element ref="#[payload]"/>
         </mongo:update-objects-by-function>
 <!-- END_INCLUDE(mongo:update-objects-by-function) -->
 
 <!-- BEGIN_INCLUDE(mongo:update-objects-by-function-using-map) -->
-        <mongo:update-objects-by-function-using-map collection="myCollection" upsert="true" function="$set">
+        <mongo:update-objects-by-function-using-map config-ref="Mongo_DB__ConnectionManagement" collection="myCollection" upsert="true" function="$set">
             <mongo:query-attributes>
                 <mongo:query-attribute key="foo">bar</mongo:query-attribute>
                 <mongo:query-attribute key="foo">bar</mongo:query-attribute>
@@ -171,7 +186,7 @@
 <!-- END_INCLUDE(mongo:update-objects-by-function-using-map) -->
 
 <!-- BEGIN_INCLUDE(mongo:insert-from-map) -->
-        <mongo:insert-from-map collection="Employees" writeConcern="SAFE">
+        <mongo:insert-from-map config-ref="Mongo_DB__ConnectionManagement" collection="Employees">
             <mongo:element-attributes>
                 <mongo:element-attribute key="foo">bar</mongo:element-attribute>
                 <mongo:element-attribute key="foobar">baz</mongo:element-attribute>
@@ -180,15 +195,15 @@
 <!-- END_INCLUDE(mongo:insert-from-map) -->
 
 <!-- BEGIN_INCLUDE(mongo:create-file-from-payload) -->
-        <mongo:create-file-from-payload filename="#[variable:filename]" metadata-ref="myDbObject"/>
+        <mongo:create-file-from-payload config-ref="Mongo_DB__ConnectionManagement" filename="#[variable:filename]" metadata-ref="myDbObject"/>
 <!-- END_INCLUDE(mongo:create-file-from-payload) -->
 
 <!-- BEGIN_INCLUDE(mongo:find-files) -->
-        <mongo:find-files query-ref="myDbObject" />
+        <mongo:find-files config-ref="Mongo_DB__ConnectionManagement" query-ref="myDbObject" />
 <!-- END_INCLUDE(mongo:find-files) -->
 
 <!-- BEGIN_INCLUDE(mongo:find-files-using-query-map) -->
-        <mongo:find-files-using-query-map>
+        <mongo:find-files-using-query-map config-ref="Mongo_DB__ConnectionManagement">
             <mongo:query-attributes>
                 <mongo:query-attribute key="foo">bar</mongo:query-attribute>
                 <mongo:query-attribute key="foos">bars</mongo:query-attribute>
@@ -197,15 +212,15 @@
 <!-- END_INCLUDE(mongo:find-files-using-query-map) -->
 
 <!-- BEGIN_INCLUDE(mongo:find-one-file) -->
-        <mongo:find-one-file query-ref="myDbObject" />
+        <mongo:find-one-file config-ref="Mongo_DB__ConnectionManagement" query-ref="myDbObject" />
 <!-- END_INCLUDE(mongo:find-one-file) -->
 
 <!-- BEGIN_INCLUDE(mongo:get-file-content) -->
-        <mongo:get-file-content query-ref="myDbObject" />
+        <mongo:get-file-content config-ref="Mongo_DB__ConnectionManagement" query-ref="myDbObject" />
 <!-- END_INCLUDE(mongo:get-file-content) -->
 
 <!-- BEGIN_INCLUDE(mongo:get-file-content-using-query-map) -->
-        <mongo:get-file-content-using-query-map>
+        <mongo:get-file-content-using-query-map config-ref="Mongo_DB__ConnectionManagement">
             <mongo:query-attributes>
                 <mongo:query-attribute key="foo">bar</mongo:query-attribute>
                 <mongo:query-attribute key="foos">bars</mongo:query-attribute>
@@ -214,11 +229,11 @@
 <!-- END_INCLUDE(mongo:get-file-content-using-query-map) -->
 
 <!-- BEGIN_INCLUDE(mongo:list-files) -->
-        <mongo:list-files query-ref="myDbObject"/>
+        <mongo:list-files config-ref="Mongo_DB__ConnectionManagement" query-ref="myDbObject"/>
 <!-- END_INCLUDE(mongo:list-files) -->
 
 <!-- BEGIN_INCLUDE(mongo:list-files-using-query-map) -->
-        <mongo:list-files-using-query-map>
+        <mongo:list-files-using-query-map config-ref="Mongo_DB__ConnectionManagement">
             <mongo:query-attributes>
                 <mongo:query-attribute key="foo">foobaz</mongo:query-attribute>
                 <mongo:query-attribute key="foobar">foobaz</mongo:query-attribute>
@@ -227,11 +242,11 @@
 <!-- END_INCLUDE(mongo:list-files-using-query-map) -->
 
 <!-- BEGIN_INCLUDE(mongo:remove-files) -->
-        <mongo:remove-files query-ref="myDbObject"/>
+        <mongo:remove-files config-ref="Mongo_DB__ConnectionManagement" query-ref="myDbObject"/>
 <!-- END_INCLUDE(mongo:remove-files) -->
 
 <!-- BEGIN_INCLUDE(mongo:remove-files-using-query-map) -->
-        <mongo:remove-files-using-query-map>
+        <mongo:remove-files-using-query-map config-ref="Mongo_DB__ConnectionManagement">
             <mongo:query-attributes>
                 <mongo:query-attribute key="foo">foobaz</mongo:query-attribute>
                 <mongo:query-attribute key="foobar">foobaz</mongo:query-attribute>
@@ -240,7 +255,7 @@
 <!-- END_INCLUDE(mongo:remove-files-using-query-map) -->
 
 <!-- BEGIN_INCLUDE(mongo:find-one-file-using-query-map) -->
-        <mongo:find-one-file-using-query-map>
+        <mongo:find-one-file-using-query-map config-ref="Mongo_DB__ConnectionManagement">
             <mongo:query-attributes>
                 <mongo:query-attribute key="foo">bar</mongo:query-attribute>
                 <mongo:query-attribute key="foos">bars</mongo:query-attribute>
@@ -249,20 +264,16 @@
 <!-- END_INCLUDE(mongo:find-one-file-using-query-map) -->
 
 <!-- BEGIN_INCLUDE(mongo:dump) -->
-        <mongo:dump oplog="true"/>
+        <mongo:dump config-ref="Mongo_DB__ConnectionManagement" oplog="true"/>
 <!-- END_INCLUDE(mongo:dump) -->
 
 <!-- BEGIN_INCLUDE(mongo:restore) -->
-        <mongo:restore inputPath="dump/test.zip" oplogReplay="true"/>
+        <mongo:restore config-ref="Mongo_DB__ConnectionManagement" inputPath="dump/test.zip" oplogReplay="true"/>
 <!-- END_INCLUDE(mongo:restore) -->
 
 <!-- BEGIN_INCLUDE(mongo:incremental-dump) -->
-        <mongo:incremental-dump />
+        <mongo:incremental-dump config-ref="Mongo_DB__ConnectionManagement" />
 <!-- END_INCLUDE(mongo:incremental-dump) -->
-
-<!-- BEGIN_INCLUDE(mongo:jsonToDbobject) -->
-        <mongo:json-to-dbobject />
-<!-- END_INCLUDE(mongo:jsonToDbobject) -->
 
 <!-- BEGIN_INCLUDE(mongo:dbobjectToJson) -->
         <mongo:json-to-dbobject />
@@ -280,10 +291,10 @@
         <mongo:db-object-to-map />
 <!-- END_INCLUDE(mongo:dbObjectToMap) -->
 
-<!-- BEGIN_INCLUDE(mongo:start-consistent-request) -->
-        <mongo:start-consistent-request />
-<!-- END_INCLUDE(mongo:start-consistent-request) -->
+<!-- BEGIN_INCLUDE(mongo:jsonToDocument) -->
+        <mongo:json-to-document />
+<!-- END_INCLUDE(mongo:jsonToDocument) -->
 
-<!-- BEGIN_INCLUDE(mongo:end-consistent-request) -->
-        <mongo:end-consistent-request />
-<!-- END_INCLUDE(mongo:end-consistent-request) -->
+<!-- BEGIN_INCLUDE(mongo:documentToJson) -->
+        <mongo:document-to-json />
+<!-- END_INCLUDE(mongo:documentToJson) -->

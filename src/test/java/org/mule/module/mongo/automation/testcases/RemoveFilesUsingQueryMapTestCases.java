@@ -9,25 +9,26 @@
 package org.mule.module.mongo.automation.testcases;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.mule.module.mongo.automation.MongoTestParent;
+import org.mule.module.mongo.automation.AbstractMongoTest;
 import org.mule.module.mongo.automation.RegressionTests;
-import org.mule.modules.tests.ConnectorTestUtils;
 
-public class RemoveFilesUsingQueryMapTestCases extends MongoTestParent {
+public class RemoveFilesUsingQueryMapTestCases extends AbstractMongoTest {
+
+    private Map<String, Object> queryAttributes = new HashMap<String, Object>();
 
     @Before
     public void setUp() {
-        initializeTestRunMessage("removeFilesUsingQueryMap");
-
-        createFileFromPayload(getTestRunMessageValue("filename1"));
-        createFileFromPayload(getTestRunMessageValue("filename1"));
-        createFileFromPayload(getTestRunMessageValue("filename2"));
+        createFileFromPayload("filename1");
+        createFileFromPayload("filename1");
+        createFileFromPayload("filename2");
     }
 
     @After
@@ -38,25 +39,15 @@ public class RemoveFilesUsingQueryMapTestCases extends MongoTestParent {
     @Category({ RegressionTests.class })
     @Test
     public void testRemoveFilesUsingQueryMap_emptyQuery() {
-        try {
-            runFlowAndGetPayload("remove-files-using-query-map-empty-query");
-            assertEquals("There should be 0 files found after remove-files-using-query-map with an empty query", 0, findFiles());
-        } catch (Exception e) {
-            fail(ConnectorTestUtils.getStackTrace(e));
-        }
-
+        getConnector().removeFilesUsingQueryMap(queryAttributes);
+        assertEquals("There should be 0 files found after remove-files-using-query-map with an empty query", 0, findFiles(null));
     }
 
     @Category({ RegressionTests.class })
     @Test
     public void testRemoveFilesUsingQueryMap_nonemptyQuery() {
-        try {
-            runFlowAndGetPayload("remove-files-using-query-map-non-empty-query");
-            assertEquals("There should be 1 files found after removing files with a filename of " + getTestRunMessageValue("value"), 1, findFiles());
-        } catch (Exception e) {
-            fail(ConnectorTestUtils.getStackTrace(e));
-        }
-
+        queryAttributes.put("filename", "filename1");
+        getConnector().removeFilesUsingQueryMap(queryAttributes);
+        assertEquals("There should be 1 files found after removing files with a filename of " + queryAttributes.get("filename"), 1, findFiles(null));
     }
-
 }

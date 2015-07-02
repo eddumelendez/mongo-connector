@@ -9,29 +9,29 @@
 package org.mule.module.mongo.automation.testcases;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.mule.module.mongo.api.automation.MongoHelper;
-import org.mule.module.mongo.automation.MongoTestParent;
+import org.mule.module.mongo.automation.AbstractMongoTest;
 import org.mule.module.mongo.automation.RegressionTests;
-import org.mule.modules.tests.ConnectorTestUtils;
 
+import com.google.common.collect.Iterables;
 import com.mongodb.DBObject;
 
-public class FindFilesUsingQueryMapTestCases extends MongoTestParent {
+public class FindFilesUsingQueryMapTestCases extends AbstractMongoTest {
+
+    Map<String, Object> queryAttributes = new HashMap<String, Object>();
 
     @Before
     public void setUp() {
-        initializeTestRunMessage("findFilesUsingQueryMap");
-
-        createFileFromPayload(getTestRunMessageValue("filename1"));
-
-        // create another file with a different name
-        createFileFromPayload(getTestRunMessageValue("filename2"));
+        createFileFromPayload("file1");
+        createFileFromPayload("file2");
+        queryAttributes.put("filename", "file2");
     }
 
     @After
@@ -42,21 +42,15 @@ public class FindFilesUsingQueryMapTestCases extends MongoTestParent {
     @Category({ RegressionTests.class })
     @Test
     public void testFindFilesUsingQueryMap() {
-        try {
-            // queryAttribKey and queryAttribVal in testObjects are used in
-            // findFilesUsingQueryMapFlow to query for a file with filename of
-            // 'file2'
-            // One such file should be found
+        // queryAttribKey and queryAttribVal in testObjects are used in
+        // findFilesUsingQueryMapFlow to query for a file with filename of
+        // 'file2'
+        // One such file should be found
 
-            Iterable<DBObject> iterable = runFlowAndGetPayload("find-files-using-query-map");
-            int filesFoundUsingQueryMap = MongoHelper.getIterableSize(iterable);
+        Iterable<DBObject> iterable = getConnector().findFilesUsingQueryMap(queryAttributes);
+        int filesFoundUsingQueryMap = Iterables.size(iterable);
 
-            assertEquals("There should be 1 file with the name " + getTestRunMessageValue("filename2"), 1, filesFoundUsingQueryMap);
-            assertEquals("There should be 2 files in total", 2, findFiles());
-        } catch (Exception e) {
-            fail(ConnectorTestUtils.getStackTrace(e));
-        }
-
+        assertEquals("There should be 1 file with the name file2", 1, filesFoundUsingQueryMap);
+        assertEquals("There should be 2 files in total", 2, findFiles(null));
     }
-
 }

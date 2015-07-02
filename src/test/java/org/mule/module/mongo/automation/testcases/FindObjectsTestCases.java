@@ -9,69 +9,51 @@
 package org.mule.module.mongo.automation.testcases;
 
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bson.Document;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.mule.module.mongo.api.MongoCollection;
-import org.mule.module.mongo.automation.MongoTestParent;
+import org.mule.module.mongo.automation.AbstractMongoTest;
 import org.mule.module.mongo.automation.RegressionTests;
-import org.mule.module.mongo.automation.SmokeTests;
-import org.mule.modules.tests.ConnectorTestUtils;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBObject;
+import com.google.common.collect.Iterables;
 
-public class FindObjectsTestCases extends MongoTestParent {
+public class FindObjectsTestCases extends AbstractMongoTest {
 
     private List<String> objectIDs = new ArrayList<String>();
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         // create collection
-        initializeTestRunMessage("findObjects");
-        runFlowAndGetPayload("create-collection");
-
-        int numberOfObjects = (Integer) getTestRunMessageValue("numberOfObjects");
+        getConnector().createCollection("Arenas", false, 5, 5);
+        int numberOfObjects = 25;
 
         for (int i = 0; i < numberOfObjects; i++) {
-            BasicDBObject dbObject = new BasicDBObject();
-            upsertOnTestRunMessage("dbObjectRef", dbObject);
-
-            String payload = runFlowAndGetPayload("insert-object");
+            Document dbObject = new Document();
+            String payload = getConnector().insertObject("Arenas", dbObject);
             objectIDs.add(payload);
         }
-
     }
 
-    @Category({
-            SmokeTests.class,
-            RegressionTests.class })
+    @Category({ RegressionTests.class })
     @Test
     public void testFindObjects() {
-        try {
-            MongoCollection payload = runFlowAndGetPayload("find-objects");
+        Iterable<Document> payload = getConnector().findObjects("Arenas", new Document(), null, null, null, null);
 
-            assertTrue(objectIDs.size() == payload.size());
-            for (DBObject obj : payload) {
-                String dbObjectID = obj.get("_id").toString();
-                assertTrue(objectIDs.contains(dbObjectID));
-            }
-        } catch (Exception e) {
-            fail(ConnectorTestUtils.getStackTrace(e));
+        for (Document obj : payload) {
+            String dbObjectID = obj.get("_id").toString();
+            assertTrue(objectIDs.contains(dbObjectID));
         }
-
+        assertTrue(objectIDs.size() == Iterables.size(payload));
     }
 
     @After
     public void tearDown() throws Exception {
-        runFlowAndGetPayload("drop-collection");
-
+        getConnector().dropCollection("Arenas");
     }
-
 }

@@ -17,10 +17,8 @@ import java.util.List;
 
 import org.bson.BSONDecoder;
 import org.bson.BSONObject;
-import org.bson.BasicBSONObject;
+import org.bson.Document;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBObject;
 import com.mongodb.DefaultDBDecoder;
 
 public class RestoreFile implements Comparable<RestoreFile> {
@@ -33,24 +31,20 @@ public class RestoreFile implements Comparable<RestoreFile> {
         this.collection = BackupUtils.getCollectionName(file.getName());
     }
 
-    public List<DBObject> getCollectionObjects() throws IOException {
+    @SuppressWarnings("unchecked")
+    public List<Document> getCollectionObjects() throws IOException {
         BSONDecoder bsonDecoder = new DefaultDBDecoder();
-        BufferedInputStream inputStream = null;
-        List<DBObject> dbObjects = new ArrayList<DBObject>();
+        List<Document> documents = new ArrayList<>();
 
-        try {
-            inputStream = new BufferedInputStream(new FileInputStream(file));
+        try (BufferedInputStream inputStream = new BufferedInputStream(new FileInputStream(file))){
             while (inputStream.available() != 0) {
                 BSONObject bsonObject = bsonDecoder.readObject(inputStream);
                 if (bsonObject != null) {
-                    dbObjects.add(new BasicDBObject((BasicBSONObject) bsonObject));
+                    Document doc = new Document(bsonObject.toMap());
+                    documents.add(doc);
                 }
             }
-            return dbObjects;
-        } finally {
-            if (inputStream != null) {
-                inputStream.close();
-            }
+            return documents;
         }
     }
 

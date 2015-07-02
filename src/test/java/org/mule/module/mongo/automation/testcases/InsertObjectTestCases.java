@@ -9,43 +9,32 @@
 package org.mule.module.mongo.automation.testcases;
 
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
+import org.bson.Document;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.mule.module.mongo.automation.MongoTestParent;
+import org.mule.module.mongo.automation.AbstractMongoTest;
 import org.mule.module.mongo.automation.RegressionTests;
-import org.mule.module.mongo.automation.SmokeTests;
-import org.mule.modules.tests.ConnectorTestUtils;
 
-public class InsertObjectTestCases extends MongoTestParent {
+public class InsertObjectTestCases extends AbstractMongoTest {
 
     @Before
-    public void setUp() throws Exception {
-        initializeTestRunMessage("insertObject");
-        runFlowAndGetPayload("create-collection");
+    public void setUp() {
+        getConnector().createCollection("Arenas", false, 5, 5);
     }
 
-    @Category({
-            SmokeTests.class,
-            RegressionTests.class })
+    @Category({ RegressionTests.class })
     @Test
     public void testInsertObject() {
-        try {
-            String objectID = runFlowAndGetPayload("insert-object");
-
-            assertTrue(objectID != null && !objectID.equals("") && !objectID.trim().equals(""));
-        } catch (Exception e) {
-            fail(ConnectorTestUtils.getStackTrace(e));
-        }
-
+        String objectID = getConnector().insertObject("Arenas", new Document());
+        assertTrue(objectID != null && !objectID.equals("") && !objectID.trim().equals(""));
     }
 
     @After
     public void tearDown() throws Exception {
-        runFlowAndGetPayload("drop-collection");
+        getConnector().dropCollection("Arenas");
     }
 
 }

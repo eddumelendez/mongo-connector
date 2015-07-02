@@ -9,69 +9,48 @@
 package org.mule.module.mongo.automation.testcases;
 
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.util.List;
 
+import org.bson.Document;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.mule.module.mongo.api.IndexOrder;
 import org.mule.module.mongo.api.automation.MongoHelper;
-import org.mule.module.mongo.automation.MongoTestParent;
+import org.mule.module.mongo.automation.AbstractMongoTest;
 import org.mule.module.mongo.automation.RegressionTests;
-import org.mule.module.mongo.automation.SmokeTests;
-import org.mule.modules.tests.ConnectorTestUtils;
 
-import com.mongodb.DBObject;
+public class CreateIndexTestCases extends AbstractMongoTest {
 
-public class CreateIndexTestCases extends MongoTestParent {
+    private String indexKey = "myField";
+    private IndexOrder indexOrder;
 
     @Before
-    public void setUp() throws Exception {
-        initializeTestRunMessage("createIndex");
-        runFlowAndGetPayload("create-collection");
-
+    public void setUp() {
+        indexOrder = IndexOrder.ASC;
+        getConnector().createCollection("Arenas", false, 5, 5);
     }
 
-    @Category({
-            SmokeTests.class,
-            RegressionTests.class })
+    @Category({ RegressionTests.class })
     @Test
     public void testCreateIndex() {
-        try {
+        String indexName = indexKey + "_" + indexOrder.getValue();
 
-            String indexKey = getTestRunMessageValue("field").toString();
-            IndexOrder indexOrder = (IndexOrder) getTestRunMessageValue("order");
-            String indexName = indexKey + "_" + indexOrder.getValue();
+        getConnector().createIndex("Arenas", indexKey, indexOrder);
 
-            runFlowAndGetPayload("create-index");
-
-            List<DBObject> payload = runFlowAndGetPayload("list-indices");
-
-            assertTrue(MongoHelper.indexExistsInList(payload, indexName));
-
-        } catch (Exception e) {
-            fail(ConnectorTestUtils.getStackTrace(e));
-        }
-
+        List<Document> payload = (List<Document>) getConnector().listIndices("Arenas");
+        assertTrue(MongoHelper.indexExistsInList(payload, indexName));
     }
 
     @After
     public void tearDown() throws Exception {
         // Drop the created index
-        String indexKey = getTestRunMessageValue("field").toString();
-        IndexOrder indexOrder = (IndexOrder) getTestRunMessageValue("order");
-
         String indexName = indexKey + "_" + indexOrder.getValue();
-        upsertOnTestRunMessage("index", indexName);
-
-        runFlowAndGetPayload("drop-index");
+        getConnector().dropIndex("Arenas", indexName);
 
         // Drop the collection
-        runFlowAndGetPayload("drop-collection");
-
+        getConnector().dropCollection("Arenas");
     }
-
 }

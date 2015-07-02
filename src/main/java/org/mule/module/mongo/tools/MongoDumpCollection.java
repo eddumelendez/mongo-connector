@@ -8,39 +8,36 @@
 
 package org.mule.module.mongo.tools;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Iterator;
 import java.util.concurrent.Callable;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBCollection;
-import com.mongodb.DBCursor;
-import com.mongodb.DBObject;
+import org.bson.Document;
+import org.mule.module.mongo.api.IndexOrder;
+
+import com.mongodb.client.FindIterable;
+import com.mongodb.client.MongoCollection;
 
 public class MongoDumpCollection implements Callable<Void> {
 
-    private final DBCollection collection;
+    private final MongoCollection<Document> collection;
     private DumpWriter dumpWriter;
-    private DBObject query;
+    private Document query;
     private String name;
-    private final List<Integer> options = new ArrayList<Integer>();
+    private boolean oplogReplay;
 
-    public MongoDumpCollection(final DBCollection collection) {
+    public MongoDumpCollection(final MongoCollection<Document> collection) {
         this.collection = collection;
     }
 
     @Override
     public Void call() throws Exception {
-        final DBCursor cursor = query != null ? collection.find(query) : collection.find();
-        cursor.sort(new BasicDBObject("_id", 1));
-
-        for (final Integer option : options) {
-            cursor.addOption(option);
-        }
-
-        while (cursor.hasNext()) {
-            final BasicDBObject dbObject = (BasicDBObject) cursor.next();
-            dumpWriter.writeObject(name != null ? name : collection.getName(), dbObject);
+        final FindIterable<Document> cursor = query != null ? collection.find(query) : collection.find();
+        cursor.sort(new Document("_id", IndexOrder.ASC.getValue()));
+        cursor.oplogReplay(oplogReplay);
+        Iterator<Document> iterator = cursor.iterator();
+        while (iterator.hasNext()) {
+            final Document document = iterator.next();
+            dumpWriter.writeObject(name != null ? name : collection.getNamespace().getCollectionName(), document);
         }
         return null;
     }
@@ -49,7 +46,7 @@ public class MongoDumpCollection implements Callable<Void> {
         this.dumpWriter = dumpWriter;
     }
 
-    public void setQuery(final DBObject query) {
+    public void setQuery(final Document query) {
         this.query = query;
     }
 
@@ -57,8 +54,8 @@ public class MongoDumpCollection implements Callable<Void> {
         this.name = name;
     }
 
-    public void addOption(final Integer option) {
-        this.options.add(option);
+    public void setOplogReplay(boolean oplogReplay) {
+        this.oplogReplay = oplogReplay;
     }
 
 }

@@ -14,69 +14,78 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.bson.Document;
 import org.bson.types.ObjectId;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 
 /**
- * Conversions between JSon Strings and Maps into DBObjects
+ * Conversions between Json {@link String}s and {@link Map}s into {@link Document}s and {@link DBObject}s
  */
 public final class DBObjects {
 
     private static final Pattern OBJECT_ID_PATTERN = Pattern.compile("ObjectId\\((.+)\\)");
 
+    private static final String OK_KEY = "ok";
+
     private DBObjects() {
     }
 
     /**
-     * Performs a shallow conversion of a map into a DBObject: values of type Map will not be converted
+     * Performs a shallow conversion of a map into a Document: values of type Map will not be converted
      */
-    public static DBObject fromMap(Map<String, Object> map) {
-        return new BasicDBObject(map);
+    public static Document fromMap(Map<String, Object> map) {
+        return new Document(map);
+    }
+
+    /**
+     * Inspect a {@link Document} produced as a result of a command execution and say if it was successful or not
+     * 
+     * @param document
+     *            the result of a command execution
+     * @return whether the document contains {ok: 1.0} (meaning it was successful) or not.
+     */
+    public static boolean isCommandResultOk(Document document) {
+        return document.containsKey(OK_KEY) && document.getDouble(OK_KEY) == 1.0d;
     }
 
     @SuppressWarnings("unchecked")
-    public static DBObject from(Object o) {
+    public static Document from(Object o) {
         if (o == null) {
             return null;
-        }
-        if (o instanceof DBObject) {
-            return (DBObject) o;
-        }
-        if (o instanceof Map<?, ?>) {
+        } else if (o instanceof Document) {
+            return (Document) o;
+        } else if (o instanceof Map<?, ?>) {
             return fromMap((Map<String, Object>) o);
         }
         throw new IllegalArgumentException("Unsupported object type " + o);
     }
 
-    public static DBObject fromFunction(String function, DBObject dbObject) {
-        return new BasicDBObject(function, dbObject);
-    }
-
-    public static DBObject fromCommand(String commandName, String commandValue) {
-        DBObject dbObject;
-        if (commandValue == null) {
-            dbObject = new BasicDBObject(commandName, 1);
-        } else {
-            dbObject = new BasicDBObject(commandName, commandValue);
-        }
-
-        return dbObject;
+    public static Document fromFunction(String function, Document document) {
+        return new Document(function, document);
     }
 
     @SuppressWarnings("unchecked")
     public static Object adapt(Object o) {
         Object obj = o;
-        if (obj instanceof DBObject) {
-            adaptObjectId((DBObject) obj);
-            adaptAttributes((DBObject) obj);
+        if (obj instanceof Document) {
+            adaptObjectId((Document) obj);
+            adaptAttributes((Document) obj);
         } else if (obj instanceof Map<?, ?>) {
             obj = adapt(fromMap((Map<String, Object>) o));
         } else if (obj instanceof List<?>) {
             adaptElements(obj);
         }
         return obj;
+    }
+
+    public static Document adapt(Map<String, Object> o) {
+        return new Document(o);
+    }
+
+    public static DBObject adaptToDbObject(Map<String, Object> o) {
+        return new BasicDBObject(o);
     }
 
     @SuppressWarnings("unchecked")
@@ -86,17 +95,17 @@ public final class DBObjects {
         }
     }
 
-    private static void adaptAttributes(DBObject o) {
+    private static void adaptAttributes(Document o) {
         for (String key : o.keySet()) {
             o.put(key, adapt(o.get(key)));
         }
     }
 
-    private static void adaptObjectId(DBObject o) {
+    private static void adaptObjectId(Document o) {
         Object id = o.get("_id");
 
         if (id != null && id instanceof String) {
-            Matcher m = objectIdMatcher(id);
+            Matcher m = objectIdMatcher((String) id);
 
             if (m.matches()) {
                 o.put("_id", new ObjectId(m.group(1)));
@@ -104,7 +113,11 @@ public final class DBObjects {
         }
     }
 
-    private static Matcher objectIdMatcher(Object id) {
-        return OBJECT_ID_PATTERN.matcher((String) id);
+    private static Matcher objectIdMatcher(String id) {
+        return OBJECT_ID_PATTERN.matcher(id);
+    }
+
+    public static DBObject documentToDbObject(Document doc) {
+        return new BasicDBObject(doc);
     }
 }

@@ -9,69 +9,51 @@
 package org.mule.module.mongo.automation.testcases;
 
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
+import org.bson.Document;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.mule.module.mongo.automation.MongoTestParent;
+import org.mule.module.mongo.automation.AbstractMongoTest;
 import org.mule.module.mongo.automation.RegressionTests;
-import org.mule.modules.tests.ConnectorTestUtils;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBObject;
-
-public class UpdateObjectsTestCases extends MongoTestParent {
+public class UpdateObjectsTestCases extends AbstractMongoTest {
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         // Create the collection
-        initializeTestRunMessage("updateObjects");
-        runFlowAndGetPayload("create-collection");
-
+        getConnector().createCollection("Arenas", false, 5, 5);
         // Insert object
-        runFlowAndGetPayload("insert-object");
-
+        getConnector().insertObject("Arenas", new Document());
     }
 
     @After
     public void tearDown() throws Exception {
         // Drop the collection
-        runFlowAndGetPayload("drop-collection");
+        getConnector().dropCollection("Arenas");
 
     }
 
     @Category({ RegressionTests.class })
     @Test
     public void testUpdateObjects_OneObject() {
-        try {
 
-            // Grab the key-value pair
-            String key = getTestRunMessageValue("key").toString();
-            String value = getTestRunMessageValue("value").toString();
+        // Grab the key-value pair
+        String key = "myKey";
+        String value = "myValue";
 
-            // Create new DBObject based on key-value pair to replace existing DBObject
-            DBObject newDBObject = new BasicDBObject(key, value);
+        // Create new DBObject based on key-value pair to replace existing DBObject
+        Document newDBObject = new Document(key, value);
 
-            // Place it in testObjects so that the flow can access it
-            upsertOnTestRunMessage("elementRef", newDBObject);
+        // Update the object
+        getConnector().updateObjects("Arenas", new Document(), newDBObject, false);
 
-            // Update the object
-            runFlowAndGetPayload("update-objects-single-object");
+        // Attempt to find the object
+        Document obj = getConnector().findOneObject("Arenas", newDBObject, null, true);
 
-            // Attempt to find the object
-            DBObject obj = runFlowAndGetPayload("find-one-object");
-
-            // Assert that the object retrieved from MongoDB contains the key-value pairs
-            // Not the most ideal way to test, but since update returns void in connector,
-            // we cannot retrieve the ID granted to newDBObject
-            assertTrue(obj.containsField(key));
-            assertTrue(obj.get(key).equals(value));
-        } catch (Exception e) {
-            fail(ConnectorTestUtils.getStackTrace(e));
-        }
-
+        // Assert that the object retrieved from MongoDB contains the key-value pairs
+        assertTrue(obj.containsKey(key));
+        assertTrue(obj.get(key).equals(value));
     }
-
 }

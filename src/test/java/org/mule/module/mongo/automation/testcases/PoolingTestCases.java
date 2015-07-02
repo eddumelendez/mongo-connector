@@ -9,58 +9,51 @@
 package org.mule.module.mongo.automation.testcases;
 
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
+import org.bson.Document;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.mule.module.mongo.automation.MongoTestParent;
+import org.mule.module.mongo.automation.AbstractMongoTest;
 import org.mule.module.mongo.automation.RegressionTests;
-import org.mule.modules.tests.ConnectorTestUtils;
 
 import com.mongodb.BasicDBObject;
 
-public class PoolingTestCases extends MongoTestParent {
+public class PoolingTestCases extends AbstractMongoTest {
 
-    @SuppressWarnings("unchecked")
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         // Create collection
-        initializeTestRunMessage("countObjects");
-        runFlowAndGetPayload("create-collection");
-
+        getConnector().createCollection("Arenas", false, 5, 5);
     }
 
     @After
     public void tearDown() throws Exception {
         // Delete collection
-        runFlowAndGetPayload("drop-collection");
-
+        getConnector().dropCollection("Arenas");
     }
 
     @Category({ RegressionTests.class })
     @Test
     public void testPoolSizeDoesNotExceedConfiguration() throws Exception {
 
-        int numObjects = (Integer) getTestRunMessageValue("numObjects");
+        int numObjects = 5;
 
-        insertObjects(getEmptyDBObjects(numObjects));
-
-        Integer startingConnections = Integer.parseInt((String) runFlowAndGetPayload("count-open-connections"));
-
-        upsertOnTestRunMessage("queryRef", new BasicDBObject());
+        insertObjects(getEmptyDocuments(numObjects), "Arenas");
+        Integer startingConnections = getConnections();
 
         for (int i = 0; i < 32; i++) {
-            try {
-                runFlowAndGetPayload("count-objects");
-            } catch (Exception e) {
-                fail(ConnectorTestUtils.getStackTrace(e));
-            }
-
+            getConnector().countObjects("Arenas", new BasicDBObject());
         }
 
-        int newConnections = Integer.parseInt((String) runFlowAndGetPayload("count-open-connections")) - startingConnections;
+        int newConnections = getConnections() - startingConnections;
         assertTrue("Too many new connections (" + newConnections + ", ", newConnections <= 2);
+    }
+
+    private int getConnections() {
+        Document dbObj = getConnector().executeCommand("serverStatus", "");
+        dbObj = (Document) dbObj.get("connections");
+        return (Integer) dbObj.get("current");
     }
 }

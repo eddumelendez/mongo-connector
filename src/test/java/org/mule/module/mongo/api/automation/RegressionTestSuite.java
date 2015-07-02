@@ -14,7 +14,6 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite.SuiteClasses;
 import org.mule.module.mongo.api.DBObjectsUnitTest;
 import org.mule.module.mongo.api.FieldsSetUnitTest;
-import org.mule.module.mongo.api.MongoCollectionUnitTest;
 import org.mule.module.mongo.automation.RegressionTests;
 import org.mule.module.mongo.automation.testcases.AddUserTestCases;
 import org.mule.module.mongo.automation.testcases.CountObjectsTestCases;
@@ -44,7 +43,7 @@ import org.mule.module.mongo.automation.testcases.InsertObjectTestCases;
 import org.mule.module.mongo.automation.testcases.ListCollectionTestCases;
 import org.mule.module.mongo.automation.testcases.ListFilesTestCases;
 import org.mule.module.mongo.automation.testcases.ListFilesUsingQueryMapTestCases;
-import org.mule.module.mongo.automation.testcases.ListIndicesTestCases;
+import org.mule.module.mongo.automation.testcases.ListIndexesTestCases;
 import org.mule.module.mongo.automation.testcases.MapReduceObjectsTestCases;
 import org.mule.module.mongo.automation.testcases.RemoveFilesTestCases;
 import org.mule.module.mongo.automation.testcases.RemoveFilesUsingQueryMapTestCases;
@@ -92,9 +91,9 @@ import org.mule.module.mongo.automation.testcases.UpdateObjectsUsingQueryMapTest
         ListCollectionTestCases.class,
         ListFilesTestCases.class,
         ListFilesUsingQueryMapTestCases.class,
-        ListIndicesTestCases.class,
+        ListIndexesTestCases.class,
         MapReduceObjectsTestCases.class,
-        MongoCollectionUnitTest.class,
+        MapReduceObjectsTestCases.class,
         RemoveFilesTestCases.class,
         RemoveFilesUsingQueryMapTestCases.class,
         RemoveObjectsTestCases.class,

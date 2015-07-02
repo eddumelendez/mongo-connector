@@ -10,65 +10,59 @@ package org.mule.module.mongo.automation.testcases;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.bson.Document;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.mule.module.mongo.automation.MongoTestParent;
+import org.mule.module.mongo.automation.AbstractMongoTest;
 import org.mule.module.mongo.automation.RegressionTests;
-import org.mule.module.mongo.automation.SmokeTests;
-import org.mule.modules.tests.ConnectorTestUtils;
 
-import com.mongodb.DBObject;
-
-public class SaveObjectFromMapTestCases extends MongoTestParent {
+public class SaveObjectFromMapTestCases extends AbstractMongoTest {
 
     @Before
-    public void setUp() throws Exception {
-        initializeTestRunMessage("saveObjectFromMap");
-        runFlowAndGetPayload("create-collection");
-
+    public void setUp() {
+        // initializeTestRunMessage("saveObjectFromMap");
+        getConnector().createCollection("Arenas", false, 5, 5);
     }
 
     @After
     public void tearDown() throws Exception {
-        runFlowAndGetPayload("drop-collection");
+        getConnector().dropCollection("Arenas");
 
     }
 
-    @Category({
-            SmokeTests.class,
-            RegressionTests.class })
+    @Category({ RegressionTests.class })
     @Test
     public void testSaveObjectFromMap() {
-        try {
 
-            String key = getTestRunMessageValue("key").toString();
-            String value = getTestRunMessageValue("value").toString();
+        String key = "someKey";
+        String value = "someValue";
+        Map<String, Object> elementAttributes = new HashMap<String, Object>();
+        elementAttributes.put(key, value);
 
-            // Save object to MongoDB
-            runFlowAndGetPayload("save-object-from-map");
+        // Save object to MongoDB
+        getConnector().saveObjectFromMap("Arenas", elementAttributes);
 
-            // Check whether it was saved
-            DBObject object = (DBObject) runFlowAndGetPayload("find-one-object-using-query-map");
-            assertTrue(object.containsField(key));
-            assertTrue(object.get(key).equals(value));
+        // Check whether it was saved
+        Document object = getConnector().findOneObjectUsingQueryMap("Arenas", elementAttributes, null, true);
+        assertTrue(object.containsKey(key));
+        assertTrue(object.get(key).equals(value));
 
-            // Modify object and save to MongoDB
-            upsertOnTestRunMessage("value", "differentValue");
-            String differentValue = getTestRunMessageValue("value").toString();
-            runFlowAndGetPayload("save-object-from-map");
+        // Modify object and save to MongoDB
+        String differentValue = "differentValue";
+        elementAttributes.clear();
+        elementAttributes.put(key, differentValue);
+        getConnector().saveObjectFromMap("Arenas", elementAttributes);
 
-            // Check that modifications were saved
-            object = runFlowAndGetPayload("find-one-object-using-query-map");
-            assertTrue(object.containsField(key));
-            assertFalse(object.get(key).equals(value));
-            assertTrue(object.get(key).equals(differentValue));
-        } catch (Exception e) {
-            fail(ConnectorTestUtils.getStackTrace(e));
-        }
-
+        // Check that modifications were saved
+        object = getConnector().findOneObjectUsingQueryMap("Arenas", elementAttributes, null, true);
+        assertTrue(object.containsKey(key));
+        assertFalse(object.get(key).equals(value));
+        assertTrue(object.get(key).equals(differentValue));
     }
 }

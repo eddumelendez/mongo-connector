@@ -9,41 +9,35 @@
 package org.mule.module.mongo.automation.testcases;
 
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.fail;
 
+import org.bson.Document;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.mule.module.mongo.automation.MongoTestParent;
+import org.mule.module.mongo.automation.AbstractMongoTest;
 import org.mule.module.mongo.automation.RegressionTests;
-import org.mule.modules.tests.ConnectorTestUtils;
 
-public class DropDatabaseTestCases extends MongoTestParent {
+public class DropDatabaseTestCases extends AbstractMongoTest {
 
     @Before
-    public void setUp() throws Exception {
-        initializeTestRunMessage("dropDatabase");
-        runFlowAndGetPayload("save-object-for-drop-restore");
+    public void setUp() {
+        Document dbObject = new Document();
+        dbObject.put("key", "mykey");
+
+        getConnector().createCollection("Arenas", false, 5, 5);
+        getConnector().saveObject("Arenas", dbObject);
     }
 
     @After
     public void tearDown() throws Exception {
-        runFlowAndGetPayload("drop-collection-for-drop-restore");
+        getConnector().dropCollection("Arenas");
     }
 
     @Category({ RegressionTests.class })
     @Test
     public void testDropDatabase() {
-        try {
-            runFlowAndGetPayload("drop-database");
-            assertFalse("After dropping the database, the collection " + getTestRunMessageValue("collection") + " should not exist",
-                    (Boolean) runFlowAndGetPayload("exists-collection-for-drop-restore"));
-
-        } catch (Exception e) {
-            fail(ConnectorTestUtils.getStackTrace(e));
-        }
-
+        getConnector().dropDatabase();
+        assertFalse("After dropping the database, the collection Arenas" + " should not exist", getConnector().existsCollection("Arenas"));
     }
-
 }

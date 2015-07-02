@@ -22,35 +22,35 @@ public class MongoTestConnection {
     @Before
     public void setup() throws Exception {
         connector = new MongoCloudConnector();
-        connector.setHost("127.0.0.1");
+        connector.getStrategy().setHost("127.0.0.1");
     }
 
     @After
     public void tearDown() throws Exception {
-        connector.disconnect();
+        connector.getStrategy().disconnect();
     }
 
     @Test
     public void connectionIncorrectPort() throws ConnectionException {
-        connector.setPort(32589);
+        connector.getStrategy().setPort(32589);
         assertTrue(!isConnected("admin", "", "test"));
     }
 
     @Test
     public void connectionIncorrectCredentials() {
-        connector.setPort(27017);
+        connector.getStrategy().setPort(27017);
         assertTrue(!isConnected("admin", "zdrgdr", "test"));
     }
 
     @Test
     public void validConnection() {
-        connector.setPort(27017);
+        connector.getStrategy().setPort(27017);
         assertTrue(isConnected("admin", "", "test"));
     }
 
     private boolean isConnected(String user, String pass, String db) {
         try {
-            connector.connect(user, pass, db);
+            connector.getStrategy().connect(user, pass, db);
         } catch (ConnectionException e) {
             return false;
         }

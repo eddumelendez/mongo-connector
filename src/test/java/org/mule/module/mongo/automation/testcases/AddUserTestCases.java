@@ -8,32 +8,35 @@
 
 package org.mule.module.mongo.automation.testcases;
 
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
+import org.bson.Document;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.mule.module.mongo.automation.MongoTestParent;
+import org.mule.module.mongo.api.DBObjects;
+import org.mule.module.mongo.automation.AbstractMongoTest;
 import org.mule.module.mongo.automation.RegressionTests;
-import org.mule.modules.tests.ConnectorTestUtils;
 
-import com.mongodb.WriteResult;
+public class AddUserTestCases extends AbstractMongoTest {
 
-public class AddUserTestCases extends MongoTestParent {
+    @Before
+    public void setUp() {
+    }
 
     @Category({ RegressionTests.class })
     @Test
     public void testAddUser() {
-        try {
-            initializeTestRunMessage("addUser");
+        Document result = getConnector().addUser("newUsername", "newPassword");
 
-            WriteResult result = runFlowAndGetPayload("add-user");
-            assertTrue(result.getLastError().ok());
-            assertTrue(result.getError() == null);
-        } catch (Exception e) {
-            fail(ConnectorTestUtils.getStackTrace(e));
-        }
-
+        assertNotNull(result);
+        assertTrue(DBObjects.isCommandResultOk(result));
     }
 
+    @After
+    public void tearDown() {
+        getConnector().executeCommand("dropUser", "newUsername");
+    }
 }

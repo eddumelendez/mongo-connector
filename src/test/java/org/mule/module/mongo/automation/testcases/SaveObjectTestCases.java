@@ -8,63 +8,56 @@
 
 package org.mule.module.mongo.automation.testcases;
 
-import static org.junit.Assert.fail;
+import static org.junit.Assert.assertEquals;
 
+import org.bson.Document;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.mule.module.mongo.automation.MongoTestParent;
+import org.mule.module.mongo.automation.AbstractMongoTest;
 import org.mule.module.mongo.automation.RegressionTests;
-import org.mule.module.mongo.automation.SmokeTests;
-import org.mule.modules.tests.ConnectorTestUtils;
 
-import com.mongodb.DBObject;
-
-public class SaveObjectTestCases extends MongoTestParent {
+public class SaveObjectTestCases extends AbstractMongoTest {
 
     @Before
-    public void setUp() throws Exception {
-        initializeTestRunMessage("saveObject");
-        runFlowAndGetPayload("create-collection");
-
+    public void setUp() {
+        getConnector().createCollection("Arenas", false, 5, 5);
     }
 
-    @Category({
-            SmokeTests.class,
-            RegressionTests.class })
+    @Category({ RegressionTests.class })
     @Test
     public void testSaveObject() {
-        try {
-            runFlowAndGetPayload("save-object");
 
-            DBObject element = (DBObject) getTestRunMessageValue("elementRef");
+        Document element = new Document();
+        element.put("someKey", "someValue");
+        getConnector().saveObject("Arenas", element);
 
-            // Check that object was inserted
-            // MongoCollection dbObjects = getObjects(testObjects);
-            // assertTrue(dbObjects.contains(element));
+        // Check that object was inserted
+        Iterable<Document> dbObjects = getObjects("Arenas", element);
 
-            // Get key and value from payload (defined in bean)
-            String key = getTestRunMessageValue("key").toString();
-            String value = getTestRunMessageValue("value").toString();
-
-            // Modify object and save
-            element.put(key, value);
-            runFlowAndGetPayload("save-object");
-
-            // Check that object was changed in MongoDB
-            // dbObjects = getObjects(testObjects);
-            // assertTrue(dbObjects.contains(element));
-        } catch (Exception e) {
-            fail(ConnectorTestUtils.getStackTrace(e));
+        for (Document obj : dbObjects) {
+            assertEquals(obj, element);
         }
 
+        String key = "someKey";
+        String value = "differentValue";
+
+        // Modify object and save
+        element.put(key, value);
+        getConnector().saveObject("Arenas", element);
+
+        // Check that object was changed in MongoDB
+        dbObjects = getObjects("Arenas", element);
+
+        for (Document obj : dbObjects) {
+            assertEquals(obj, element);
+        }
     }
 
     @After
-    public void tearDown() throws Exception {
-        runFlowAndGetPayload("drop-collection");
-
+    public void tearDown() {
+        getConnector().dropCollection("Arenas");
     }
 
 }

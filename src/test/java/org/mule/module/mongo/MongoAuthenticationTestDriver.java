@@ -15,7 +15,7 @@ import org.junit.Test;
 
 /**
  * Integration test for the Connector when Authenticated. This test is only meaningful when server has being started with --auth argument, and a user has being created:
- *
+ * 
  * <pre>
  * db.addUser(username, password)
  * </pre>
@@ -32,11 +32,10 @@ public class MongoAuthenticationTestDriver {
     @Before
     public void setup() throws Exception {
         connector = new MongoCloudConnector();
-        connector.setHost("127.0.0.1");
-        connector.setPort(27017);
+        connector.getStrategy().setHost("127.0.0.1");
+        connector.getStrategy().setPort(27017);
         // connector.connect("foobar", "1234", "mongo-connector-test");
-        connector.connect("admin", "", "test");
-
+        connector.getStrategy().connect("admin", "", "test");
     }
 
     @Test

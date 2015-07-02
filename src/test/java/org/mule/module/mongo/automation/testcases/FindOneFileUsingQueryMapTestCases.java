@@ -9,27 +9,29 @@
 package org.mule.module.mongo.automation.testcases;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.mule.module.mongo.automation.MongoTestParent;
+import org.mule.module.mongo.automation.AbstractMongoTest;
 import org.mule.module.mongo.automation.RegressionTests;
-import org.mule.modules.tests.ConnectorTestUtils;
 
 import com.mongodb.DBObject;
 
-public class FindOneFileUsingQueryMapTestCases extends MongoTestParent {
+public class FindOneFileUsingQueryMapTestCases extends AbstractMongoTest {
+
+    private Map<String, Object> queryAttributes = new HashMap<String, Object>();
 
     @Before
     public void setUp() {
-        initializeTestRunMessage("findOneFileUsingQueryMap");
-
-        createFileFromPayload(getTestRunMessageValue("filename1"));
-        createFileFromPayload(getTestRunMessageValue("filename1"));
-        createFileFromPayload(getTestRunMessageValue("filename2"));
+        createFileFromPayload("file1");
+        createFileFromPayload("file2");
+        createFileFromPayload("file3");
+        queryAttributes.put("filename", "file1");
     }
 
     @After
@@ -40,16 +42,9 @@ public class FindOneFileUsingQueryMapTestCases extends MongoTestParent {
     @Category({ RegressionTests.class })
     @Test
     public void testFindOneFileUsingQueryMap() {
-        try {
-            DBObject dbObj = runFlowAndGetPayload("find-one-file-using-query-map");
+        DBObject dbObj = getConnector().findOneFileUsingQueryMap(queryAttributes);
 
-            assertEquals("The file found should have the name " + getTestRunMessageValue("filename1"), getTestRunMessageValue("filename1"), dbObj.get("filename"));
-            assertEquals("There should be 3 files in total", 3, findFiles());
-
-        } catch (Exception e) {
-            fail(ConnectorTestUtils.getStackTrace(e));
-        }
-
+        assertEquals("The file found should have the name file1", queryAttributes.get("filename"), dbObj.get("filename"));
+        assertEquals("There should be 3 files in total", 3, findFiles(null));
     }
-
 }

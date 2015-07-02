@@ -15,18 +15,19 @@ import java.util.List;
 
 import javax.validation.constraints.NotNull;
 
-import com.mongodb.DBCollection;
-import com.mongodb.DBObject;
-import com.mongodb.WriteResult;
+import org.bson.Document;
+import org.bson.conversions.Bson;
 
-/**
- * @author flbulgarelli
- */
+import com.mongodb.DBObject;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.MongoIterable;
+
 public interface MongoClient extends Closeable {
 
-    Collection<String> listCollections();
+    MongoIterable<String> listCollections();
 
-    DBCollection getCollection(@NotNull String name);
+    MongoCollection<Document> getCollection(@NotNull String name);
 
     boolean existsCollection(@NotNull String name);
 
@@ -34,27 +35,27 @@ public interface MongoClient extends Closeable {
 
     void createCollection(@NotNull String name, boolean capped, Integer maxObjects, Integer size);
 
-    String insertObject(@NotNull String collection, @NotNull DBObject object, @NotNull WriteConcern writeConcern);
+    String insertObject(@NotNull String collection, @NotNull Document document);
 
-    void updateObjects(@NotNull String collection, DBObject query, DBObject object, boolean upsert, boolean multi, @NotNull WriteConcern writeConcern);
+    void updateObjects(@NotNull String collection, Document query, Document object, boolean multi);
 
-    void saveObject(@NotNull String collection, @NotNull DBObject object, @NotNull WriteConcern writeConcern);
+    void saveObject(@NotNull String collection, @NotNull Document document);
 
-    void removeObjects(@NotNull String collection, DBObject query, @NotNull WriteConcern writeConcern);
+    void removeObjects(@NotNull String collection, Bson query);
 
-    Iterable<DBObject> mapReduceObjects(@NotNull String collection, @NotNull String mapFunction, @NotNull String reduceFunction, String outputCollection);
+    Iterable<Document> mapReduceObjects(@NotNull String collection, @NotNull String mapFunction, @NotNull String reduceFunction, String outputCollection);
 
-    long countObjects(@NotNull String collection, DBObject query);
+    long countObjects(@NotNull String collection, Bson query);
 
-    Iterable<DBObject> findObjects(@NotNull String collection, DBObject query, List<String> fields, Integer numToSkip, Integer limit, DBObject sortBy);
+    Iterable<Document> findObjects(@NotNull String collection, Document query, List<String> fields, Integer numToSkip, Integer limit, Document sortBy);
 
-    DBObject findOneObject(@NotNull String collection, DBObject query, List<String> fields, boolean failOnNotFound);
+    Document findOneObject(@NotNull String collection, Document query, List<String> fields, boolean failOnNotFound);
 
     void createIndex(String collection, String field, IndexOrder order);
 
     void dropIndex(String collection, String name);
 
-    Collection<DBObject> listIndices(String collection);
+    Collection<Document> listIndices(String collection);
 
     DBObject createFile(InputStream content, String filename, String contentType, DBObject metadata);
 
@@ -68,13 +69,16 @@ public interface MongoClient extends Closeable {
 
     void removeFiles(DBObject query);
 
-    DBObject executeComamnd(DBObject command);
+    Document executeCommand(Document command);
 
-    WriteResult addUser(String username, String password);
+    Document addUser(String username, String password);
 
     void dropDatabase();
 
-    void requestStart();
+    MongoDatabase getDatabase(String databaseName);
 
-    void requestDone();
+    boolean isAlive();
+
+    String getConnectionId();
+
 }

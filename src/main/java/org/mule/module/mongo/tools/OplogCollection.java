@@ -11,11 +11,10 @@ package org.mule.module.mongo.tools;
 import java.io.IOException;
 
 import org.apache.commons.lang.Validate;
+import org.bson.Document;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.CommandResult;
-import com.mongodb.DB;
-import com.mongodb.DBCollection;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
 
 public class OplogCollection {
 
@@ -23,10 +22,10 @@ public class OplogCollection {
     private static final String REPLICA_OPLOG = "rs";
     private static final String IS_MASTER_FIELD = "ismaster";
 
-    private DB admin;
-    private DB local;
+    private MongoDatabase admin;
+    private MongoDatabase local;
 
-    public OplogCollection(DB admin, DB local) {
+    public OplogCollection(MongoDatabase admin, MongoDatabase local) {
         Validate.notNull(admin);
         Validate.notNull(local);
 
@@ -34,7 +33,7 @@ public class OplogCollection {
         this.local = local;
     }
 
-    public DBCollection getOplogCollection() throws IOException {
+    public MongoCollection<Document> getOplogCollection() throws IOException {
         String oplogCollectionName = BackupConstants.OPLOG + ".";
         oplogCollectionName += isMaster() ? MASTER_OPLOG : REPLICA_OPLOG;
 
@@ -43,11 +42,11 @@ public class OplogCollection {
 
     private boolean isMaster() throws IOException {
         // Validate we are on master or replica
-        CommandResult commandResult = admin.command(new BasicDBObject(IS_MASTER_FIELD, 1));
+        Document commandResult = admin.runCommand(new Document(IS_MASTER_FIELD, 1));
         boolean isMaster = commandResult.getBoolean(IS_MASTER_FIELD, false);
 
         // Replica set member
-        if (commandResult.containsField("hosts")) {
+        if (commandResult.containsKey("hosts")) {
             return false;
         } else {
             if (!isMaster) {

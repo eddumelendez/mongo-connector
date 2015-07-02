@@ -8,45 +8,42 @@
 
 package org.mule.module.mongo.automation.testcases;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.assertFalse;
 
+import org.bson.Document;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.mule.module.mongo.api.MongoCollection;
-import org.mule.module.mongo.automation.MongoTestParent;
+import org.mule.module.mongo.automation.AbstractMongoTest;
 import org.mule.module.mongo.automation.RegressionTests;
-import org.mule.modules.tests.ConnectorTestUtils;
 
-public class RemoveObjectsTestCases extends MongoTestParent {
+public class RemoveObjectsTestCases extends AbstractMongoTest {
 
     @Before
-    public void setUp() throws Exception {
-        initializeTestRunMessage("removeObjects");
-        runFlowAndGetPayload("create-collection");
-        runFlowAndGetPayload("insert-object");
+    public void setUp() {
+        // initializeTestRunMessage("removeObjects");
+        getConnector().createCollection("Arenas", false, 5, 5);
+        getConnector().insertObject("Arenas", new Document());
+        // runFlowAndGetPayload("insert-object");
 
     }
 
     @Category({ RegressionTests.class })
     @Test
     public void testRemoveObjects() {
-        try {
-            runFlowAndGetPayload("remove-objects");
-            MongoCollection payload = runFlowAndGetPayload("find-objects");
-            assertTrue(payload.isEmpty());
-        } catch (Exception e) {
-            fail(ConnectorTestUtils.getStackTrace(e));
-        }
+
+        // runFlowAndGetPayload("remove-objects");
+        getConnector().removeObjects("Arenas", new Document());
+        // MongoCollection payload = runFlowAndGetPayload("find-objects");
+        Iterable<Document> resultCollection = getConnector().findObjects("Arenas", new Document(), null, 0, 0, null);
+        assertFalse(resultCollection.iterator().hasNext());
 
     }
 
     @After
     public void tearDown() throws Exception {
-        runFlowAndGetPayload("drop-collection");
-
+        getConnector().dropCollection("Arenas");
     }
 
 }

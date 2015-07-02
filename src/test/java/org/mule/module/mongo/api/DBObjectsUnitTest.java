@@ -16,18 +16,17 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.mule.module.mongo.automation.RegressionTests;
 
-import com.mongodb.DBObject;
+import com.google.common.collect.ImmutableMap;
 
-@SuppressWarnings("serial")
 public class DBObjectsUnitTest {
 
     @Category({ RegressionTests.class })
@@ -39,16 +38,10 @@ public class DBObjectsUnitTest {
     @Category({ RegressionTests.class })
     @Test
     public void fromMap() throws Exception {
-        DBObject map = DBObjects.from(new HashMap<String, Object>() {
-
-            {
-                put("key1", 4);
-                put("key2", Collections.singletonMap("key3", 9));
-            }
-        });
+        Document map = DBObjects.from(ImmutableMap.of("key1",  4, "key2", Collections.singletonMap("key3", 9)));
         assertEquals(4, map.get("key1"));
         assertThat(map.get("key2"), instanceOf(Map.class));
-        assertThat(map, instanceOf(HashMap.class));
+        assertThat(map, instanceOf(Document.class));
     }
 
     @Category({ RegressionTests.class })
@@ -61,15 +54,7 @@ public class DBObjectsUnitTest {
     @Category({ RegressionTests.class })
     @Test
     public void fromMapWithId() throws Exception {
-        DBObject o = DBObjects.from(new HashMap<String, Object>() {
-
-            {
-                put("name", "John");
-                put("surname", "Doe");
-                put("age", 35);
-                put("_id", 500);
-            }
-        });
+        Document o = DBObjects.from(ImmutableMap.of("name",  "John", "surname", "Doe", "age", 35, "_id", 500));
         assertEquals("John", o.get("name"));
         assertEquals(500, o.get("_id"));
     }
@@ -77,68 +62,33 @@ public class DBObjectsUnitTest {
     @Category({ RegressionTests.class })
     @Test
     public void fromMapWithObjectId() throws Exception {
-        DBObject o = DBObjects.from(new HashMap<String, Object>() {
-
-            {
-                put("name", "John");
-                put("surname", "Doe");
-                put("age", 35);
-                put("_id", "4df7b8e8663b85b105725d34");
-            }
-        });
+        Map<String, Object> map = ImmutableMap.<String, Object>of("name",  "John", "surname", "Doe", "age", 35, "_id", new ObjectId("4df7b8e8663b85b105725d34"));
+        Document o = DBObjects.from(map);
         assertEquals("John", o.get("name"));
         assertEquals(new ObjectId("4df7b8e8663b85b105725d34"), o.get("_id"));
+        assertEquals(o.keySet(), map.keySet());
     }
 
     @Category({ RegressionTests.class })
     @Test
     public void fromMapWithNestedObject() throws Exception {
-        final DBObject cat = DBObjects.from(new HashMap<String, Object>() {
-
-            {
-                put("name", "Garfield");
-            }
-        });
-        DBObject o = DBObjects.from(new HashMap<String, Object>() {
-
-            {
-                put("name", "Jon");
-                put("surname", "Arbuckle");
-                put("cat", cat);
-            }
-        });
+        final Document cat = DBObjects.from(ImmutableMap.of("name", "Garfield"));
+        Document o = DBObjects.from(ImmutableMap.of("name", "Jon", "surname", "Arbuckle", "cat", cat));
         assertEquals("Jon", o.get("name"));
         assertEquals("Arbuckle", o.get("surname"));
-        assertThat(o.get("cat"), instanceOf(DBObject.class));
-        assertEquals("Garfield", ((DBObject) o.get("cat")).get("name"));
+        assertThat(o.get("cat"), instanceOf(Document.class));
+        assertEquals("Garfield", ((Document) o.get("cat")).get("name"));
     }
 
     @Category({ RegressionTests.class })
     @Test
     public void fromMapWithNestedList() throws Exception {
-        final DBObject garfield = DBObjects.from(new HashMap<String, Object>() {
-
-            {
-                put("name", "Garfield");
-            }
-        });
-        final DBObject oddie = DBObjects.from(new HashMap<String, Object>() {
-
-            {
-                put("name", "Oddie");
-            }
-        });
-        DBObject o = DBObjects.from(new HashMap<String, Object>() {
-
-            {
-                put("name", "Jon");
-                put("surname", "Arbuckle");
-                put("pets", Arrays.asList(garfield, oddie));
-            }
-        });
+        final Document garfield = DBObjects.from(ImmutableMap.of("name", "Garfield"));
+        final Document oddie = DBObjects.from(ImmutableMap.of("name", "Oddie"));
+        Document o = DBObjects.from(ImmutableMap.of("name", "Jon", "surname", "Arbuckle", "pets", Arrays.asList(garfield, oddie)));
         assertEquals("Jon", o.get("name"));
         assertEquals("Arbuckle", o.get("surname"));
         assertThat(o.get("pets"), instanceOf(List.class));
-        assertTrue(((List<?>) o.get("pets")).get(0) instanceof DBObject);
+        assertTrue(((List<?>) o.get("pets")).get(0) instanceof Document);
     }
 }

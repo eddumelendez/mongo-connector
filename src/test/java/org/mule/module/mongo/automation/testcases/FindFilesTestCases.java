@@ -14,17 +14,15 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.mule.module.mongo.automation.MongoTestParent;
+import org.mule.module.mongo.automation.AbstractMongoTest;
 import org.mule.module.mongo.automation.RegressionTests;
 
-public class FindFilesTestCases extends MongoTestParent {
+public class FindFilesTestCases extends AbstractMongoTest {
 
     @Before
     public void setUp() {
-        initializeTestRunMessage("findFiles");
-
-        createFileFromPayload(getTestRunMessageValue("filename1"));
-        createFileFromPayload(getTestRunMessageValue("filename1"));
+        createFileFromPayload("file1");
+        createFileFromPayload("file2");
     }
 
     @After
@@ -35,7 +33,7 @@ public class FindFilesTestCases extends MongoTestParent {
     @Category({ RegressionTests.class })
     @Test
     public void testFindFiles() {
-        assertEquals("There should be 2 files found", 2, findFiles());
+        assertEquals("There should be 2 files found", 2, findFiles(null));
     }
 
 }

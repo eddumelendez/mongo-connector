@@ -9,66 +9,47 @@
 package org.mule.module.mongo.automation.testcases;
 
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.fail;
 
 import java.util.List;
 
+import org.bson.Document;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.mule.module.mongo.api.IndexOrder;
 import org.mule.module.mongo.api.automation.MongoHelper;
-import org.mule.module.mongo.automation.MongoTestParent;
+import org.mule.module.mongo.automation.AbstractMongoTest;
 import org.mule.module.mongo.automation.RegressionTests;
-import org.mule.module.mongo.automation.SmokeTests;
-import org.mule.modules.tests.ConnectorTestUtils;
 
-import com.mongodb.DBObject;
+public class DropIndexTestCases extends AbstractMongoTest {
 
-public class DropIndexTestCases extends MongoTestParent {
+    private String indexKey = "myField";
+    private IndexOrder indexOrder;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         // Create the collection
-        initializeTestRunMessage("dropIndex");
-        runFlowAndGetPayload("create-collection");
+        indexOrder = IndexOrder.ASC;
+        getConnector().createCollection("Arenas", false, 5, 5);
 
         // Create the index
-        runFlowAndGetPayload("create-index");
-
+        getConnector().createIndex("Arenas", indexKey, indexOrder);
     }
 
-    @Category({
-            SmokeTests.class,
-            RegressionTests.class })
+    @Category({ RegressionTests.class })
     @Test
     public void testDropIndexByName() {
-        try {
+        String indexName = indexKey + "_" + indexOrder.getValue();
 
-            String indexKey = getTestRunMessageValue("field").toString();
-            IndexOrder indexOrder = (IndexOrder) getTestRunMessageValue("order");
+        getConnector().dropIndex("Arenas", indexName);
 
-            String indexName = indexKey + "_" + indexOrder.getValue();
-
-            upsertOnTestRunMessage("index", indexName);
-
-            runFlowAndGetPayload("drop-index");
-
-            List<DBObject> payload = runFlowAndGetPayload("list-indices");
-
-            assertFalse(MongoHelper.indexExistsInList(payload, indexName));
-
-        } catch (Exception e) {
-            fail(ConnectorTestUtils.getStackTrace(e));
-        }
-
+        List<Document> payload = (List<Document>) getConnector().listIndices("Arenas");
+        assertFalse(MongoHelper.indexExistsInList(payload, indexName));
     }
 
     @After
     public void tearDown() throws Exception {
-        runFlowAndGetPayload("drop-collection");
-
+        getConnector().dropCollection("Arenas");
     }
-
 }

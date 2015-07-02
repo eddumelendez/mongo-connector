@@ -8,14 +8,16 @@
 
 package org.mule.module.mongo.automation.testrunners;
 
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.experimental.categories.Categories;
 import org.junit.experimental.categories.Categories.IncludeCategory;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite.SuiteClasses;
+import org.mule.module.mongo.MongoCloudConnector;
 import org.mule.module.mongo.MongoObjectStoreTestCases;
 import org.mule.module.mongo.api.DBObjectsUnitTest;
 import org.mule.module.mongo.api.FieldsSetUnitTest;
-import org.mule.module.mongo.api.MongoCollectionUnitTest;
 import org.mule.module.mongo.automation.RegressionTests;
 import org.mule.module.mongo.automation.testcases.AddUserTestCases;
 import org.mule.module.mongo.automation.testcases.CountObjectsTestCases;
@@ -45,7 +47,7 @@ import org.mule.module.mongo.automation.testcases.InsertObjectTestCases;
 import org.mule.module.mongo.automation.testcases.ListCollectionTestCases;
 import org.mule.module.mongo.automation.testcases.ListFilesTestCases;
 import org.mule.module.mongo.automation.testcases.ListFilesUsingQueryMapTestCases;
-import org.mule.module.mongo.automation.testcases.ListIndicesTestCases;
+import org.mule.module.mongo.automation.testcases.ListIndexesTestCases;
 import org.mule.module.mongo.automation.testcases.MapReduceObjectsTestCases;
 import org.mule.module.mongo.automation.testcases.PoolingTestCases;
 import org.mule.module.mongo.automation.testcases.RemoveFilesTestCases;
@@ -60,6 +62,7 @@ import org.mule.module.mongo.automation.testcases.UpdateObjectsByFunctionUsingMa
 import org.mule.module.mongo.automation.testcases.UpdateObjectsTestCases;
 import org.mule.module.mongo.automation.testcases.UpdateObjectsUsingMapTestCases;
 import org.mule.module.mongo.automation.testcases.UpdateObjectsUsingQueryMapTestCases;
+import org.mule.tools.devkit.ctf.mockup.ConnectorTestContext;
 
 @RunWith(Categories.class)
 @IncludeCategory(RegressionTests.class)
@@ -94,10 +97,9 @@ import org.mule.module.mongo.automation.testcases.UpdateObjectsUsingQueryMapTest
         ListCollectionTestCases.class,
         ListFilesTestCases.class,
         ListFilesUsingQueryMapTestCases.class,
-        ListIndicesTestCases.class,
+        ListIndexesTestCases.class,
         MapReduceObjectsTestCases.class,
         MongoObjectStoreTestCases.class,
-        MongoCollectionUnitTest.class,
         PoolingTestCases.class,
         RemoveFilesTestCases.class,
         RemoveFilesUsingQueryMapTestCases.class,
@@ -113,4 +115,13 @@ import org.mule.module.mongo.automation.testcases.UpdateObjectsUsingQueryMapTest
         UpdateObjectsUsingQueryMapTestCases.class })
 public class RegressionTestSuite {
 
+    @BeforeClass
+    public static void initialiseSuite() {
+        ConnectorTestContext.initialize(MongoCloudConnector.class);
+    }
+
+    @AfterClass
+    public static void shutdownSuite() throws Exception {
+        ConnectorTestContext.shutDown();
+    }
 }

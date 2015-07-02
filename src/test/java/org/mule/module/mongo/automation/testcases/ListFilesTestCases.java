@@ -11,29 +11,27 @@ package org.mule.module.mongo.automation.testcases;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.mule.api.MuleMessage;
-import org.mule.module.mongo.api.automation.MongoHelper;
-import org.mule.module.mongo.automation.MongoTestParent;
+import org.mule.module.mongo.automation.AbstractMongoTest;
 import org.mule.module.mongo.automation.RegressionTests;
-import org.mule.modules.tests.ConnectorTestUtils;
 
+import com.google.common.collect.Iterables;
+import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 
-public class ListFilesTestCases extends MongoTestParent {
+public class ListFilesTestCases extends AbstractMongoTest {
+
+    private DBObject query = new BasicDBObject();
 
     @Before
     public void setUp() {
-        initializeTestRunMessage("listFiles");
-
-        createFileFromPayload(getTestRunMessageValue("filename1"));
-        createFileFromPayload(getTestRunMessageValue("filename1"));
-        createFileFromPayload(getTestRunMessageValue("filename2"));
+        createFileFromPayload("filename1");
+        createFileFromPayload("filename2");
+        createFileFromPayload("filename1");
     }
 
     @After
@@ -44,44 +42,23 @@ public class ListFilesTestCases extends MongoTestParent {
     @Category({ RegressionTests.class })
     @Test
     public void testListFiles_emptyQuery() {
-        MuleMessage response = null;
-        try {
-            response = runFlowAndGetMessage("list-files");
+        Iterable<DBObject> response = getConnector().listFiles(query);
 
-            assertNotNull(response);
-            assertNotNull(response.getPayload());
-            assertTrue(response.getPayload() instanceof Iterable);
-
-            Iterable<DBObject> iterable = (Iterable<DBObject>) response.getPayload();
-
-            assertEquals("An empty DBObject for the query should list all the files", 3, MongoHelper.getIterableSize(iterable));
-
-        } catch (Exception e) {
-            fail(ConnectorTestUtils.getStackTrace(e));
-        }
-
+        assertNotNull(response);
+        assertTrue(response instanceof Iterable);
+        assertEquals("An empty DBObject for the query should list all the files", 3, Iterables.size(response));
     }
 
     @Category({ RegressionTests.class })
     @Test
     public void testListFiles_nonemptyQuery() {
-        DBObject queryRef = (DBObject) getTestRunMessageValue("queryRef");
-        queryRef.put((String) getTestRunMessageValue("key"), getTestRunMessageValue("value"));
-        MuleMessage response = null;
-        try {
-            response = runFlowAndGetMessage("list-files");
+        query.put("filename", "filename1");
 
-            assertNotNull(response);
-            assertNotNull(response.getPayload());
-            assertTrue(response.getPayload() instanceof Iterable);
+        Iterable<DBObject> response = getConnector().listFiles(query);
 
-            Iterable<DBObject> iterable = (Iterable<DBObject>) response.getPayload();
-
-            assertEquals("Listing files with a query with key " + getTestRunMessageValue("key") + " and value " + getTestRunMessageValue("value") + " should give 2 results", 2,
-                    MongoHelper.getIterableSize(iterable));
-        } catch (Exception e) {
-            fail(ConnectorTestUtils.getStackTrace(e));
-        }
-
+        assertNotNull(response);
+        assertTrue(response instanceof Iterable);
+        assertEquals("Listing files with a query with key " + query.keySet().toString() + " and value " + query.get("filename1") + " should give 2 results", 2,
+                Iterables.size(response));
     }
 }

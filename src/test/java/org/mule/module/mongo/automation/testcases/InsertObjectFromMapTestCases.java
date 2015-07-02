@@ -9,54 +9,54 @@
 package org.mule.module.mongo.automation.testcases;
 
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+
+import org.bson.Document;
+import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.mule.module.mongo.automation.MongoTestParent;
+import org.mule.module.mongo.automation.AbstractMongoTest;
 import org.mule.module.mongo.automation.RegressionTests;
-import org.mule.modules.tests.ConnectorTestUtils;
 
-import com.mongodb.DBObject;
+public class InsertObjectFromMapTestCases extends AbstractMongoTest {
 
-public class InsertObjectFromMapTestCases extends MongoTestParent {
+    private Map<String, Object> testData = new HashMap<String, Object>();
+    private List<String> list = new LinkedList<String>();
 
     @Before
-    public void setUp() throws Exception {
-        initializeTestRunMessage("insertObjectFromMap");
-        runFlowAndGetPayload("create-collection");
-
+    public void setUp() {
+        getConnector().createCollection("Arenas", false, 5, 5);
+        testData.put("key", "objectKey");
+        testData.put("value", "objectValue");
+        list.add("key");
+        list.add("value");
     }
 
     @Category({ RegressionTests.class })
     @Test
     public void testInsertObjectFromMap() {
-        try {
+        Iterable<Document> iterable;
+        String objectID = getConnector().insertObjectFromMap("Arenas", testData);
 
-            String key = getTestRunMessageValue("key").toString();
-            String value = getTestRunMessageValue("value").toString();
+        assertTrue(objectID != null && !objectID.equals("") && !objectID.trim().equals(""));
 
-            String objectID = runFlowAndGetPayload("insert-object-from-map");
-
-            assertTrue(objectID != null && !objectID.equals("") && !objectID.trim().equals(""));
-
-            DBObject object = runFlowAndGetPayload("find-one-object-using-query-map");
-            assertTrue(object.containsField("_id"));
-            assertTrue(object.containsField(key));
-
-            assertTrue(object.get("_id").equals(objectID));
-            assertTrue(object.get(key).equals(value));
-
-        } catch (Exception e) {
-            fail(ConnectorTestUtils.getStackTrace(e));
+        iterable = getConnector().findObjectsUsingQueryMap("Arenas", testData, list, null, null, null);
+        for (Document dbObj : iterable) {
+            assertTrue(dbObj.containsKey("_id"));
+            assertTrue(dbObj.containsKey("key"));
+            ObjectId id = (ObjectId) dbObj.get("_id");
+            assertTrue(id.toString().equals(objectID));
         }
     }
 
     @After
     public void tearDown() throws Exception {
-        runFlowAndGetPayload("drop-collection");
-
+        getConnector().dropCollection("Arenas");
     }
 }

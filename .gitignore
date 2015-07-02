@@ -10,3 +10,6 @@
 .DS_Store
 .classpath
 .project
+automation-credentials.properties
+interop-testdata-override.xml
+interop-testdata.xml

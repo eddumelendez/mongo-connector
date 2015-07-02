@@ -13,10 +13,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 import org.bson.BSON;
+import org.bson.BSONObject;
+import org.bson.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.mongodb.DBObject;
+import com.mongodb.BasicDBObject;
 
 public class BsonDumpWriter extends DumpWriter {
 
@@ -37,19 +39,15 @@ public class BsonDumpWriter extends DumpWriter {
     }
 
     @Override
-    public void writeObject(String collection, DBObject dbObject) throws IOException {
-        FileOutputStream outputStream = null;
+    public void writeObject(String collection, Document document) throws IOException {
         File outputFile = new File(getFilePath(collection));
-        if (!outputFile.getParentFile().mkdirs()) {
-            logger.info("Couldn't create dir: " + outputFile.getParentFile());
+        File folder = outputFile.getParentFile();
+        if (!folder.exists() && !folder.mkdirs()) {
+            logger.warn("Couldn't create dir: " + folder);
         }
-        try {
-            outputStream = new FileOutputStream(outputFile, true);
-            outputStream.write(BSON.encode(dbObject));
-        } finally {
-            if (outputStream != null) {
-                outputStream.close();
-            }
+        try (FileOutputStream outputStream = new FileOutputStream(outputFile, true)) {
+            BSONObject doc = new BasicDBObject(document);
+            outputStream.write(BSON.encode(doc));
         }
     }
 }

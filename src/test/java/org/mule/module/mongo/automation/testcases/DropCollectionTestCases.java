@@ -9,39 +9,24 @@
 package org.mule.module.mongo.automation.testcases;
 
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.fail;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.mule.module.mongo.automation.MongoTestParent;
+import org.mule.module.mongo.automation.AbstractMongoTest;
 import org.mule.module.mongo.automation.RegressionTests;
-import org.mule.module.mongo.automation.SmokeTests;
-import org.mule.modules.tests.ConnectorTestUtils;
 
-public class DropCollectionTestCases extends MongoTestParent {
+public class DropCollectionTestCases extends AbstractMongoTest {
 
     @Before
-    public void setUp() throws Exception {
-        initializeTestRunMessage("dropCollection");
-        runFlowAndGetPayload("create-collection");
-
+    public void setUp() {
+        getConnector().createCollection("Arenas", false, 5, 5);
     }
 
-    @Category({
-            SmokeTests.class,
-            RegressionTests.class })
+    @Category({ RegressionTests.class })
     @Test
     public void testDropCollection() {
-
-        try {
-            runFlowAndGetPayload("drop-collection");
-            assertFalse((Boolean) runFlowAndGetPayload("exists-collection"));
-
-        } catch (Exception e) {
-            fail(ConnectorTestUtils.getStackTrace(e));
-        }
-
+        getConnector().dropCollection("Arenas");
+        assertFalse(getConnector().existsCollection("Arenas"));
     }
-
 }

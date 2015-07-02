@@ -8,98 +8,86 @@
 
 package org.mule.module.mongo.automation.testcases;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.bson.Document;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.mule.module.mongo.api.MongoCollection;
-import org.mule.module.mongo.automation.MongoTestParent;
+import org.mule.module.mongo.automation.AbstractMongoTest;
 import org.mule.module.mongo.automation.RegressionTests;
-import org.mule.modules.tests.ConnectorTestUtils;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBObject;
+import com.google.common.collect.Iterables;
 
-public class RemoveObjectsUsingQueryMapTestCases extends MongoTestParent {
+public class RemoveObjectsUsingQueryMapTestCases extends AbstractMongoTest {
+
+    private int numberOfObjects = 25;
+    private int extraObjects = 10;
+    private String key = "someKey";
+    private String value = "someValue";
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         // Create the collection
-        initializeTestRunMessage("removeObjectsUsingQueryMap");
-        runFlowAndGetPayload("create-collection");
-
-        // Load variables from testObjects
-        String key = getTestRunMessageValue("key").toString();
-        String value = getTestRunMessageValue("value").toString();
-        int numberOfObjects = (Integer) getTestRunMessageValue("numberOfObjects");
-        int extraObjects = (Integer) getTestRunMessageValue("extraObjects");
+        getConnector().createCollection("Arenas", false, 5, 5);
 
         // Create list of objects, some with key-value pair, some without
-        List<DBObject> objects = new ArrayList<DBObject>();
+        List<Document> objects = new ArrayList<>();
         for (int i = 0; i < numberOfObjects; i++) {
-            DBObject dbObj = new BasicDBObject(key, value);
+            Document dbObj = new Document(key, value);
             objects.add(dbObj);
         }
 
-        objects.addAll(getEmptyDBObjects(extraObjects));
+        objects.addAll(getEmptyDocuments(extraObjects));
 
         // Insert objects into collection
-        insertObjects(objects);
-
+        insertObjects(objects, "Arenas");
     }
 
     @After
     public void tearDown() throws Exception {
         // Drop the collection
-        runFlowAndGetPayload("drop-collection");
-
+        getConnector().dropCollection("Arenas");
     }
 
     @Category({ RegressionTests.class })
     @Test
     public void testRemoveUsingQueryMap_WithQueryMap() {
-        try {
-            int extraObjects = (Integer) getTestRunMessageValue("extraObjects");
-            String key = getTestRunMessageValue("key").toString();
+        Map<String, Object> query = new HashMap<String, Object>();
+        query.put(key, value);
 
-            // Remove all records matching key-value pair
-            runFlowAndGetPayload("remove-objects-using-query-map-with-query-map");
+        // Remove all records matching key-value pair
+        getConnector().removeObjectsUsingQueryMap("Arenas", query);
 
-            // Get all objects
-            // Only objects which should be returned are those without the key value pairs
-            MongoCollection objects = runFlowAndGetPayload("find-objects");
-            assertTrue(objects.size() == extraObjects);
+        // Get all objects
+        // Only objects which should be returned are those without the key value pairs
+        Iterable<Document> objects = getConnector().findObjects("Arenas", new Document(), null, null, null, null);
 
-            // Check that each returned object does not contain the defined key-value pair
-            for (DBObject obj : objects) {
-                assertTrue(!obj.containsField(key));
-            }
-        } catch (Exception e) {
-            fail(ConnectorTestUtils.getStackTrace(e));
+        // Check that each returned object does not contain the defined key-value pair
+        for (Document dbo : objects) {
+            assertTrue(!dbo.containsKey(key));
         }
-
+        assertTrue(Iterables.size(objects) == extraObjects);
     }
 
     @Category({ RegressionTests.class })
     @Test
     public void testRemoveUsingQueryMap_WithoutQueryMap() {
-        try {
 
-            // Remove all records
-            runFlowAndGetPayload("remove-objects-using-query-map-without-query-map");
+        Map<String, Object> query = new HashMap<String, Object>();
+        // Remove all records
+        getConnector().removeObjectsUsingQueryMap("Arenas", query);
 
-            // Get all objects
-            MongoCollection objects = (MongoCollection) runFlowAndGetPayload("find-objects");
-            assertTrue(objects.isEmpty());
-        } catch (Exception e) {
-            fail(ConnectorTestUtils.getStackTrace(e));
-        }
+        // Get all objects
+        Iterable<Document> objects = getConnector().findObjects("Arenas", new Document(), null, null, null, null);
+        assertFalse(objects.iterator().hasNext());
 
     }
 }

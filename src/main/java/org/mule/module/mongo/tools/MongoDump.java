@@ -11,7 +11,6 @@ package org.mule.module.mongo.tools;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -23,15 +22,16 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.Validate;
+import org.bson.Document;
 import org.bson.types.BSONTimestamp;
 import org.mule.module.mongo.api.MongoClient;
 
 import com.mongodb.BasicDBObject;
-import com.mongodb.Bytes;
-import com.mongodb.DB;
-import com.mongodb.DBCollection;
-import com.mongodb.DBCursor;
-import com.mongodb.DBObject;
+import com.mongodb.client.FindIterable;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoCursor;
+import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.MongoIterable;
 
 public class MongoDump extends AbstractMongoUtility {
 
@@ -40,8 +40,8 @@ public class MongoDump extends AbstractMongoUtility {
     private final MongoClient mongoClient;
     private boolean zip;
     private boolean oplog;
-    private final Map<String, DB> dbs = new HashMap<String, DB>();
-    private DBCollection oplogCollection;
+    private final Map<String, MongoDatabase> dbs = new HashMap<>();
+    private MongoCollection<Document> oplogCollection;
     private BSONTimestamp oplogStart;
 
     public MongoDump(final MongoClient mongoClient) {
@@ -58,12 +58,12 @@ public class MongoDump extends AbstractMongoUtility {
 
         initOplog(database);
 
-        final Collection<String> collections = mongoClient.listCollections();
+        final MongoIterable<String> collections = mongoClient.listCollections();
         if (collections != null) {
             final ExecutorService executor = Executors.newFixedThreadPool(threads);
             final DumpWriter dumpWriter = new BsonDumpWriter(outputDirectory, opName);
             for (final String collectionName : collections) {
-                final DBCollection dbCollection = mongoClient.getCollection(collectionName);
+                final MongoCollection<Document> dbCollection = mongoClient.getCollection(collectionName);
                 final MongoDumpCollection dumpCollection = new MongoDumpCollection(dbCollection);
                 dumpCollection.setDumpWriter(dumpWriter);
 
@@ -81,9 +81,8 @@ public class MongoDump extends AbstractMongoUtility {
                     final ExecutorService singleExecutor = Executors.newSingleThreadExecutor();
                     final MongoDumpCollection dumpCollection = new MongoDumpCollection(oplogCollection);
                     dumpCollection.setName(BackupConstants.OPLOG);
-                    dumpCollection.addOption(Bytes.QUERYOPTION_OPLOGREPLAY);
-                    dumpCollection.addOption(Bytes.QUERYOPTION_SLAVEOK);
-                    final DBObject query = new BasicDBObject();
+                    dumpCollection.setOplogReplay(true);
+                    final Document query = new Document();
                     query.put(BackupConstants.TIMESTAMP_FIELD, new BasicDBObject("$gt", oplogStart));
                     // Filter only oplogs for given database
                     query.put(BackupConstants.NAMESPACE_FIELD, BackupUtils.getNamespacePattern(database));
@@ -109,11 +108,12 @@ public class MongoDump extends AbstractMongoUtility {
         if (oplog) {
             oplogCollection = new OplogCollection(dbs.get(BackupConstants.ADMIN_DB), dbs.get(BackupConstants.LOCAL_DB)).getOplogCollection();
             // Filter for oplogs for the given database
-            final DBObject query = new BasicDBObject(BackupConstants.NAMESPACE_FIELD, BackupUtils.getNamespacePattern(database));
-            final DBCursor oplogCursor = oplogCollection.find(query);
-            oplogCursor.sort(new BasicDBObject("$natural", -1));
-            if (oplogCursor.hasNext()) {
-                oplogStart = ((BSONTimestamp) oplogCursor.next().get("ts"));
+            final Document query = new Document(BackupConstants.NAMESPACE_FIELD, BackupUtils.getNamespacePattern(database));
+            final FindIterable<Document> oplogCursor = oplogCollection.find(query);
+            oplogCursor.sort(new Document("$natural", -1));
+            MongoCursor<Document> iterator = oplogCursor.iterator();
+            if (iterator.hasNext()) {
+                oplogStart = ((BSONTimestamp) iterator.next().get("ts"));
             }
         }
     }
@@ -132,7 +132,7 @@ public class MongoDump extends AbstractMongoUtility {
         this.oplog = oplog;
     }
 
-    public void addDB(final DB db) {
+    public void addDB(final MongoDatabase db) {
         dbs.put(db.getName(), db);
     }
 }

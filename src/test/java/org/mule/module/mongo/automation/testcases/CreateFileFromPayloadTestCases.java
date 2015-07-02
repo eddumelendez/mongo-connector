@@ -9,24 +9,28 @@
 package org.mule.module.mongo.automation.testcases;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+
+import java.io.IOException;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.mule.module.mongo.automation.MongoTestParent;
+import org.mule.module.mongo.automation.AbstractMongoTest;
 import org.mule.module.mongo.automation.RegressionTests;
-import org.mule.module.mongo.automation.SmokeTests;
-import org.mule.modules.tests.ConnectorTestUtils;
 
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBObject;
 import com.mongodb.gridfs.GridFSInputFile;
 
-public class CreateFileFromPayloadTestCases extends MongoTestParent {
+public class CreateFileFromPayloadTestCases extends AbstractMongoTest {
+
+    private DBObject dbObj;
 
     @Before
     public void setUp() {
-        initializeTestRunMessage("createFileFromPayload");
+        dbObj = new BasicDBObject();
+        dbObj.put("filename", "file1");
     }
 
     @After
@@ -34,22 +38,16 @@ public class CreateFileFromPayloadTestCases extends MongoTestParent {
         deleteFilesCreatedByCreateFileFromPayload();
     }
 
-    @Category({
-            SmokeTests.class,
-            RegressionTests.class })
+    @Category({ RegressionTests.class })
     @Test
-    public void testCreateFileFromPayload() {
-        try {
-            deleteFilesCreatedByCreateFileFromPayload();
-            assertEquals("There should be 0 files found before create-file-from-payload", 0, findFiles());
+    public void testCreateFileFromPayload() throws IOException {
 
-            GridFSInputFile res = createFileFromPayload(getTestRunMessageValue("filename1"));
+        deleteFilesCreatedByCreateFileFromPayload();
+        assertEquals("There should be 0 files found before create-file-from-payload", 0, findFiles(new BasicDBObject()));
 
-            assertEquals("The created file should be named " + getTestRunMessageValue("filename1"), getTestRunMessageValue("filename1"), res.getFilename());
-            assertEquals("There should be 1 files found after create-file-from-payload", 1, findFiles());
+        GridFSInputFile res = createFileFromPayload(dbObj, "file1");
 
-        } catch (Exception e) {
-            fail(ConnectorTestUtils.getStackTrace(e));
-        }
+        assertEquals("The created file should be named file1", "file1", res.getFilename());
+        assertEquals("There should be 1 files found after create-file-from-payload", 1, findFiles(dbObj));
     }
 }
