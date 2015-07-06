@@ -23,7 +23,7 @@ import org.mule.tck.junit4.FunctionalTestCase;
  */
 public class MongoNamespaceHandlerTestCase extends FunctionalTestCase {
     @Override
-    protected String getConfigResources() {
+    protected String getConfigFile() {
         return "mongo-namespace-config.xml";
     }
 
