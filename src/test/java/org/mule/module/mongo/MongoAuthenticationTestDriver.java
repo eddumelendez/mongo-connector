@@ -15,31 +15,41 @@ import org.junit.Test;
 
 /**
  * Integration test for the Connector when Authenticated. This test is only meaningful when server has being started with --auth argument, and a user has being created:
- * 
+ *
  * <pre>
  * db.addUser(username, password)
+ * SSL argument:-Djavax.net.ssl.trustStore
  * </pre>
  *
- * @author flbulgarelli
  */
 public class MongoAuthenticationTestDriver {
 
     private MongoCloudConnector connector;
 
     /**
-     * Setups an athenticated connector
+     * Setups an authenticated connector
      */
     @Before
     public void setup() throws Exception {
         connector = new MongoCloudConnector();
+        final ConnectionManagementStrategy strategy = new ConnectionManagementStrategy();
+        connector.setStrategy(strategy);
         connector.getStrategy().setHost("127.0.0.1");
         connector.getStrategy().setPort(27017);
-        // connector.connect("foobar", "1234", "mongo-connector-test");
-        connector.getStrategy().connect("admin", "", "test");
     }
 
     @Test
-    public void createCollection() throws Exception {
+    public void createCollectionwithoutSsl() throws Exception {
+        connector.getStrategy().setSsl(false);
+        connector.getStrategy().connect("admin", "admin", "test");
+        assertNotNull(connector.listCollections());
+    }
+
+    @Test
+    public void createCollectionUsingSsl() throws Exception {
+        connector.getStrategy().setSsl(true);
+        connector.getStrategy().setSslInvalidHostNameAllowed(true);
+        connector.getStrategy().connect("admin", "admin", "test");
         assertNotNull(connector.listCollections());
     }
 

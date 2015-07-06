@@ -12,6 +12,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.net.ssl.SSLSocketFactory;
+
 import jersey.repackaged.com.google.common.base.Function;
 import jersey.repackaged.com.google.common.collect.Lists;
 
@@ -51,7 +53,7 @@ public class ConnectionManagementStrategy {
     private static final Logger logger = LoggerFactory.getLogger(ConnectionManagementStrategy.class);
 
     protected static List<ServerAddress> getAddresses(final String commaSeparatedHosts, final int port) {
-        ArrayList<String> list = Lists.newArrayList(commaSeparatedHosts.split(",\\s?"));
+        final ArrayList<String> list = Lists.newArrayList(commaSeparatedHosts.split(",\\s?"));
         final List<ServerAddress> addresses = Lists.transform(list, new Function<String, ServerAddress>() {
 
             @Override
@@ -112,9 +114,25 @@ public class ConnectionManagementStrategy {
     @Optional
     private Integer socketTimeout;
 
+    /**
+     * This is for enabling a ssl connection. It is disabled by default.
+     */
+    @Configurable()
+    @Default("false")
+    private boolean ssl;
+
+    /**
+     * This is for enabling invalid host names when SSL is enabled. It is disabled by default.
+     */
+    @Configurable()
+    @Default("false")
+    private boolean sslInvalidHostNameAllowed;
+
     private String database;
 
     private MongoClient client;
+
+
 
     public MongoClient getClient() {
         return client;
@@ -137,13 +155,13 @@ public class ConnectionManagementStrategy {
         try {
 
             final List<ServerAddress> addresses = getAddresses(host, port);
-            MongoClientOptions mongoOptions = getMongoOptions(database);
+            final MongoClientOptions mongoOptions = getMongoOptions(database);
             com.mongodb.MongoClient mongo;
             if (StringUtils.isNotBlank(password)) {
                 Validate.notNull(username, "Username must not be null if password is set");
                 logger.info("Connecting to MongoDB, authenticating as user '{}'", username);
 
-                MongoCredential credential = MongoCredential.createCredential(username, database, password.toCharArray());
+                final MongoCredential credential = MongoCredential.createCredential(username, database, password.toCharArray());
                 mongo = new com.mongodb.MongoClient(addresses, Lists.newArrayList(credential), mongoOptions);
             } else {
                 logger.info("Connecting to MongoDB, not using authentication");
@@ -162,11 +180,11 @@ public class ConnectionManagementStrategy {
             throw new ConnectionException(ConnectionExceptionCode.CANNOT_REACH, e.getLocalizedMessage(), e.getMessage(), e.getCause());
         } catch (final IllegalArgumentException e) {
             throw new ConnectionException(ConnectionExceptionCode.CANNOT_REACH, e.getLocalizedMessage(), e.getMessage(), e.getCause());
-        } catch (MongoSecurityException e) {
+        } catch (final MongoSecurityException e) {
             throw new ConnectionException(ConnectionExceptionCode.INCORRECT_CREDENTIALS, String.valueOf(e.getCode()), "Authentication failed", e);
-        } catch (MongoTimeoutException e) {
+        } catch (final MongoTimeoutException e) {
             throw new ConnectionException(ConnectionExceptionCode.CANNOT_REACH, String.valueOf(e.getCode()), "Timeout waiting for server or a connection to become available", e);
-        } catch (MongoWaitQueueFullException e) {
+        } catch (final MongoWaitQueueFullException e) {
             throw new ConnectionException(ConnectionExceptionCode.UNKNOWN, String.valueOf(e.getCode()), "Wait Queue is full", e);
         }
     }
@@ -188,6 +206,13 @@ public class ConnectionManagementStrategy {
         }
         if (socketTimeout != null) {
             options.socketTimeout(socketTimeout);
+        }
+        if (ssl) {
+            options.sslEnabled(true);
+            options.socketFactory(SSLSocketFactory.getDefault());
+            if (sslInvalidHostNameAllowed) {
+                options.sslInvalidHostNameAllowed(true);
+            }
         }
         if (database != null) {
             this.database = database;
@@ -282,4 +307,19 @@ public class ConnectionManagementStrategy {
         this.socketTimeout = socketTimeout;
     }
 
+    public boolean getSsl() {
+        return ssl;
+    }
+
+    public void setSsl(final boolean ssl) {
+        this.ssl = ssl;
+    }
+
+    public boolean getSslInvalidHostNameAllowed() {
+        return sslInvalidHostNameAllowed;
+    }
+
+    public void setSslInvalidHostNameAllowed(final boolean sslInvalidHostNameAllowed) {
+        this.sslInvalidHostNameAllowed = sslInvalidHostNameAllowed;
+    }
 }
